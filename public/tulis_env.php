@@ -18,7 +18,7 @@ APP_URL=https://ptutamamadaniraya.com
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=u169145000_jukungsync1
+DB_DATABASE=u169145000_jukungsyncv1
 DB_USERNAME=u169145000_ptumar
 DB_PASSWORD=' . $dbPass . '
 
