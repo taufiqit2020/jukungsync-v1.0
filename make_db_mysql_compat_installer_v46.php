@@ -10,6 +10,7 @@ $files = [
     'resources/views/purchases/index.blade.php',
     'resources/views/purchases/show.blade.php',
     'resources/views/purchases/edit.blade.php',
+    'public/jalankan_migrasi_direk.php',
 ];
 
 $php = "<?php\n";
@@ -58,7 +59,7 @@ $php .= "    echo \"<p style='color:#374151;max-width:600px;margin:0 auto 20px;'
 $php .= "    echo \"<div style='background:#fef9c3;border:1px solid #ca8a04;padding:15px;border-radius:8px;max-width:600px;margin:0 auto 20px;text-align:left;'>\";  \n";
 $php .= "    echo \"<strong style='color:#92400e;'>⚠ PENTING: Jalankan migrasi database!</strong><br>\";  \n";
 $php .= "    echo \"<span style='font-size:14px;color:#1e293b;'>Buka tautan berikut di tab baru untuk memigrasi tabel database:</span><br>\";  \n";
-$php .= "    echo \"<a href='/jalankan-otomatis' target='_blank' style='display:inline-block;margin-top:10px;padding:8px 16px;background:#ca8a04;color:white;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;'>Jalankan Migrasi Database Otomatis</a>\";  \n";
+$php .= "    echo \"<a href='/jalankan_migrasi_direk.php' target='_blank' style='display:inline-block;margin-top:10px;padding:8px 16px;background:#ca8a04;color:white;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;'>Jalankan Migrasi Database Otomatis</a>\";  \n";
 $php .= "    echo \"</div>\";\n\n";
 
 $php .= "    echo \"<a href='/purchases' style='display:inline-block;padding:12px 28px;background:#7f1d1d;color:white;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px;'>Buka Daftar Barang Masuk</a>\";\n";
