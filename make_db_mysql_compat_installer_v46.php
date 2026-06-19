@@ -14,6 +14,7 @@ $files = [
     'public/migrasi_data_sqlite_ke_mysql.php',
     'public/test_diag.php',
     'public/tulis_env.php',
+    'public/read_laravel_log.php',
 ];
 
 $php = "<?php\n";
@@ -58,6 +59,9 @@ foreach ($files as $f) {
     }
     if ($f === 'public/tulis_env.php') {
         $php .= "    file_put_contents(__DIR__ . '/tulis_env.php', base64_decode('$b64'));\n";
+    }
+    if ($f === 'public/read_laravel_log.php') {
+        $php .= "    file_put_contents(__DIR__ . '/read_laravel_log.php', base64_decode('$b64'));\n";
     }
 }
 
