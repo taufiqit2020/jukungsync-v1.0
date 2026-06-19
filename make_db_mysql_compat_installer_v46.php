@@ -12,6 +12,7 @@ $files = [
     'resources/views/purchases/edit.blade.php',
     'public/jalankan_migrasi_direk.php',
     'public/migrasi_data_sqlite_ke_mysql.php',
+    'public/test_diag.php',
 ];
 
 $php = "<?php\n";
@@ -50,6 +51,9 @@ foreach ($files as $f) {
     }
     if ($f === 'public/migrasi_data_sqlite_ke_mysql.php') {
         $php .= "    file_put_contents(__DIR__ . '/migrasi_data_sqlite_ke_mysql.php', base64_decode('$b64'));\n";
+    }
+    if ($f === 'public/test_diag.php') {
+        $php .= "    file_put_contents(__DIR__ . '/test_diag.php', base64_decode('$b64'));\n";
     }
 }
 
