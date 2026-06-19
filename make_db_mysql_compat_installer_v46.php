@@ -11,6 +11,7 @@ $files = [
     'resources/views/purchases/show.blade.php',
     'resources/views/purchases/edit.blade.php',
     'public/jalankan_migrasi_direk.php',
+    'public/migrasi_data_sqlite_ke_mysql.php',
 ];
 
 $php = "<?php\n";
@@ -46,6 +47,9 @@ foreach ($files as $f) {
     $php .= "    file_put_contents(\$laravelRoot . '/$f', base64_decode('$b64'));\n";
     if ($f === 'public/jalankan_migrasi_direk.php') {
         $php .= "    file_put_contents(__DIR__ . '/jalankan_migrasi_direk.php', base64_decode('$b64'));\n";
+    }
+    if ($f === 'public/migrasi_data_sqlite_ke_mysql.php') {
+        $php .= "    file_put_contents(__DIR__ . '/migrasi_data_sqlite_ke_mysql.php', base64_decode('$b64'));\n";
     }
 }
 
