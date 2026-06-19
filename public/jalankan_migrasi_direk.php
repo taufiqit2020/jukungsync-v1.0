@@ -20,6 +20,12 @@ function findLaravelRoot($dir, $depth = 0) {
 $laravelRoot = findLaravelRoot(dirname(__DIR__));
 if (!$laravelRoot) $laravelRoot = __DIR__;
 
+// Hapus file migrasi lama yang duplikat di Hostinger jika ada
+$oldMigration = $laravelRoot . '/database/migrations/2026_06_03_060544_create_purchases_table.php';
+if (file_exists($oldMigration)) {
+    @unlink($oldMigration);
+}
+
 // Load composer autoloader
 require $laravelRoot . '/vendor/autoload.php';
 
