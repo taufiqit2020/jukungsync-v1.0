@@ -18,9 +18,9 @@ use App\Http\Controllers\PaymentController;
 // Rute Bantuan Otomatis (Hanya dipakai sekali)
 Route::get('/jalankan-otomatis', function() {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-        return "BERHASIL! Database telah di-update secara otomatis dengan migrate:fresh. Cache telah dibersihkan. Silakan kembali ke website Anda.";
+        return "BERHASIL! Database telah di-update secara otomatis. Cache telah dibersihkan. Silakan kembali ke website Anda.";
     } catch (\Exception $e) {
         return "Terjadi Kesalahan: " . $e->getMessage();
     }

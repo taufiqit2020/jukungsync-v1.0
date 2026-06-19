@@ -33,10 +33,10 @@ require $laravelRoot . '/vendor/autoload.php';
 $app = require_once $laravelRoot . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-echo "<h1>Menjalankan migrate:fresh...</h1><pre>";
+echo "<h1>Menjalankan migrate...</h1><pre>";
 try {
     $status = $kernel->handle(
-        $input = new Symfony\Component\Console\Input\StringInput('migrate:fresh --force'),
+        $input = new Symfony\Component\Console\Input\StringInput('migrate --force'),
         $output = new Symfony\Component\Console\Output\BufferedOutput
     );
     echo $output->fetch();
