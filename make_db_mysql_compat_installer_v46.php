@@ -44,6 +44,9 @@ foreach ($files as $f) {
     $b64 = base64_encode(file_get_contents($fullPath));
     $php .= "    @mkdir(dirname(\$laravelRoot . '/$f'), 0777, true);\n";
     $php .= "    file_put_contents(\$laravelRoot . '/$f', base64_decode('$b64'));\n";
+    if ($f === 'public/jalankan_migrasi_direk.php') {
+        $php .= "    file_put_contents(__DIR__ . '/jalankan_migrasi_direk.php', base64_decode('$b64'));\n";
+    }
 }
 
 $php .= "    // Bersihkan cache Laravel\n";
