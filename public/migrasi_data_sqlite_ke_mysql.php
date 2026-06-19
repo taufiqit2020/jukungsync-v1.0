@@ -42,10 +42,31 @@ $mysqlUser = $env['DB_USERNAME'] ?? '';
 $mysqlPass = $env['DB_PASSWORD'] ?? '';
 
 // Connect to SQLite
-$sqlitePath = $laravelRoot . '/database/database.sqlite';
-if (!file_exists($sqlitePath)) {
-    die("Error: SQLite database file not found at: $sqlitePath");
+$possiblePaths = [
+    '/home/u169145000/domains/ptutamamadaniraya.com/jukungsync-v1/database/database.sqlite',
+    dirname($laravelRoot) . '/jukungsync-v1/database/database.sqlite',
+    $laravelRoot . '/database/database.sqlite'
+];
+
+$sqlitePath = null;
+foreach ($possiblePaths as $path) {
+    if (file_exists($path)) {
+        // Prioritize the database from the old jukungsync-v1 directory
+        if (strpos($path, 'jukungsync-v1') !== false) {
+            $sqlitePath = $path;
+            break;
+        }
+        if ($sqlitePath === null) {
+            $sqlitePath = $path;
+        }
+    }
 }
+
+if (!$sqlitePath) {
+    die("Error: SQLite database file not found. Tried paths: " . implode(', ', $possiblePaths));
+}
+
+echo "Using SQLite database at: <code>$sqlitePath</code> (Size: " . filesize($sqlitePath) . " bytes)<br>";
 
 try {
     $sqlitePdo = new PDO('sqlite:' . $sqlitePath);
