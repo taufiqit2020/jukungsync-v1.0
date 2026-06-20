@@ -59,6 +59,7 @@
                     <a href="#beranda" :class="{ 'text-gray-600 hover:text-tema-marun': scrolled, 'text-gray-200 hover:text-white': !scrolled }" class="text-sm font-semibold transition-colors">Beranda</a>
                     <a href="#tentang" :class="{ 'text-gray-600 hover:text-tema-marun': scrolled, 'text-gray-200 hover:text-white': !scrolled }" class="text-sm font-semibold transition-colors">Tentang Kami</a>
                     <a href="#layanan" :class="{ 'text-gray-600 hover:text-tema-marun': scrolled, 'text-gray-200 hover:text-white': !scrolled }" class="text-sm font-semibold transition-colors">Layanan</a>
+                    <a href="#katalog" :class="{ 'text-gray-600 hover:text-tema-marun': scrolled, 'text-gray-200 hover:text-white': !scrolled }" class="text-sm font-semibold transition-colors">E-Catalog</a>
                     <a href="#kontak" :class="{ 'text-gray-600 hover:text-tema-marun': scrolled, 'text-gray-200 hover:text-white': !scrolled }" class="text-sm font-semibold transition-colors">Kontak</a>
                 </div>
 
@@ -106,6 +107,7 @@
                 <a href="#beranda" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Beranda</a>
                 <a href="#tentang" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Tentang Kami</a>
                 <a href="#layanan" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Layanan</a>
+                <a href="#katalog" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">E-Catalog</a>
                 <a href="#kontak" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Kontak</a>
                 <div class="pt-4 mt-2 border-t border-gray-100 flex flex-col gap-3">
                     @auth
@@ -340,6 +342,333 @@
             </div>
         </div>
     </section>
+
+    <!-- =====================================================
+         E-CATALOG PUBLIK SECTION
+         Tampilkan semua produk tanpa login.
+         Klik produk → modal login/daftar.
+    ===================================================== -->
+    <section id="katalog" class="py-20 lg:py-32 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-tema-marun font-black uppercase tracking-wider text-sm mb-3 block">E-Catalog Produk</span>
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
+                    Jelajahi Koleksi <span class="text-tema-marun">Produk Kami</span>
+                </h2>
+                <p class="text-gray-600 text-lg">
+                    Temukan ribuan produk berkualitas dari berbagai kategori. Daftar atau masuk untuk melihat harga dan melakukan pemesanan.
+                </p>
+            </div>
+
+            @if(isset($groupedProducts) && $groupedProducts->count() > 0)
+
+            <!-- Search Bar -->
+            <div class="relative max-w-xl mx-auto mb-10">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                </div>
+                <input type="text"
+                       id="publicSearchInput"
+                       placeholder="Cari produk..."
+                       class="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-2xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-tema-marun focus:border-transparent text-gray-800 text-base transition-all"
+                       autocomplete="off">
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="flex flex-wrap justify-center gap-2 mb-10" id="categoryTabs">
+                <button onclick="filterCategory('all')"
+                        data-cat="all"
+                        class="cat-tab active-tab px-4 py-2 rounded-xl text-sm font-bold transition-all border border-tema-marun bg-tema-marun text-white shadow-sm">
+                    Semua Produk
+                </button>
+                @foreach($groupedProducts as $categoryName => $products)
+                <button onclick="filterCategory('{{ Str::slug($categoryName) }}')"
+                        data-cat="{{ Str::slug($categoryName) }}"
+                        class="cat-tab px-4 py-2 rounded-xl text-sm font-bold transition-all border border-gray-200 bg-white text-gray-700 hover:border-tema-marun hover:text-tema-marun">
+                    {{ $categoryName }}
+                    <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">{{ $products->count() }}</span>
+                </button>
+                @endforeach
+            </div>
+
+            <!-- Products Grid -->
+            <div id="publicCatalogGrid">
+                @foreach($groupedProducts as $categoryName => $products)
+                <div class="category-group mb-12" data-cat="{{ Str::slug($categoryName) }}">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-1 h-8 bg-tema-marun rounded-full"></div>
+                        <h3 class="text-xl font-black text-gray-800">{{ $categoryName }}</h3>
+                        <span class="text-sm text-gray-500 font-semibold">{{ $products->count() }} produk</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                        @foreach($products as $product)
+                        <div class="product-card bg-white rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-gray-100 cursor-pointer group"
+                             data-name="{{ strtolower($product->nama_barang) }}"
+                             data-cat="{{ Str::slug($categoryName) }}"
+                             onclick="showLoginModal('{{ addslashes($product->nama_barang) }}')">
+
+                            <!-- Product Image -->
+                            <div class="relative aspect-square bg-gray-50 overflow-hidden">
+                                @if($product->gambar && file_exists(public_path('storage/' . $product->gambar)))
+                                    <img src="{{ asset('storage/' . $product->gambar) }}"
+                                         alt="{{ $product->nama_barang }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                         loading="lazy">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-3">
+                                        <svg class="w-10 h-10 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                        </svg>
+                                        <p class="text-xs text-gray-400 text-center leading-tight">{{ Str::limit($product->nama_barang, 20) }}</p>
+                                    </div>
+                                @endif
+
+                                <!-- Stock Badge -->
+                                @if($product->stok_saat_ini > 0)
+                                <span class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                                    Tersedia
+                                </span>
+                                @else
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                                    Habis
+                                </span>
+                                @endif
+
+                                <!-- Hover overlay -->
+                                <div class="absolute inset-0 bg-tema-hitam/0 group-hover:bg-tema-hitam/40 transition-all duration-300 flex items-center justify-center">
+                                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center px-2">
+                                        <div class="w-10 h-10 bg-tema-kuning rounded-xl flex items-center justify-center mx-auto mb-1 shadow-lg">
+                                            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-white text-xs font-bold">Lihat Harga</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="p-3">
+                                <p class="text-xs text-gray-400 font-mono mb-0.5">{{ $product->sku }}</p>
+                                <h4 class="text-sm font-bold text-gray-800 leading-tight mb-1 line-clamp-2">{{ $product->nama_barang }}</h4>
+                                @if($product->merk)
+                                <p class="text-xs text-gray-500 mb-2">{{ $product->merk->nama_merk }}</p>
+                                @endif
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{{ $product->satuan }}</span>
+                                    <span class="text-xs font-bold text-tema-marun flex items-center gap-0.5">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                        Login
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <!-- Empty State (hidden by default, shown by JS when no results) -->
+            <div id="noProductResult" class="hidden text-center py-20">
+                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-gray-500 font-semibold text-lg">Produk tidak ditemukan</p>
+                <p class="text-gray-400 text-sm mt-1">Coba kata kunci lain atau reset filter</p>
+                <button onclick="resetFilter()" class="mt-4 px-5 py-2 bg-tema-marun text-white rounded-xl text-sm font-bold hover:bg-red-900 transition-colors">
+                    Tampilkan Semua
+                </button>
+            </div>
+
+            <!-- CTA Banner inside catalog -->
+            <div class="mt-14 rounded-3xl bg-gradient-to-br from-tema-hitam to-gray-800 p-8 md:p-10 text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-tema-kuning/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-tema-marun/20 rounded-full blur-3xl -ml-10 -mb-10"></div>
+                <div class="relative z-10">
+                    <span class="inline-flex items-center gap-2 bg-tema-kuning/20 border border-tema-kuning/30 text-tema-kuning text-sm font-bold px-4 py-1.5 rounded-full mb-4">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        Harga Tersedia untuk Member
+                    </span>
+                    <h3 class="text-2xl md:text-3xl font-black text-white mb-3">Ingin Lihat Harga & Pesan Langsung?</h3>
+                    <p class="text-gray-400 mb-6 max-w-lg mx-auto">Daftarkan perusahaan/bisnis Anda sebagai mitra klien PT. UMAR dan dapatkan akses ke harga grosir, sistem pemesanan digital, dan layanan B2B eksklusif.</p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <a href="{{ route('register') }}" class="px-7 py-3.5 bg-tema-kuning hover:bg-yellow-500 text-black rounded-2xl font-black text-base shadow-lg transition-all transform hover:-translate-y-0.5">
+                            Daftar Sebagai Klien
+                        </a>
+                        <a href="{{ route('login') }}" class="px-7 py-3.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-bold text-base transition-all">
+                            Masuk / Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @else
+            <!-- Empty catalog state -->
+            <div class="text-center py-20">
+                <svg class="w-20 h-20 text-gray-200 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <p class="text-gray-500 font-bold text-xl">Katalog Segera Hadir</p>
+                <p class="text-gray-400 mt-2">Produk kami sedang dalam proses pendaftaran.</p>
+            </div>
+            @endif
+        </div>
+    </section>
+    <!-- END E-CATALOG PUBLIK SECTION -->
+
+    <!-- Modal Login Prompt (muncul saat klik produk) -->
+    <div id="loginPromptModal"
+         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+         style="display:none !important"
+         onclick="if(event.target===this) closeLoginModal()">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative transform transition-all" id="loginModalBox">
+            <!-- Close Button -->
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-tema-kuning/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                <svg class="w-9 h-9 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+
+            <!-- Content -->
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-black text-gray-900 mb-2">Masuk untuk Melihat Harga</h3>
+                <p class="text-gray-500 text-sm leading-relaxed" id="modalProductName">
+                    Untuk melihat harga dan memesan produk ini, silakan masuk atau daftar sebagai klien/mitra PT. UMAR.
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col gap-3">
+                <a href="{{ route('login') }}" class="w-full py-3.5 bg-tema-hitam hover:bg-gray-800 text-white rounded-2xl font-black text-base text-center transition-all shadow-sm">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Masuk / Login
+                    </span>
+                </a>
+                <a href="{{ route('register') }}" class="w-full py-3.5 bg-tema-kuning hover:bg-yellow-500 text-black rounded-2xl font-black text-base text-center transition-all shadow-sm">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                        </svg>
+                        Daftar Klien Baru
+                    </span>
+                </a>
+                <button onclick="closeLoginModal()" class="w-full py-2.5 text-gray-500 hover:text-gray-700 text-sm font-semibold transition-colors">
+                    Kembali ke Katalog
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS: Catalog filter, search, modal -->
+    <script>
+    // ==== MODAL ====
+    function showLoginModal(productName) {
+        const modal = document.getElementById('loginPromptModal');
+        const nameEl = document.getElementById('modalProductName');
+        if (nameEl) {
+            nameEl.textContent = 'Untuk melihat harga dan memesan "' + productName + '", silakan masuk atau daftar sebagai klien/mitra PT. UMAR.';
+        }
+        modal.style.removeProperty('display');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        const box = document.getElementById('loginModalBox');
+        box.classList.remove('scale-95', 'opacity-0');
+        box.classList.add('scale-100', 'opacity-100');
+    }
+
+    function closeLoginModal() {
+        const modal = document.getElementById('loginPromptModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLoginModal();
+    });
+
+    // ==== SEARCH ====
+    const searchInput = document.getElementById('publicSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            applyFilters();
+        });
+    }
+
+    // ==== CATEGORY FILTER ====
+    let activeCategory = 'all';
+
+    function filterCategory(cat) {
+        activeCategory = cat;
+        // Update tab styles
+        document.querySelectorAll('.cat-tab').forEach(function(btn) {
+            if (btn.dataset.cat === cat) {
+                btn.classList.add('bg-tema-marun', 'text-white', 'border-tema-marun');
+                btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+            } else {
+                btn.classList.remove('bg-tema-marun', 'text-white', 'border-tema-marun');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+            }
+        });
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const groups = document.querySelectorAll('.category-group');
+        let totalVisible = 0;
+
+        groups.forEach(function(group) {
+            const groupCat = group.dataset.cat;
+            const groupMatches = activeCategory === 'all' || activeCategory === groupCat;
+
+            const cards = group.querySelectorAll('.product-card');
+            let groupVisible = 0;
+
+            cards.forEach(function(card) {
+                const nameMatch = !query || card.dataset.name.includes(query);
+                const catMatch = groupMatches;
+                if (nameMatch && catMatch) {
+                    card.style.display = '';
+                    groupVisible++;
+                    totalVisible++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show/hide group
+            group.style.display = groupVisible > 0 ? '' : 'none';
+        });
+
+        const emptyState = document.getElementById('noProductResult');
+        if (emptyState) {
+            emptyState.classList.toggle('hidden', totalVisible > 0);
+        }
+    }
+
+    function resetFilter() {
+        if (searchInput) searchInput.value = '';
+        filterCategory('all');
+    }
+    </script>
 
     <!-- CTA Section -->
     <section class="py-20 relative overflow-hidden bg-tema-hitam">

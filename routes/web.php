@@ -26,9 +26,19 @@ Route::get('/jalankan-otomatis', function() {
     }
 });
 
-// Root Landing Page
+// Root Landing Page (Publik - tampilkan produk tanpa login)
 Route::get('/', function () {
-    return view('welcome');
+    $products = \App\Models\Product::with(['category', 'merk'])
+        ->orderBy('nama_barang', 'asc')
+        ->get();
+
+    $groupedProducts = $products->groupBy(function ($product) {
+        return $product->category ? $product->category->nama_kategori : 'Tanpa Kategori';
+    })->sortBy(function ($items, $key) {
+        return $key === 'Tanpa Kategori' ? 1 : 0;
+    });
+
+    return view('welcome', compact('groupedProducts'));
 })->name('welcome');
 
 // Authentication Routes (Guest Only)
