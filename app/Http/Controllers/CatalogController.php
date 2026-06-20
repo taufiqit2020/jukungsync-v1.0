@@ -12,12 +12,10 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        $search = $request->input('search', '');
         
-        $products = Product::with('category')->when($search, function($q) use ($search) {
-                $q->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%");
-            })
+        // Selalu ambil seluruh produk agar pencarian instan sisi klien berjalan sempurna
+        $products = Product::with('category')
             ->orderBy('nama_barang', 'asc')
             ->get();
             

@@ -129,10 +129,10 @@
                 <p class="text-xs text-gray-500 mt-0.5">Pilih produk dan masukkan kuantitas untuk checkout</p>
             </div>
             
-            <form method="GET" action="{{ route('catalog.index') }}" class="w-full md:w-auto flex relative">
-                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama barang atau SKU..." class="w-full md:w-80 pl-10 pr-16 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:ring-tema-marun focus:border-tema-marun focus:bg-white outline-none transition-all">
+            <form method="GET" action="{{ route('catalog.index') }}" class="w-full md:w-auto flex relative" @submit.prevent>
+                <input type="text" name="search" x-model="searchQuery" @input="runSearch()" placeholder="Cari nama barang atau SKU..." class="w-full md:w-80 pl-10 pr-16 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:ring-tema-marun focus:border-tema-marun focus:bg-white outline-none transition-all">
                 <svg class="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 bg-tema-hitam text-white text-xs px-3 rounded-xl hover:bg-black transition-colors font-bold shadow-sm">Cari</button>
+                <button type="button" @click="runSearch()" class="absolute right-2 top-1.5 bottom-1.5 bg-tema-hitam text-white text-xs px-3 rounded-xl hover:bg-black transition-colors font-bold shadow-sm">Cari</button>
             </form>
         </div>
 
@@ -153,14 +153,14 @@
         <!-- Product Grid by Category -->
         <div class="space-y-12">
             @forelse($groupedProducts as $kategoriName => $productsGroup)
-            <div id="cat-{{ Str::slug($kategoriName) }}" class="scroll-mt-[150px]">
+            <div id="cat-{{ Str::slug($kategoriName) }}" class="scroll-mt-[150px] category-section">
                 <!-- Category Header -->
                 <div class="flex items-center justify-between mb-6 border-b border-gray-200/60 pb-3">
                     <h3 class="text-2xl font-heading font-black text-gray-800 flex items-center gap-2">
                         <span class="w-1.5 h-6 bg-tema-marun rounded-full"></span>
                         {{ $kategoriName }}
                     </h3>
-                    <span class="bg-white text-gray-600 text-xs font-black px-3.5 py-1.5 rounded-full border border-gray-200 shadow-sm">{{ $productsGroup->count() }} Produk</span>
+                    <span class="bg-white text-gray-600 text-xs font-black px-3.5 py-1.5 rounded-full border border-gray-200 shadow-sm category-count">{{ $productsGroup->count() }} Produk</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -181,7 +181,7 @@
                                 'image' => $product->gambar ? asset('storage/' . $product->gambar) : ''
                             ];
                         @endphp
-                        <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden group hover:shadow-[0_20px_40px_rgba(127,29,29,0.08)] -translate-y-0 hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative cursor-pointer" @click="openProductModal({{ json_encode($productData) }})">
+                        <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden group hover:shadow-[0_20px_40px_rgba(127,29,29,0.08)] -translate-y-0 hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative cursor-pointer product-card" data-search="{{ strtolower($product->nama_barang) }} {{ strtolower($product->sku) }}" @click="openProductModal({{ json_encode($productData) }})">
                             <!-- Stock Badges -->
                             @if($product->stok_saat_ini > 0 && $product->stok_saat_ini < 5)
                                 <div class="absolute top-3 right-3 z-10">
@@ -240,6 +240,13 @@
                 <p class="text-sm">Tidak ada barang yang cocok dengan kata kunci tersebut.</p>
             </div>
             @endforelse
+
+            <!-- Client-side No Results Placeholder -->
+            <div id="no-results-placeholder" class="hidden col-span-full py-20 text-center text-gray-500 bg-white rounded-3xl shadow-sm border border-gray-100">
+                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Pencarian Tidak Ditemukan</h3>
+                <p class="text-sm">Tidak ada barang yang cocok dengan kata kunci tersebut.</p>
+            </div>
         </div>
     </main>
 
@@ -461,6 +468,7 @@
                 errorMessage: '',
                 activeCategory: window.location.hash ? window.location.hash.replace('#cat-', '') : 'all',
                 showScrollTop: false,
+                searchQuery: '{{ $search }}',
 
                 // === CONFIG TIER dari server ===
                 tipePelanggan: '{{ auth()->user()->tipe_pelanggan ?? "reguler" }}',
@@ -476,6 +484,51 @@
                     window.addEventListener('scroll', () => {
                         this.showScrollTop = window.scrollY > 400;
                     });
+
+                    if (this.searchQuery) {
+                        setTimeout(() => {
+                            this.runSearch();
+                        }, 100);
+                    }
+                },
+
+                runSearch() {
+                    const query = this.searchQuery.toLowerCase().trim();
+                    const cards = document.querySelectorAll('.product-card');
+                    const sections = document.querySelectorAll('.category-section');
+                    let totalVisible = 0;
+
+                    cards.forEach(card => {
+                        const searchText = card.getAttribute('data-search') || '';
+                        if (query === '' || searchText.includes(query)) {
+                            card.style.display = '';
+                            totalVisible++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    sections.forEach(section => {
+                        const visibleCards = section.querySelectorAll('.product-card:not([style*="display: none"])');
+                        const countSpan = section.querySelector('.category-count');
+                        if (countSpan) {
+                            countSpan.textContent = visibleCards.length + ' Produk';
+                        }
+                        if (visibleCards.length === 0) {
+                            section.style.display = 'none';
+                        } else {
+                            section.style.display = '';
+                        }
+                    });
+
+                    const placeholder = document.getElementById('no-results-placeholder');
+                    if (placeholder) {
+                        if (totalVisible === 0) {
+                            placeholder.classList.remove('hidden');
+                        } else {
+                            placeholder.classList.add('hidden');
+                        }
+                    }
                 },
 
                 get totalItems() {
