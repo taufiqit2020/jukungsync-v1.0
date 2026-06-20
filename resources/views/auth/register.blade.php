@@ -19,18 +19,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
     <style>
         .glass-panel { background: linear-gradient(145deg, #111827 0%, #1f2937 50%, #7f1d1d 100%); }
+
+        /* === Camera UI === */
         .camera-frame {
             position: relative;
             border: 3px dashed #d1d5db;
             border-radius: 16px;
             overflow: hidden;
             background: #f9fafb;
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
-        .camera-frame.active { border-color: #7f1d1d; background: #fff; }
+        .camera-frame.active   { border-color: #7f1d1d; border-style: solid; background: #000; }
         .camera-frame.captured { border-color: #16a34a; border-style: solid; }
-        #ktpVideo, #ktpCanvas { width: 100%; display: block; }
-        #ktpCanvas { display: none; }
+        .camera-frame.invalid  { border-color: #dc2626; border-style: solid; }
+        .camera-frame.checking { border-color: #d97706; border-style: solid; }
+
+        #ktpVideo  { width: 100%; display: block; }
+        #ktpCanvas { width: 100%; display: none; }
+
+        /* KTP overlay guide */
+        .ktp-guide-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        .ktp-guide-box {
+            border: 3px solid rgba(251,191,36,0.85);
+            border-radius: 12px;
+            width: 85%;
+            aspect-ratio: 85.6 / 54;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.45);
+            position: relative;
+        }
+        /* Corner marks */
+        .ktp-guide-box::before,
+        .ktp-guide-box::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+        }
+        .corner { position: absolute; width: 20px; height: 20px; border-color: #fbbf24; border-style: solid; }
+        .corner-tl { top: -3px; left: -3px;  border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+        .corner-tr { top: -3px; right: -3px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+        .corner-bl { bottom: -3px; left: -3px;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+        .corner-br { bottom: -3px; right: -3px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+
+        /* OTP Method Cards */
         .otp-method-card {
             cursor: pointer;
             border: 2px solid #e5e7eb;
@@ -45,12 +83,46 @@
         .otp-method-card:hover { border-color: #7f1d1d; background: #fff7f7; }
         .otp-method-card.selected { border-color: #7f1d1d; background: #fff7f7; box-shadow: 0 0 0 3px rgba(127,29,29,0.12); }
         .otp-method-card input[type="radio"] { accent-color: #7f1d1d; width: 18px; height: 18px; }
+
+        /* Animations */
         @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(127,29,29,0.4); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(127,29,29,0); }
+            0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(127,29,29,0.4); }
+            70%  { transform: scale(1);    box-shadow: 0 0 0 8px rgba(127,29,29,0); }
             100% { transform: scale(0.95); }
         }
         .pulse-rec { animation: pulse-ring 1.5s infinite; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+
+        /* Scanning animation bar */
+        @keyframes scanline {
+            0%   { top: 0; }
+            50%  { top: calc(100% - 4px); }
+            100% { top: 0; }
+        }
+        .scan-bar {
+            position: absolute;
+            left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #fbbf24, transparent);
+            animation: scanline 1.8s ease-in-out infinite;
+            border-radius: 2px;
+        }
+
+        /* OCR verifying overlay */
+        #verifyingOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.70);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+            border-radius: 13px;
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex">
@@ -109,10 +181,10 @@
             </div>
 
             <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
-                <form method="POST" action="{{ route('register.post') }}" class="space-y-5" id="registerForm" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('register.post') }}" class="space-y-5" id="registerForm">
                     @csrf
 
-                    {{-- ============ DATA DIRI ============ --}}
+                    {{-- ===== DATA DIRI ===== --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">NAMA LENGKAP <span class="text-red-500">*</span></label>
@@ -155,90 +227,128 @@
                         </div>
                     </div>
 
-                    {{-- ============ FOTO KTP (KAMERA ONLY) ============ --}}
+                    {{-- ===== FOTO KTP (CAMERA + OCR VALIDATION) ===== --}}
                     <div>
                         <label class="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">
                             FOTO KTP <span class="text-red-500">*</span>
-                            <span class="ml-1 text-[10px] text-red-700 font-bold normal-case">(Wajib - gunakan kamera)</span>
+                            <span class="ml-1 text-[10px] text-red-700 font-bold normal-case">(Wajib – gunakan kamera, diverifikasi otomatis)</span>
                         </label>
 
                         {{-- Info box --}}
                         <div class="flex items-start gap-2.5 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-3">
-                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <p class="text-xs text-amber-800 font-medium">Foto KTP <strong>hanya bisa diambil melalui kamera</strong> (tidak bisa upload dari galeri). Pastikan KTP terlihat jelas dan tidak buram.</p>
+                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <p class="text-xs text-amber-800 font-medium">
+                                Foto KTP <strong>hanya via kamera</strong> (tidak bisa dari galeri). Sistem akan <strong>memverifikasi otomatis</strong> bahwa foto adalah KTP Indonesia asli. Pastikan KTP terlihat jelas, terang, dan tidak buram.
+                            </p>
                         </div>
 
-                        {{-- Camera area --}}
-                        <div id="ktpArea">
-                            {{-- State: belum buka kamera --}}
-                            <div id="cameraPlaceholder" class="camera-frame flex flex-col items-center justify-center gap-3 py-8 px-4 text-center">
-                                <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-gray-700">Klik tombol di bawah untuk membuka kamera</p>
-                                    <p class="text-xs text-gray-500 mt-1">Arahkan kamera ke KTP Anda, lalu ambil foto</p>
-                                </div>
-                                <button type="button" id="openCameraBtn"
-                                    class="mt-1 inline-flex items-center gap-2 px-5 py-2.5 bg-tema-marun hover:bg-red-900 text-white rounded-xl text-sm font-bold transition-all active:scale-95 shadow-sm">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    Buka Kamera
-                                </button>
+                        {{-- === STATE 1: Belum buka kamera === --}}
+                        <div id="cameraPlaceholder" class="camera-frame flex flex-col items-center justify-center gap-3 py-10 px-4 text-center">
+                            <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
                             </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-700">Klik tombol di bawah untuk membuka kamera</p>
+                                <p class="text-xs text-gray-400 mt-1">Arahkan kamera ke KTP Anda, lalu ambil foto</p>
+                            </div>
+                            <button type="button" id="openCameraBtn"
+                                class="mt-1 inline-flex items-center gap-2 px-5 py-2.5 bg-tema-marun hover:bg-red-900 text-white rounded-xl text-sm font-bold transition-all active:scale-95 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Buka Kamera
+                            </button>
+                        </div>
 
-                            {{-- State: kamera aktif --}}
-                            <div id="cameraActive" class="camera-frame active hidden">
+                        {{-- === STATE 2: Kamera aktif === --}}
+                        <div id="cameraActive" class="camera-frame active hidden">
+                            <div class="relative">
                                 <video id="ktpVideo" autoplay playsinline></video>
-                                <div class="p-3 flex items-center justify-between bg-gray-900/80 backdrop-blur-sm">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-2.5 h-2.5 bg-red-500 rounded-full pulse-rec"></span>
-                                        <span class="text-white text-xs font-bold">Kamera Aktif</span>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <button type="button" id="captureBtn"
-                                            class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-xs font-black transition-all active:scale-95">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
-                                            Ambil Foto
-                                        </button>
-                                        <button type="button" id="closeCameraBtn"
-                                            class="px-3 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg text-xs font-bold transition-all">
-                                            Batal
-                                        </button>
+                                {{-- KTP guide overlay --}}
+                                <div class="ktp-guide-overlay">
+                                    <div class="ktp-guide-box">
+                                        <div class="corner corner-tl"></div>
+                                        <div class="corner corner-tr"></div>
+                                        <div class="corner corner-bl"></div>
+                                        <div class="corner corner-br"></div>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- State: foto sudah diambil --}}
-                            <div id="cameraResult" class="camera-frame captured hidden">
-                                <canvas id="ktpCanvas"></canvas>
-                                <div class="p-3 flex items-center justify-between bg-green-900/90 backdrop-blur-sm">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                        <span class="text-white text-xs font-bold">Foto KTP Berhasil Diambil</span>
-                                    </div>
-                                    <button type="button" id="retakeBtn"
-                                        class="inline-flex items-center gap-1.5 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-bold transition-all active:scale-95">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                        Ulangi Foto
+                            <div class="p-3 flex items-center justify-between bg-gray-900/90 backdrop-blur-sm">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full pulse-rec"></span>
+                                    <span class="text-white text-xs font-bold">Arahkan KTP ke kotak kuning</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button type="button" id="captureBtn"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-xs font-black transition-all active:scale-95">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+                                        Ambil Foto
+                                    </button>
+                                    <button type="button" id="closeCameraBtn"
+                                        class="px-3 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg text-xs font-bold">
+                                        Batal
                                     </button>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Hidden input untuk base64 foto KTP --}}
+                        {{-- === STATE 3: Sedang verifikasi OCR === --}}
+                        <div id="cameraChecking" class="camera-frame checking hidden">
+                            <div class="relative">
+                                <canvas id="ktpCanvas"></canvas>
+                                <div id="verifyingOverlay">
+                                    <div class="scan-bar" style="position:relative;width:80%;height:3px;"></div>
+                                    <svg class="w-8 h-8 text-yellow-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    <p class="text-white font-bold text-sm">Memverifikasi KTP...</p>
+                                    <p class="text-white/60 text-xs" id="ocrStatus">Membaca data KTP Indonesia</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- === STATE 4: VALID – Foto KTP terverifikasi === --}}
+                        <div id="cameraResult" class="camera-frame captured hidden">
+                            <div class="relative">
+                                <canvas id="ktpCanvasResult"></canvas>
+                                <div class="absolute top-2 left-2 bg-green-600/90 backdrop-blur-sm text-white text-xs font-black px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                    KTP Terverifikasi
+                                </div>
+                            </div>
+                            <div class="p-3 flex items-center justify-between bg-green-900/90 backdrop-blur-sm">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    <span class="text-white text-xs font-bold">Foto KTP Indonesia Valid</span>
+                                </div>
+                                <button type="button" id="retakeBtn"
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-bold transition-all active:scale-95">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Ulangi Foto
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Hidden input untuk base64 --}}
                         <input type="hidden" name="foto_ktp" id="ktpBase64">
                         @error('foto_ktp')<p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>@enderror
                     </div>
 
-                    {{-- ============ METODE OTP ============ --}}
+                    {{-- ===== METODE OTP ===== --}}
                     <div>
                         <label class="block text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">
                             METODE VERIFIKASI OTP <span class="text-red-500">*</span>
                         </label>
                         <p class="text-xs text-gray-500 mb-3">Pilih cara pengiriman kode OTP 6-digit untuk verifikasi akun Anda:</p>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="otpMethodCards">
-                            {{-- WhatsApp --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <label class="otp-method-card {{ old('otp_method', 'whatsapp') === 'whatsapp' ? 'selected' : '' }}" id="cardWhatsapp">
                                 <input type="radio" name="otp_method" value="whatsapp"
                                     {{ old('otp_method', 'whatsapp') === 'whatsapp' ? 'checked' : '' }}
@@ -249,12 +359,10 @@
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-gray-800 leading-tight">WhatsApp</p>
+                                    <p class="text-sm font-bold text-gray-800">WhatsApp</p>
                                     <p class="text-xs text-gray-500 mt-0.5">OTP dikirim ke nomor HP aktif</p>
                                 </div>
                             </label>
-
-                            {{-- Email --}}
                             <label class="otp-method-card {{ old('otp_method') === 'email' ? 'selected' : '' }}" id="cardEmail">
                                 <input type="radio" name="otp_method" value="email"
                                     {{ old('otp_method') === 'email' ? 'checked' : '' }}
@@ -265,7 +373,7 @@
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-bold text-gray-800 leading-tight">Email</p>
+                                    <p class="text-sm font-bold text-gray-800">Email</p>
                                     <p class="text-xs text-gray-500 mt-0.5">OTP dikirim ke email aktif</p>
                                 </div>
                             </label>
@@ -273,7 +381,7 @@
                         @error('otp_method')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                     </div>
 
-                    {{-- ============ PASSWORD ============ --}}
+                    {{-- ===== PASSWORD ===== --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-[11px] font-bold text-gray-500 mb-1.5 uppercase tracking-wider">PASSWORD <span class="text-red-500">*</span></label>
@@ -320,123 +428,273 @@
         </div>
     </div>
 
+    {{-- SweetAlert & Tesseract.js OCR --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- Tesseract.js v5 – OCR engine untuk validasi teks KTP --}}
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
     <script>
-        // ===== Password Toggle =====
-        function togglePwd(id) {
-            const el = document.getElementById(id);
-            el.type = el.type === 'password' ? 'text' : 'password';
+    // ===========================
+    //  Password Toggle
+    // ===========================
+    function togglePwd(id) {
+        const el = document.getElementById(id);
+        el.type = el.type === 'password' ? 'text' : 'password';
+    }
+
+    // ===========================
+    //  OTP Method Selector
+    // ===========================
+    function selectOtpMethod(radio) {
+        document.querySelectorAll('.otp-method-card').forEach(c => c.classList.remove('selected'));
+        radio.closest('.otp-method-card').classList.add('selected');
+    }
+
+    // ===========================
+    //  KTP Camera + OCR Validation
+    // ===========================
+    let stream          = null;
+    let ktpValidated    = false;    // flag: foto sudah terbukti KTP valid
+    let capturedDataUrl = null;     // simpan hasil foto
+
+    const video           = document.getElementById('ktpVideo');
+    const canvas          = document.getElementById('ktpCanvas');
+    const canvasResult    = document.getElementById('ktpCanvasResult');
+    const ktpBase64Input  = document.getElementById('ktpBase64');
+    const ocrStatusEl     = document.getElementById('ocrStatus');
+
+    const elPlaceholder   = document.getElementById('cameraPlaceholder');
+    const elActive        = document.getElementById('cameraActive');
+    const elChecking      = document.getElementById('cameraChecking');
+    const elResult        = document.getElementById('cameraResult');
+
+    // --- Buka Kamera ---
+    document.getElementById('openCameraBtn').addEventListener('click', openCamera);
+
+    async function openCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: { ideal: 'environment' },
+                    width:  { ideal: 1920 },
+                    height: { ideal: 1080 }
+                },
+                audio: false
+            });
+            video.srcObject = stream;
+            showState('active');
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Izin Kamera Ditolak',
+                html: 'Browser tidak dapat mengakses kamera.<br><small class="text-gray-500">Izinkan akses kamera di pengaturan browser Anda, lalu coba lagi.</small>',
+                confirmButtonColor: '#7f1d1d',
+                confirmButtonText: 'Mengerti'
+            });
         }
+    }
 
-        // ===== OTP Method Selector =====
-        function selectOtpMethod(radio) {
-            document.querySelectorAll('.otp-method-card').forEach(c => c.classList.remove('selected'));
-            radio.closest('.otp-method-card').classList.add('selected');
-        }
+    // --- Ambil Foto & Jalankan OCR ---
+    document.getElementById('captureBtn').addEventListener('click', async function () {
+        canvas.width  = video.videoWidth  || 1280;
+        canvas.height = video.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        capturedDataUrl = canvas.toDataURL('image/jpeg', 0.90);
 
-        // ===== KTP Camera (Camera Only - no file upload) =====
-        let stream = null;
+        // Tampilkan di canvas checking
+        canvas.style.display = 'block';
 
-        const video       = document.getElementById('ktpVideo');
-        const canvas      = document.getElementById('ktpCanvas');
-        const ktpBase64   = document.getElementById('ktpBase64');
-        const placeholder = document.getElementById('cameraPlaceholder');
-        const cameraActive  = document.getElementById('cameraActive');
-        const cameraResult  = document.getElementById('cameraResult');
+        stopCamera();
+        showState('checking');
+        ocrStatusEl.textContent = 'Memuat mesin OCR...';
 
-        document.getElementById('openCameraBtn').addEventListener('click', async function() {
-            try {
-                // Paksa environment: camera, bukan galeri
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: { ideal: 'environment' }, // Kamera belakang
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: false
-                });
-                video.srcObject = stream;
-                placeholder.classList.add('hidden');
-                cameraActive.classList.remove('hidden');
-                cameraResult.classList.add('hidden');
-            } catch (err) {
+        await runKtpOcr(capturedDataUrl);
+    });
+
+    // --- Batal Kamera ---
+    document.getElementById('closeCameraBtn').addEventListener('click', function () {
+        stopCamera();
+        showState('placeholder');
+    });
+
+    // --- Ulangi Foto ---
+    document.getElementById('retakeBtn').addEventListener('click', function () {
+        ktpValidated    = false;
+        capturedDataUrl = null;
+        ktpBase64Input.value = '';
+        canvas.style.display = 'none';
+        openCamera();
+    });
+
+    // --- OCR Validation Menggunakan Tesseract.js ---
+    async function runKtpOcr(dataUrl) {
+        /**
+         * Kata kunci KTP Indonesia (versi kapital & huruf kecil dicampur).
+         * Minimal 3 dari daftar ini harus ditemukan untuk dianggap valid.
+         */
+        const KTP_KEYWORDS = [
+            'REPUBLIK INDONESIA',
+            'INDONESIA',
+            'NIK',
+            'NAMA',
+            'Tempat',
+            'Lahir',
+            'TTL',
+            'Jenis Kelamin',
+            'LAKI',
+            'PEREMPUAN',
+            'Golongan Darah',
+            'Alamat',
+            'RT',
+            'RW',
+            'Kel',
+            'Kec',
+            'Agama',
+            'Status Perkawinan',
+            'Pekerjaan',
+            'Kewarganegaraan',
+            'WNI',
+            'Berlaku Hingga',
+            'SEUMUR HIDUP',
+        ];
+
+        try {
+            ocrStatusEl.textContent = 'Membaca teks di foto...';
+
+            // Buat worker Tesseract (Bahasa Indonesia + Inggris)
+            const worker = await Tesseract.createWorker('ind+eng', 1, {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        const pct = Math.round((m.progress || 0) * 100);
+                        ocrStatusEl.textContent = `Membaca teks: ${pct}%`;
+                    }
+                }
+            });
+
+            const { data: { text } } = await worker.recognize(dataUrl);
+            await worker.terminate();
+
+            const upperText = text.toUpperCase();
+
+            // Hitung berapa keyword yang ditemukan
+            let found = 0;
+            let foundWords = [];
+            KTP_KEYWORDS.forEach(kw => {
+                if (upperText.includes(kw.toUpperCase())) {
+                    found++;
+                    foundWords.push(kw);
+                }
+            });
+
+            // Syarat minimum: ditemukan ≥ 3 kata kunci KTP
+            const MIN_KEYWORDS = 3;
+
+            if (found >= MIN_KEYWORDS) {
+                // ✅ Valid KTP
+                ktpValidated = true;
+                ktpBase64Input.value = capturedDataUrl;
+
+                // Salin gambar ke canvasResult untuk ditampilkan
+                canvasResult.width  = canvas.width;
+                canvasResult.height = canvas.height;
+                canvasResult.getContext('2d').drawImage(canvas, 0, 0);
+                canvasResult.style.display = 'block';
+
+                showState('result');
+            } else {
+                // ❌ Bukan KTP
+                ktpValidated = false;
+                ktpBase64Input.value = '';
+                showState('placeholder');
+
                 Swal.fire({
                     icon: 'error',
-                    title: 'Izin Kamera Ditolak',
-                    html: 'Browser tidak dapat mengakses kamera Anda.<br><br>' +
-                          '<small>Pastikan Anda memberikan izin kamera di pengaturan browser, lalu coba lagi.</small>',
+                    title: '❌ Bukan KTP yang Terdeteksi',
+                    html: `
+                        <div style="text-align:left; font-size:14px; line-height:1.7;">
+                            <p>Sistem tidak dapat mengenali foto ini sebagai <strong>KTP Indonesia</strong>.</p>
+                            <br>
+                            <p><strong>Kemungkinan penyebab:</strong></p>
+                            <ul style="list-style:disc; padding-left:20px; color:#555;">
+                                <li>Foto bukan KTP Indonesia</li>
+                                <li>KTP terlalu jauh, buram, atau kurang cahaya</li>
+                                <li>Sebagian teks KTP tertutup atau terpotong</li>
+                                <li>Pantulan cahaya yang menutupi teks</li>
+                            </ul>
+                            <br>
+                            <p><strong>Tips:</strong> Pastikan KTP terlihat jelas, rata, dan semua teks terbaca.</p>
+                        </div>
+                    `,
                     confirmButtonColor: '#7f1d1d',
-                    confirmButtonText: 'Mengerti'
+                    confirmButtonText: '📷 Ulangi Foto',
+                    showCancelButton: true,
+                    cancelButtonText: 'Kembali',
+                    cancelButtonColor: '#6b7280',
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        openCamera();
+                    }
                 });
             }
-        });
 
-        document.getElementById('captureBtn').addEventListener('click', function() {
-            // Set ukuran canvas = ukuran video aktual
-            canvas.width  = video.videoWidth  || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        } catch (err) {
+            console.error('OCR Error:', err);
+            showState('placeholder');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Gagal Memverifikasi',
+                html: 'Terjadi kesalahan saat membaca foto KTP.<br><small>Pastikan koneksi internet stabil, lalu coba lagi.</small>',
+                confirmButtonColor: '#7f1d1d',
+                confirmButtonText: 'Coba Lagi',
+            }).then(() => openCamera());
+        }
+    }
 
-            // Simpan sebagai base64 JPEG
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-            ktpBase64.value = dataUrl;
+    // --- Helper: tampilkan state kamera ---
+    function showState(state) {
+        elPlaceholder.classList.add('hidden');
+        elActive.classList.add('hidden');
+        elChecking.classList.add('hidden');
+        elResult.classList.add('hidden');
 
-            // Tampilkan hasil
-            canvas.style.display = 'block';
-            stopCamera();
-            cameraActive.classList.add('hidden');
-            cameraResult.classList.remove('hidden');
-        });
+        if (state === 'placeholder') elPlaceholder.classList.remove('hidden');
+        if (state === 'active')      elActive.classList.remove('hidden');
+        if (state === 'checking')    elChecking.classList.remove('hidden');
+        if (state === 'result')      elResult.classList.remove('hidden');
+    }
 
-        document.getElementById('retakeBtn').addEventListener('click', async function() {
-            ktpBase64.value = '';
-            canvas.style.display = 'none';
-            cameraResult.classList.add('hidden');
-            // Buka ulang kamera
-            document.getElementById('openCameraBtn').click();
-        });
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+        }
+    }
 
-        document.getElementById('closeCameraBtn').addEventListener('click', function() {
-            stopCamera();
-            cameraActive.classList.add('hidden');
-            if (!ktpBase64.value) {
-                placeholder.classList.remove('hidden');
-            } else {
-                cameraResult.classList.remove('hidden');
-            }
-        });
+    window.addEventListener('beforeunload', stopCamera);
 
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(t => t.stop());
-                stream = null;
-            }
+    // ===========================
+    //  Form Submit Validation
+    // ===========================
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        if (!ktpValidated || !ktpBase64Input.value) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Foto KTP Belum Diverifikasi',
+                html: 'Anda wajib mengambil foto KTP yang <strong>terverifikasi</strong> menggunakan kamera sebelum mendaftar.',
+                confirmButtonColor: '#7f1d1d',
+                confirmButtonText: '📷 Ambil Foto KTP',
+            }).then(() => {
+                elPlaceholder.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            return;
         }
 
-        // Stop camera ketika navigasi keluar
-        window.addEventListener('beforeunload', stopCamera);
-
-        // ===== Form Submit Validation =====
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            // Validasi foto KTP wajib ada
-            if (!ktpBase64.value) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Foto KTP Belum Diambil',
-                    text: 'Anda wajib mengambil foto KTP menggunakan kamera sebelum mendaftar.',
-                    confirmButtonColor: '#7f1d1d',
-                    confirmButtonText: 'Ambil Foto KTP'
-                });
-                document.getElementById('openCameraBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Memproses...';
-        });
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Memproses...';
+    });
 
     </script>
 
