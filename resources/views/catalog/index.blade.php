@@ -333,7 +333,7 @@
                                 <!-- Qty Counter -->
                                 <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-gray-50">
                                     <button type="button" @click="updateQty(index, -1)" class="w-7 h-7 flex items-center justify-center hover:bg-gray-200 text-gray-600 font-bold transition-colors text-xs">-</button>
-                                    <input type="number" x-model.number="item.qty" class="w-8 text-center text-[11px] py-0.5 border-x border-gray-200 focus:outline-none bg-white font-bold" min="1" :max="item.maxStok" readonly>
+                                    <input type="number" x-model.number="item.qty" @input="onQtyInput(index)" @blur="onQtyBlur(index)" class="w-10 text-center text-[11px] py-0.5 border-x border-gray-200 focus:outline-none bg-white font-bold" min="1" :max="item.maxStok">
                                     <button type="button" @click="updateQty(index, 1)" class="w-7 h-7 flex items-center justify-center hover:bg-gray-200 text-gray-600 font-bold transition-colors text-xs">+</button>
                                 </div>
                                 
@@ -534,6 +534,34 @@
                         item.qty = newQty;
                         this.cart = [...this.cart];
                     }
+                },
+
+                onQtyInput(index) {
+                    const item = this.cart[index];
+                    let val = item.qty;
+                    if (val === '' || val === null || isNaN(val)) {
+                        return;
+                    }
+                    let parsed = parseInt(val);
+                    if (parsed > item.maxStok) {
+                        item.qty = item.maxStok;
+                    } else if (parsed < 1) {
+                        // biarkan kosong atau 0 selama mengetik, nanti akan direset saat blur
+                    } else {
+                        item.qty = parsed;
+                    }
+                    this.cart = [...this.cart];
+                },
+
+                onQtyBlur(index) {
+                    const item = this.cart[index];
+                    let val = item.qty;
+                    if (val === '' || val === null || isNaN(val) || val < 1) {
+                        item.qty = 1;
+                    } else {
+                        item.qty = Math.min(parseInt(val), item.maxStok);
+                    }
+                    this.cart = [...this.cart];
                 },
 
                 removeItem(index) {
