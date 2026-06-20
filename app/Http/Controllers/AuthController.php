@@ -47,40 +47,96 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'perusahaan' => ['required', 'string', 'max:255'],
-            'alamat' => ['required', 'string'],
-            'nomor_hp' => ['required', 'string', 'max:20'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name'        => ['required', 'string', 'max:255'],
+            'perusahaan'  => ['required', 'string', 'max:255'],
+            'alamat'      => ['required', 'string'],
+            'nomor_hp'    => ['required', 'string', 'max:20'],
+            'email'       => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password'    => ['required', 'string', 'min:8', 'confirmed'],
+            'foto_ktp'    => ['required', 'string'],   // base64 dari kamera
+            'otp_method'  => ['required', 'in:email,whatsapp'],
+        ], [
+            'foto_ktp.required' => 'Foto KTP wajib diambil menggunakan kamera sebelum mendaftar.',
         ]);
 
-        $otp = sprintf('%06d', mt_rand(100000, 999999));
-        
-        $user = User::create([
-            'name' => $validated['name'],
-            'perusahaan' => $validated['perusahaan'],
-            'alamat' => $validated['alamat'],
-            'nomor_hp' => $validated['nomor_hp'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'customer',
-            'email_otp' => $otp,
-            'email_otp_expires_at' => now()->addMinutes(5),
-        ]);
-
+        // Simpan foto KTP (base64) ke storage
+        $ktpPath = null;
         try {
-            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($otp, $user));
+            $base64Data = $validated['foto_ktp'];
+            // Hapus prefix data URI jika ada (data:image/jpeg;base64,...)
+            if (str_contains($base64Data, ',')) {
+                $base64Data = substr($base64Data, strpos($base64Data, ',') + 1);
+            }
+            $imageData = base64_decode($base64Data);
+            $filename  = 'ktp/' . uniqid('ktp_') . '.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $imageData);
+            $ktpPath = $filename;
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal mengirim email OTP: ' . $e->getMessage());
-            // Lanjut ke verifikasi, biarkan user request resend nanti
+            \Illuminate\Support\Facades\Log::error('Gagal menyimpan foto KTP: ' . $e->getMessage());
         }
 
-        // Simpan email di session sementara untuk konfirmasi OTP
-        session(['otp_email' => $user->email]);
+        $otp = sprintf('%06d', mt_rand(100000, 999999));
 
-        return redirect()->route('verify.otp')->with('success', 'Pendaftaran berhasil! Kode OTP telah dikirim ke email Anda.');
+        $user = User::create([
+            'name'                  => $validated['name'],
+            'perusahaan'            => $validated['perusahaan'],
+            'alamat'                => $validated['alamat'],
+            'nomor_hp'              => $validated['nomor_hp'],
+            'email'                 => $validated['email'],
+            'password'              => Hash::make($validated['password']),
+            'role'                  => 'customer',
+            'foto_ktp'              => $ktpPath,
+            'otp_method'            => $validated['otp_method'],
+            'email_otp'             => $otp,
+            'email_otp_expires_at'  => now()->addMinutes(10),
+        ]);
+
+        $otpSent    = false;
+        $otpMethod  = $validated['otp_method'];
+
+        if ($otpMethod === 'whatsapp') {
+            // Kirim via WhatsApp (Fonnte)
+            $nomor = preg_replace('/[^0-9]/', '', $user->nomor_hp);
+            if (str_starts_with($nomor, '0')) {
+                $nomor = '62' . substr($nomor, 1);
+            }
+            $pesan  = "Halo {$user->name}, 👋\n\n";
+            $pesan .= "Berikut adalah *Kode OTP* verifikasi akun JukungSync Anda:\n\n";
+            $pesan .= "🔑 *{$otp}*\n\n";
+            $pesan .= "Kode berlaku selama *10 menit*.\n";
+            $pesan .= "Jangan bagikan kode ini kepada siapapun.\n\n";
+            $pesan .= "_PT Utama Madani Raya – JukungSync_";
+            try {
+                $otpSent = \App\Services\FonnteService::sendMessage($nomor, $pesan);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal kirim OTP via WA: ' . $e->getMessage());
+            }
+        } else {
+            // Kirim via Email
+            try {
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($otp, $user));
+                $otpSent = true;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal mengirim email OTP: ' . $e->getMessage());
+            }
+        }
+
+        // Simpan info ke session untuk halaman verifikasi OTP
+        session([
+            'otp_email'     => $user->email,
+            'otp_method'    => $otpMethod,
+            'otp_target'    => $otpMethod === 'whatsapp' ? $user->nomor_hp : $user->email,
+        ]);
+
+        $successMsg = $otpSent
+            ? ($otpMethod === 'whatsapp'
+                ? 'Pendaftaran berhasil! Kode OTP telah dikirim ke WhatsApp Anda.'
+                : 'Pendaftaran berhasil! Kode OTP telah dikirim ke email Anda.')
+            : 'Pendaftaran berhasil! Jika OTP belum diterima, gunakan tombol Kirim Ulang.';
+
+        return redirect()->route('verify.otp')->with('success', $successMsg);
     }
+
 
     /**
      * Proses pengecekan kredensial login
@@ -208,12 +264,36 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $email)->first();
-        if ($user) {
-            $otp = sprintf('%06d', mt_rand(100000, 999999));
-            $user->email_otp = $otp;
-            $user->email_otp_expires_at = now()->addMinutes(5);
-            $user->save();
+        if (!$user) {
+            return back()->with('error', 'Pengguna tidak ditemukan.');
+        }
 
+        $otp = sprintf('%06d', mt_rand(100000, 999999));
+        $user->email_otp = $otp;
+        $user->email_otp_expires_at = now()->addMinutes(10);
+        $user->save();
+
+        $otpMethod = session('otp_method', $user->otp_method ?? 'email');
+
+        if ($otpMethod === 'whatsapp') {
+            $nomor = preg_replace('/[^0-9]/', '', $user->nomor_hp);
+            if (str_starts_with($nomor, '0')) {
+                $nomor = '62' . substr($nomor, 1);
+            }
+            $pesan  = "Halo {$user->name}, 👋\n\n";
+            $pesan .= "Berikut adalah *Kode OTP baru* verifikasi akun JukungSync Anda:\n\n";
+            $pesan .= "🔑 *{$otp}*\n\n";
+            $pesan .= "Kode berlaku selama *10 menit*.\n";
+            $pesan .= "Jangan bagikan kode ini kepada siapapun.\n\n";
+            $pesan .= "_PT Utama Madani Raya – JukungSync_";
+            try {
+                \App\Services\FonnteService::sendMessage($nomor, $pesan);
+                return back()->with('success', 'Kode OTP baru telah dikirim ke WhatsApp Anda.');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Gagal kirim ulang OTP via WA: ' . $e->getMessage());
+                return back()->with('error', 'Gagal mengirim OTP via WhatsApp. Coba lagi atau pilih metode email.');
+            }
+        } else {
             try {
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OtpMail($otp, $user));
                 return back()->with('success', 'Kode OTP baru telah dikirim ke email Anda.');
@@ -222,7 +302,5 @@ class AuthController extends Controller
                 return back()->with('error', 'Gagal mengirim email. Pastikan koneksi dan pengaturan email benar.');
             }
         }
-
-        return back()->with('error', 'Pengguna tidak ditemukan.');
     }
 }
