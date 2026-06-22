@@ -3,6 +3,7 @@ $projectRoot = 'C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1';
 $files = [
     'app/Http/Controllers/PurchaseController.php',
     'resources/views/purchases/create.blade.php',
+    'resources/views/purchases/index.blade.php',
     'routes/web.php',
     'app/Http/Controllers/OnlineOrderController.php',
     'app/Models/User.php',

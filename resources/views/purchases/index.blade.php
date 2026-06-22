@@ -94,6 +94,235 @@
         color: #9ca3af !important;
         font-size: 13px !important;
     }
+
+    /* Autocomplete Search */
+    .search-wrapper {
+        position: relative;
+    }
+    .search-input {
+        width: 100%;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.625rem 0.875rem 0.625rem 2.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #111827;
+        transition: all 0.2s;
+        outline: none;
+    }
+    .search-input:focus {
+        border-color: #991b1b;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+    }
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        pointer-events: none;
+    }
+    .search-badge {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #991b1b;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.1rem 0.45rem;
+        border-radius: 9999px;
+        white-space: nowrap;
+    }
+    
+    /* Dropdown Results — pakai position:fixed agar tidak terpotong overflow container */
+    .search-dropdown {
+        position: fixed;
+        background: white;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 0.875rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 99999;
+        max-height: 280px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .search-dropdown::-webkit-scrollbar { width: 4px; }
+    .search-dropdown::-webkit-scrollbar-track { background: #f9fafb; }
+    .search-dropdown::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: left;
+    }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover, .dropdown-item.highlighted { background: #fef2f2; }
+    .dropdown-item-sku {
+        background: linear-gradient(135deg, #7f1d1d, #991b1b);
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.375rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .dropdown-item-name {
+        flex: 1;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #1f2937;
+        line-height: 1.3;
+    }
+    .dropdown-item-stock {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .stock-ok { background: #dcfce7; color: #166534; }
+    .stock-low { background: #fef3c7; color: #92400e; }
+    .stock-zero { background: #fee2e2; color: #991b1b; }
+
+    .dropdown-no-result {
+        padding: 1.25rem 1rem;
+        text-align: center;
+        color: #9ca3af;
+        font-size: 0.8rem;
+    }
+    
+    /* Selected Product Display */
+    .selected-product {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        background: #f0fdf4;
+        border: 1.5px solid #86efac;
+        border-radius: 0.625rem;
+        padding: 0.5rem 0.75rem;
+        text-align: left;
+    }
+    .selected-product-name {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #166534;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .change-btn {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #991b1b;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.1rem 0.35rem;
+        border-radius: 0.3rem;
+        transition: background 0.15s;
+        white-space: nowrap;
+    }
+    .change-btn:hover { background: #fee2e2; }
+
+    /* Price Input */
+    .price-input-wrapper {
+        display: flex;
+        align-items: stretch;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: #f9fafb;
+        transition: all 0.2s;
+    }
+    .price-input-wrapper:focus-within {
+        border-color: #991b1b;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+    }
+    .price-prefix {
+        background: linear-gradient(135deg, #7f1d1d, #991b1b);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 800;
+        padding: 0 0.75rem;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    .price-input-field {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1f2937;
+        outline: none;
+        min-width: 0;
+    }
+
+    /* Qty Input */
+    .qty-wrapper {
+        display: flex;
+        align-items: center;
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+    .qty-wrapper:focus-within {
+        border-color: #991b1b;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(153, 27, 27, 0.1);
+    }
+    .qty-btn {
+        background: none;
+        border: none;
+        width: 2rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #6b7280;
+        font-size: 1.1rem;
+        font-weight: 700;
+        transition: all 0.15s;
+        padding: 0.625rem 0;
+        flex-shrink: 0;
+    }
+    .qty-btn:hover { background: #f1f5f9; color: #991b1b; }
+    .qty-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 0.625rem 0;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        outline: none;
+        min-width: 0;
+        -moz-appearance: textfield;
+    }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 </style>
 
 <div class="bg-white shadow rounded-lg p-6 relative" 
@@ -197,7 +426,8 @@
                  x-transition:leave-end="opacity-0 scale-95 translate-y-4" 
                  class="relative bg-white rounded-2xl text-left shadow-2xl transform transition-all w-full border border-gray-100"
                  style="max-width: 1000px;"
-                 @click.away="closeModal()">
+                 @click.away="closeModal()"
+                 @click="closeAllDropdowns()">
                 
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-tema-marun to-red-800 rounded-t-2xl px-6 py-4 flex justify-between items-center">
@@ -245,24 +475,22 @@
                                 <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Keterangan</label>
                                 <input type="text" name="keterangan" value="{{ old('keterangan') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border" placeholder="Opsional">
                             </div>
-                        </div>
-
-                        <!-- Tabel Barang -->
-                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        </div>                         <!-- Tabel Barang -->
+                        <div class="border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
                             <table class="w-full divide-y divide-gray-200" style="table-layout: fixed;">
                                 <colgroup>
-                                    <col style="width: 40px;">
+                                    <col style="width: 50px;">
                                     <col style="width: auto;">
-                                    <col style="width: 175px;">
-                                    <col style="width: 175px;">
-                                    <col style="width: 90px;">
-                                    <col style="width: 140px;">
+                                    <col style="width: 180px;">
+                                    <col style="width: 160px;">
+                                    <col style="width: 130px;">
+                                    <col style="width: 150px;">
                                     <col style="width: 50px;">
                                 </colgroup>
                                 <thead class="bg-gray-100 border-b-2 border-gray-200">
                                     <tr>
                                         <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">#</th>
-                                        <th class="px-2 py-3 text-left text-[11px] font-bold text-gray-700 uppercase tracking-wider">Nama Barang</th>
+                                        <th class="px-2 py-3 text-left text-[11px] font-bold text-gray-700 uppercase tracking-wider">Nama Barang (Ketik Langsung)</th>
                                         <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Harga Beli / Modal</th>
                                         <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Harga Jual</th>
                                         <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Qty</th>
@@ -271,120 +499,135 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-100">
-                                    <template x-for="(item, index) in items" :key="item.id">
+                                    <template x-for="(item, index) in items" :key="item._uid">
                                         <tr class="hover:bg-amber-50/50 transition-colors">
+                                            <!-- No -->
                                             <td class="px-2 py-3.5 text-center text-xs font-bold text-gray-500 align-top" style="padding-top: 1.15rem;" x-text="index + 1"></td>
+                                            
+                                            <!-- Product Search -->
                                             <td class="px-2 py-3.5 align-top">
-                                                <select x-model="item.product_id" :name="'items['+index+'][product_id]'"
-                                                    @change="updatePrice(index)"
-                                                    x-init="$nextTick(() => {
-                                                        if (!item.ts) {
-                                                            item.ts = new TomSelect($el, {
-                                                                create: true,
-                                                                dropdownParent: 'body',
-                                                                placeholder: '🔍 Pilih / ketik nama barang baru...',
-                                                                sortField: { field: 'text', direction: 'asc' },
-                                                                maxOptions: 50,
-                                                                render: {
-                                                                    option: function(data, escape) {
-                                                                        let text = escape(data.text);
-                                                                        if (!text.includes(' - ')) {
-                                                                            return '<div>' +
-                                                                                '<span class=\"sku-badge bg-green-600\">NEW</span>' +
-                                                                                '<span class=\"product-name font-bold text-green-700\">' + text + '</span>' +
-                                                                                '</div>';
-                                                                        }
-                                                                        let parts = text.split(' - ');
-                                                                        let sku = parts[0] || '';
-                                                                        let rest = parts.slice(1).join(' - ');
-                                                                        let nameMatch = rest.match(/^(.+?)\s*\(Sisa:\s*(\d+)\)$/);
-                                                                        let pname = nameMatch ? nameMatch[1] : rest;
-                                                                        let stock = nameMatch ? parseInt(nameMatch[2]) : 0;
-                                                                        let stockClass = stock > 10 ? 'stock-ok' : 'stock-low';
-                                                                        return '<div>' +
-                                                                            '<span class=\"sku-badge\">' + escape(sku) + '</span>' +
-                                                                            '<span class=\"product-name\">' + escape(pname) + '</span>' +
-                                                                            '<span class=\"stock-info ' + stockClass + '\">' + stock + '</span>' +
-                                                                            '</div>';
-                                                                    },
-                                                                    item: function(data, escape) {
-                                                                        let text = escape(data.text);
-                                                                        if (!text.includes(' - ')) {
-                                                                            return '<div class=\"truncate w-full\" style=\"max-width:100%\"><span style=\"background:#16a34a;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-right:6px\">NEW</span>' + text + '</div>';
-                                                                        }
-                                                                        let parts = text.split(' - ');
-                                                                        let sku = parts[0] || '';
-                                                                        let rest = parts.slice(1).join(' - ');
-                                                                        let nameMatch = rest.match(/^(.+?)\s*\(Sisa:\s*\d+\)$/);
-                                                                        let pname = nameMatch ? nameMatch[1] : rest;
-                                                                        return '<div class=\"truncate w-full\" style=\"max-width:100%\"><span style=\"background:#7f1d1d;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-right:6px\">' + escape(sku) + '</span>' + escape(pname) + '</div>';
-                                                                    },
-                                                                    no_results: function() {
-                                                                        return '<div class=\"no-results\">Ketik nama barang baru untuk menambahkan secara manual</div>';
-                                                                    }
-                                                                },
-                                                                onChange: function(value) {
-                                                                    $el.dispatchEvent(new Event('input', { bubbles: true }));
-                                                                    $el.dispatchEvent(new Event('change', { bubbles: true }));
-                                                                }
-                                                            });
-                                                        }
-                                                    })" class="w-full" required>
-                                                    <option value="">Pilih / Ketik Barang...</option>
-                                                    @foreach($products as $p)
-                                                        <option value="{{ $p->id }}">{{ $p->sku }} - {{ $p->nama_barang }} (Sisa: {{ $p->stok_saat_ini }})</option>
-                                                    @endforeach
-                                                </select>
+                                                <input type="hidden" :name="'items['+index+'][product_id]'" x-model="item.product_id" required>
                                                 
-                                                <!-- Info Pilihan Harga Pintas -->
-                                                <div class="mt-2 flex flex-col gap-1 items-start" x-show="item.product_id && isExistingProduct(item.product_id)">
-                                                    <button type="button" @click="usePrice(index, 'dulu')" class="inline-flex items-center px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-bold rounded transition-colors select-none whitespace-nowrap">
-                                                        <span>📋 Harga Dulu: Beli Rp<span x-text="formatRupiah(getProductField(item.product_id, 'harga_modal'))"></span> / Jual Rp<span x-text="formatRupiah(getProductField(item.product_id, 'harga_jual'))"></span></span>
-                                                    </button>
-                                                    <button type="button" @click="usePrice(index, 'terakhir')" class="inline-flex items-center px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-bold rounded transition-colors select-none whitespace-nowrap">
-                                                        <span>⏱ Harga Terakhir: Beli Rp<span x-text="formatRupiah(getProductField(item.product_id, 'harga_beli_terakhir'))"></span> / Jual Rp<span x-text="formatRupiah(getProductField(item.product_id, 'harga_jual_terakhir'))"></span></span>
-                                                    </button>
-                                                    <button type="button" @click="item.showHistory = !item.showHistory" class="inline-flex items-center px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-[10px] font-bold rounded transition-colors select-none whitespace-nowrap mt-0.5">
-                                                        <span x-text="item.showHistory ? '📊 Sembunyikan Riwayat' : '📊 Lihat Riwayat Harga'"></span>
-                                                    </button>
-                                                    <div x-show="item.showHistory" class="mt-1 p-2 bg-purple-50/50 border border-purple-100 rounded-lg text-[10px] text-purple-950 space-y-1 w-full max-w-[280px]">
-                                                        <div class="font-bold border-b border-purple-100 pb-0.5 mb-1 text-purple-900">5 Perubahan Harga Terakhir:</div>
-                                                        <template x-for="hist in getProductField(item.product_id, 'history')" :key="hist.tanggal + hist.faktur">
-                                                            <div class="flex flex-col border-b border-purple-100/50 pb-1 mb-1 last:border-b-0 last:pb-0 last:mb-0">
-                                                                <div class="flex justify-between text-[9px] text-purple-800">
-                                                                    <span x-text="hist.tanggal"></span>
-                                                                    <span class="font-semibold truncate max-w-[120px]" x-text="hist.supplier"></span>
-                                                                </div>
-                                                                <div class="flex justify-between font-semibold mt-0.5">
-                                                                    <span>Beli: Rp<span x-text="formatRupiah(hist.harga_beli)"></span></span>
-                                                                    <span>Jual: Rp<span x-text="formatRupiah(hist.harga_jual)"></span></span>
-                                                                </div>
+                                                <div class="search-wrapper" x-show="!item.product_id" @click.stop>
+                                                    <svg class="search-icon" style="width:1rem;height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+                                                    <input 
+                                                        type="text" 
+                                                        class="search-input"
+                                                        :id="'search-'+index"
+                                                        x-model="item.searchQuery"
+                                                        @input="updateDropdownPos(index); searchProducts(index)"
+                                                        @focus="updateDropdownPos(index); item.showDropdown = true; searchProducts(index)"
+                                                        @keydown.escape="item.showDropdown = false"
+                                                        @keydown.arrow-down.prevent="moveHighlight(index, 1)"
+                                                        @keydown.arrow-up.prevent="moveHighlight(index, -1)"
+                                                        @keydown.enter.prevent="selectHighlighted(index)"
+                                                        placeholder="Ketik SKU atau nama barang..."
+                                                        autocomplete="off"
+                                                    >
+                                                    <span class="search-badge" x-show="item.searchResults.length > 0" x-text="item.searchResults.length + ' produk'"></span>
+                                                    
+                                                    <!-- Dropdown — position:fixed agar tidak terpotong overflow container -->
+                                                    <div 
+                                                        class="search-dropdown" 
+                                                        x-show="item.showDropdown && (item.searchQuery.length > 0 || item.searchResults.length > 0)" 
+                                                        :style="'top:'+item.ddTop+'px;left:'+item.ddLeft+'px;width:'+item.ddWidth+'px;'"
+                                                        style="display:none;"
+                                                        @mousedown.prevent
+                                                    >
+                                                        <template x-if="item.searchResults.length === 0 && item.searchQuery.length > 0">
+                                                            <div class="dropdown-no-result">
+                                                                <svg style="width:1.5rem;height:1.5rem;margin:0 auto 0.5rem;color:#d1d5db;display:block;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                Tidak ada produk yang cocok dengan "<strong x-text="item.searchQuery"></strong>"
                                                             </div>
                                                         </template>
-                                                        <div x-show="!getProductField(item.product_id, 'history') || getProductField(item.product_id, 'history').length === 0" class="text-purple-400 italic text-center py-1">
-                                                            Belum ada riwayat perubahan harga.
-                                                        </div>
+                                                        <template x-if="item.searchResults.length === 0 && item.searchQuery.length === 0">
+                                                            <div class="dropdown-no-result">
+                                                                Mulai ketik SKU atau nama barang untuk mencari...
+                                                            </div>
+                                                        </template>
+                                                        <template x-for="(product, pIdx) in item.searchResults" :key="product.id">
+                                                            <div 
+                                                                class="dropdown-item" 
+                                                                :class="{ 'highlighted': item.highlightIndex === pIdx }"
+                                                                @mousedown.prevent="selectProduct(index, product)"
+                                                                @mouseenter="item.highlightIndex = pIdx"
+                                                            >
+                                                                <span class="dropdown-item-sku" x-text="product.sku"></span>
+                                                                <span class="dropdown-item-name" x-text="product.nama_barang"></span>
+                                                                <span class="dropdown-item-stock" 
+                                                                    :class="product.stok_saat_ini > 10 ? 'stock-ok' : (product.stok_saat_ini > 0 ? 'stock-low' : 'stock-zero')"
+                                                                    x-text="'Stok: ' + product.stok_saat_ini">
+                                                                </span>
+                                                            </div>
+                                                        </template>
                                                     </div>
                                                 </div>
-                                            </td>
-                                            <td class="px-2 py-3.5 align-top">
-                                                <div class="flex rounded-lg overflow-hidden border-2 border-gray-300 bg-white shadow-sm focus-within:border-tema-marun focus-within:ring-1 focus-within:ring-tema-marun">
-                                                    <span class="inline-flex items-center px-2.5 bg-tema-marun text-white text-xs font-bold flex-shrink-0">Rp</span>
-                                                    <input type="number" x-model.number="item.harga_beli" :name="'items['+index+'][harga_beli]'" @input="updateSubtotal(index)" class="flex-1 min-w-0 w-full px-2 py-2 text-sm font-bold text-gray-900 border-0 bg-white focus:ring-0 focus:border-0" required min="0">
+                                                
+                                                <!-- Selected Product Display -->
+                                                <div class="selected-product" x-show="item.product_id" style="display:none;">
+                                                    <svg style="width:1rem;height:1rem;color:#16a34a;flex-shrink:0;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                                    <span class="dropdown-item-sku" x-text="item.selectedSku" style="font-size:0.6rem;"></span>
+                                                    <span class="selected-product-name" x-text="item.selectedName"></span>
+                                                    <button type="button" class="change-btn" @click="clearProduct(index)">✕ Ganti</button>
                                                 </div>
                                             </td>
+                                            
+                                            <!-- Harga Beli -->
                                             <td class="px-2 py-3.5 align-top">
-                                                <div class="flex rounded-lg overflow-hidden border-2 border-gray-300 bg-white shadow-sm focus-within:border-tema-marun focus-within:ring-1 focus-within:ring-tema-marun">
-                                                    <span class="inline-flex items-center px-2.5 bg-tema-marun text-white text-xs font-bold flex-shrink-0">Rp</span>
-                                                    <input type="number" x-model.number="item.harga_jual" :name="'items['+index+'][harga_jual]'" class="flex-1 min-w-0 w-full px-2 py-2 text-sm font-bold text-gray-900 border-0 bg-white focus:ring-0 focus:border-0" required min="0">
+                                                <div class="price-input-wrapper">
+                                                    <span class="price-prefix">Rp</span>
+                                                    <input 
+                                                        type="number" 
+                                                        class="price-input-field"
+                                                        :name="'items['+index+'][harga_beli]'" 
+                                                        x-model="item.harga_beli" 
+                                                        @input="updateSubtotal(index)" 
+                                                        min="0" 
+                                                        placeholder="0"
+                                                        required
+                                                    >
                                                 </div>
                                             </td>
+                                            
+                                            <!-- Harga Jual -->
                                             <td class="px-2 py-3.5 align-top">
-                                                <input type="number" x-model.number="item.jumlah" :name="'items['+index+'][jumlah]'" @input="updateSubtotal(index)" class="w-full rounded-lg border-2 border-gray-300 focus:ring-tema-marun focus:border-tema-marun text-sm py-2 text-center font-bold text-gray-900 shadow-sm bg-white" min="1" required>
+                                                <div class="price-input-wrapper">
+                                                    <span class="price-prefix">Rp</span>
+                                                    <input 
+                                                        type="number" 
+                                                        class="price-input-field"
+                                                        :name="'items['+index+'][harga_jual]'" 
+                                                        x-model="item.harga_jual" 
+                                                        min="0" 
+                                                        placeholder="0"
+                                                        required
+                                                    >
+                                                </div>
                                             </td>
+                                            
+                                            <!-- Qty -->
+                                            <td class="px-2 py-3.5 align-top">
+                                                <div class="qty-wrapper">
+                                                    <button type="button" class="qty-btn" @click="decreaseQty(index)">−</button>
+                                                    <input 
+                                                        type="number" 
+                                                        class="qty-input"
+                                                        :name="'items['+index+'][jumlah]'" 
+                                                        x-model="item.jumlah" 
+                                                        @input="updateSubtotal(index)"
+                                                        min="1" 
+                                                        required
+                                                    >
+                                                    <button type="button" class="qty-btn" @click="increaseQty(index)">+</button>
+                                                </div>
+                                            </td>
+                                            
+                                            <!-- Subtotal -->
                                             <td class="px-2 py-3.5 text-right align-top" style="padding-top: 1.15rem;">
                                                 <span class="font-bold text-sm text-gray-900 whitespace-nowrap" x-text="'Rp ' + formatRupiah(item.subtotal)"></span>
                                             </td>
+                                            
+                                            <!-- Delete -->
                                             <td class="px-1 py-3.5 text-center align-top" style="padding-top: 1rem;">
                                                 <button type="button" @click="removeItem(index)" class="text-gray-300 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-full transition-all" title="Hapus" x-show="items.length > 1">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -406,7 +649,7 @@
                                 <span class="text-sm font-bold text-red-900 uppercase tracking-wider">TOTAL:</span>
                                 <span class="text-2xl font-black text-red-600" x-text="'Rp ' + formatRupiah(calculateTotal())"></span>
                             </div>
-                        </div>
+                        </div>                </div>
                     </form>
                 </div>
 
@@ -423,21 +666,42 @@
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    document.addEventListener('alpine:init', () => {
+</d    document.addEventListener('alpine:init', () => {
         Alpine.data('purchasePage', (productsData, hasErrors) => ({
             isModalOpen: hasErrors,
             products: productsData,
-            nextId: 2,
-            items: [
-                { id: 1, product_id: '', jumlah: 1, harga_beli: 0, harga_jual: 0, subtotal: 0, ts: null, showHistory: false }
-            ],
+            _uidCounter: 0,
+            items: [],
+            
+            init() {
+                this.items = [this.newItem()];
+            },
+
+            newItem() {
+                return { 
+                    _uid: ++this._uidCounter,
+                    product_id: '', 
+                    jumlah: 1, 
+                    harga_beli: 0,
+                    harga_jual: 0,
+                    subtotal: 0,
+                    searchQuery: '',
+                    searchResults: [],
+                    showDropdown: false,
+                    highlightIndex: -1,
+                    selectedName: '',
+                    selectedSku: '',
+                    // posisi dropdown fixed (pixels)
+                    ddTop: 0,
+                    ddLeft: 0,
+                    ddWidth: 320,
+                };
+            },
             
             openModal() {
                 this.isModalOpen = true;
                 document.body.style.overflow = 'hidden';
+                this.items = [this.newItem()]; // reset items when opening modal
             },
             
             closeModal() {
@@ -445,69 +709,117 @@
                 document.body.style.overflow = '';
             },
             
+            updateDropdownPos(index) {
+                this.$nextTick(() => {
+                    const el = document.getElementById('search-' + index);
+                    if (!el) return;
+                    const r = el.getBoundingClientRect();
+                    this.items[index].ddTop  = r.bottom + 4;
+                    this.items[index].ddLeft = r.left;
+                    this.items[index].ddWidth = Math.max(r.width, 300);
+                });
+            },
+            
             addItem() {
-                this.items.push({ id: this.nextId++, product_id: '', jumlah: 1, harga_beli: 0, harga_jual: 0, subtotal: 0, ts: null, showHistory: false });
+                this.items.push(this.newItem());
             },
             
             removeItem(index) {
-                if(this.items.length > 1) {
-                    let item = this.items[index];
-                    if(item.ts) item.ts.destroy();
+                if (this.items.length > 1) {
                     this.items.splice(index, 1);
                 }
             },
-            
-            getProductField(productId, fieldName) {
-                const prod = this.products.find(p => p.id == productId);
-                return prod ? (prod[fieldName] || 0) : 0;
-            },
-            
-            isExistingProduct(productId) {
-                return this.products.some(p => p.id == productId);
-            },
-            
-            usePrice(index, type) {
-                let item = this.items[index];
-                if (!item.product_id) return;
-                if (type === 'dulu') {
-                    item.harga_beli = this.getProductField(item.product_id, 'harga_modal');
-                    item.harga_jual = this.getProductField(item.product_id, 'harga_jual');
-                } else if (type === 'terakhir') {
-                    item.harga_beli = this.getProductField(item.product_id, 'harga_beli_terakhir');
-                    item.harga_jual = this.getProductField(item.product_id, 'harga_jual_terakhir');
+
+            searchProducts(index) {
+                const item = this.items[index];
+                const q = item.searchQuery.toLowerCase().trim();
+                if (q === '') {
+                    item.searchResults = [];
+                    item.highlightIndex = -1;
+                    return;
                 }
-                this.updateSubtotal(index);
+                item.searchResults = this.products.filter(p => 
+                    p.sku.toLowerCase().includes(q) || 
+                    p.nama_barang.toLowerCase().includes(q)
+                ).slice(0, 12);
+                item.highlightIndex = item.searchResults.length > 0 ? 0 : -1;
             },
             
-            updatePrice(index) {
-                let item = this.items[index];
-                if (item.product_id) {
-                    const prod = this.products.find(p => p.id == item.product_id);
-                    if (prod) {
-                        item.harga_beli = prod.harga_modal ?? 0;
-                        item.harga_jual = prod.harga_jual ?? 0;
-                    } else {
-                        item.harga_beli = 0;
-                        item.harga_jual = 0;
-                    }
-                } else {
-                    item.harga_beli = 0;
-                    item.harga_jual = 0;
+            selectProduct(index, product) {
+                const item = this.items[index];
+                item.product_id = product.id;
+                item.selectedName = product.nama_barang;
+                item.selectedSku = product.sku;
+                item.showDropdown = false;
+                item.searchQuery = '';
+                item.searchResults = [];
+                // Autofill harga jual - parseInt agar tidak muncul desimal (misal 9000.00 → 9000)
+                if (product.harga_jual && item.harga_jual === 0) {
+                    item.harga_jual = parseInt(product.harga_jual) || 0;
                 }
-                this.updateSubtotal(index);
+                // Autofill harga beli dari harga_modal jika belum diisi
+                if (product.harga_modal && item.harga_beli === 0) {
+                    item.harga_beli = parseInt(product.harga_modal) || 0;
+                    this.updateSubtotal(index);
+                }
+            },
+
+            clearProduct(index) {
+                const item = this.items[index];
+                item.product_id = '';
+                item.selectedName = '';
+                item.selectedSku = '';
+                item.searchQuery = '';
+                item.searchResults = [];
+                item.subtotal = 0;
+                // Focus the search input
+                this.$nextTick(() => {
+                    const inp = document.getElementById('search-' + index);
+                    if (inp) inp.focus();
+                });
+            },
+
+            moveHighlight(index, direction) {
+                const item = this.items[index];
+                if (!item.showDropdown || item.searchResults.length === 0) return;
+                item.highlightIndex = Math.max(0, Math.min(item.searchResults.length - 1, item.highlightIndex + direction));
+            },
+
+            selectHighlighted(index) {
+                const item = this.items[index];
+                if (item.highlightIndex >= 0 && item.searchResults[item.highlightIndex]) {
+                    this.selectProduct(index, item.searchResults[item.highlightIndex]);
+                }
+            },
+
+            closeAllDropdowns() {
+                this.items.forEach(item => { item.showDropdown = false; });
             },
             
             updateSubtotal(index) {
-                let item = this.items[index];
-                item.subtotal = Number(item.jumlah) * Number(item.harga_beli);
+                const item = this.items[index];
+                item.subtotal = (parseFloat(item.jumlah) || 0) * (parseFloat(item.harga_beli) || 0);
+            },
+
+            increaseQty(index) {
+                this.items[index].jumlah = (parseInt(this.items[index].jumlah) || 0) + 1;
+                this.updateSubtotal(index);
+            },
+
+            decreaseQty(index) {
+                const current = parseInt(this.items[index].jumlah) || 1;
+                if (current > 1) {
+                    this.items[index].jumlah = current - 1;
+                    this.updateSubtotal(index);
+                }
             },
             
             calculateTotal() {
-                return this.items.reduce((total, item) => total + (Number(item.jumlah) * Number(item.harga_beli)), 0);
+                return this.items.reduce((total, item) => total + (item.subtotal || 0), 0);
             },
             
             formatRupiah(number) {
-                return new Intl.NumberFormat('id-ID').format(number);
+                return new Intl.NumberFormat('id-ID').format(number || 0);
             }
         }));
     });
