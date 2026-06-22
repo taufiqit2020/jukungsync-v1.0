@@ -26,6 +26,34 @@ Route::get('/jalankan-otomatis', function() {
     }
 });
 
+Route::get('/test-checkout-debug', function() {
+    try {
+        $user = \App\Models\User::where('role', 'customer')->first();
+        if (!$user) {
+            $user = auth()->user();
+        }
+        if (!$user) {
+            return "Silakan login terlebih dahulu atau pastikan ada data customer di database.";
+        }
+        $invoiceBlocked = $user->canUseInvoice30() && $user->hasBlockedInvoice();
+        return response()->json([
+            'status' => 'success',
+            'user' => $user->email,
+            'role' => $user->role,
+            'tipe_pelanggan' => $user->tipe_pelanggan,
+            'invoiceBlocked' => $invoiceBlocked
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString())
+        ]);
+    }
+});
+
 // Root Landing Page (Publik - tampilkan produk tanpa login)
 Route::get('/', function () {
     $products = \App\Models\Product::with(['category', 'merk'])
@@ -71,8 +99,10 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     
-    // Surat Jalan / Tanda Terima Barang
+    // Surat Jalan / Tanda Terima Barang (Invoice Manual)
     Route::get('invoices/{invoice}/surat-jalan', [\App\Http\Controllers\InvoiceController::class, 'suratJalan'])->name('invoices.surat-jalan');
+    // Surat Jalan Pesanan Online
+    Route::get('online-orders/{online_order}/surat-jalan', [OnlineOrderController::class, 'suratJalan'])->name('online-orders.surat-jalan');
     
     // FR-04: Global Search (accessible to all authenticated users)
     Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'search'])->name('api.search');
@@ -139,11 +169,20 @@ Route::middleware('auth')->group(function () {
         // Pembuatan Invoice
         Route::get('api/movements/manual-out', [InvoiceController::class, 'getManualOutMovements'])->name('api.movements.manual_out');
         Route::resource('invoices', InvoiceController::class)->only(['create', 'store']);
+    });
 
-        // Aksi Pesanan Online (Hanya Staf Admin)
+    // Rute Aksi Pesanan Online & Kasbon (Bisa diakses Staf Admin, Bendahara/Kepala Keuangan, dan Superadmin)
+    Route::middleware('role:staf_admin,bendahara')->group(function() {
         Route::post('online-orders/{online_order}/approve', [OnlineOrderController::class, 'approve'])->name('online-orders.approve');
         Route::post('online-orders/{online_order}/complete', [OnlineOrderController::class, 'complete'])->name('online-orders.complete');
+        Route::post('online-orders/{online_order}/complete-paid', [OnlineOrderController::class, 'completePaid'])->name('online-orders.complete-paid');
+        Route::post('online-orders/{online_order}/complete-unpaid', [OnlineOrderController::class, 'completeUnpaid'])->name('online-orders.complete-unpaid');
         Route::post('online-orders/{online_order}/reject', [OnlineOrderController::class, 'reject'])->name('online-orders.reject');
+
+        // Manajemen Kasbon
+        Route::get('kasbons', [\App\Http\Controllers\KasbonController::class, 'index'])->name('kasbons.index');
+        Route::post('kasbons/{kasbon}/bayar', [\App\Http\Controllers\KasbonController::class, 'bayar'])->name('kasbons.bayar');
+        Route::delete('kasbons/{kasbon}', [\App\Http\Controllers\KasbonController::class, 'destroy'])->name('kasbons.destroy');
     });
 
     // Rute Khusus Customer

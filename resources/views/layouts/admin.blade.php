@@ -176,6 +176,13 @@
                     Invoice
                 </a>
 
+                @if(in_array(auth()->user()->role, ['superadmin', 'staf_admin', 'bendahara']))
+                <a href="{{ route('kasbons.index') }}" class="flex items-center px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('kasbons.*') ? 'menu-active text-tema-kuning' : 'menu-item text-gray-400 hover:text-white' }}">
+                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Data Kasbon
+                </a>
+                @endif
+
                 <div class="pt-5 pb-2">
                     <p class="px-4 text-[11px] font-bold text-gray-600 uppercase tracking-[0.15em]">Analitik</p>
                 </div>

@@ -46,7 +46,8 @@ class PurchaseController extends Controller
 
     public function create()
     {
-        $products = Product::orderBy('sku', 'asc')->get();
+        $products = Product::orderBy('sku', 'asc')
+            ->get(['id', 'sku', 'nama_barang', 'stok_saat_ini', 'harga_modal', 'harga_jual']);
         return view('purchases.create', compact('products'));
     }
 

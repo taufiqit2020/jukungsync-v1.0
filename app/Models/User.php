@@ -82,13 +82,13 @@ class User extends Authenticatable
      */
     public function hasBlockedInvoice(): bool
     {
-        $grace = now()->subDays(0); // hari ini
+        $limitDate = now()->subDays(3)->toDateString();
         $blocked = \App\Models\Invoice::where('klien_id', $this->id)
             ->where('jenis_transaksi', 'online')
             ->where('metode_pembayaran', 'invoice_30_hari')
             ->where('status_pembayaran', 'belum_lunas')
             ->whereNotNull('tanggal_jatuh_tempo')
-            ->whereRaw('DATE(tanggal_jatuh_tempo, "+3 days") < DATE("now")')
+            ->whereDate('tanggal_jatuh_tempo', '<', $limitDate)
             ->exists();
         return $blocked;
     }
