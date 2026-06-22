@@ -160,7 +160,35 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase)
     {
         $purchase->load('purchaseItems.product');
-        return view('purchases.edit', compact('purchase'));
+        $products = Product::orderBy('sku', 'asc')
+            ->get(['id', 'sku', 'nama_barang', 'stok_saat_ini', 'harga_modal', 'harga_jual']);
+        
+        foreach ($products as $p) {
+            $lastPurchaseItem = PurchaseItem::where('product_id', $p->id)
+                ->latest('id')
+                ->first();
+                
+            $p->harga_beli_terakhir = $lastPurchaseItem ? (float) $lastPurchaseItem->harga_beli : (float) $p->harga_modal;
+            $p->harga_jual_terakhir = $lastPurchaseItem && isset($lastPurchaseItem->harga_jual) ? (float) $lastPurchaseItem->harga_jual : (float) $p->harga_jual;
+
+            // Get last 5 purchase history
+            $p->history = PurchaseItem::where('product_id', $p->id)
+                ->with('purchase')
+                ->latest('id')
+                ->limit(5)
+                ->get()
+                ->map(function($item) {
+                    return [
+                        'tanggal' => $item->purchase ? \Carbon\Carbon::parse($item->purchase->tanggal_pembelian)->format('d/m/Y') : '-',
+                        'faktur' => $item->purchase ? $item->purchase->nomor_faktur : '-',
+                        'supplier' => $item->purchase ? $item->purchase->nama_supplier : '-',
+                        'harga_beli' => (float) $item->harga_beli,
+                        'harga_jual' => (float) $item->harga_jual,
+                    ];
+                })->toArray();
+        }
+
+        return view('purchases.edit', compact('purchase', 'products'));
     }
 
     public function update(Request $request, Purchase $purchase)
@@ -170,7 +198,9 @@ class PurchaseController extends Controller
             'nama_supplier' => 'required|string|max:255',
             'tanggal_pembelian' => 'required|date',
             'keterangan' => 'nullable|string',
-            'items' => 'required|array',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|string',
+            'items.*.jumlah' => 'required|integer|min:1',
             'items.*.harga_beli' => 'required|numeric|min:0',
             'items.*.harga_jual' => 'required|numeric|min:0',
         ]);
@@ -180,28 +210,108 @@ class PurchaseController extends Controller
 
             $oldFaktur = $purchase->nomor_faktur;
             $oldSupplier = $purchase->nama_supplier;
+
+            // 1. Load old items
+            $purchase->load('purchaseItems');
+
+            // 2. Delete old inventory movements
+            InventoryMovement::where('tipe_pergerakan', 'masuk')
+                ->where('keterangan', 'Restok Faktur ' . $oldFaktur . ' & dari ' . $oldSupplier)
+                ->orWhere('keterangan', 'Restok Faktur ' . $oldFaktur . ' dari ' . $oldSupplier)
+                ->delete();
+
+            // 3. Deduct stock for deleted/changed items
+            foreach ($purchase->purchaseItems as $oldItem) {
+                $stillExists = false;
+                foreach ($request->items as $submittedItem) {
+                    if ($submittedItem['product_id'] == $oldItem->product_id) {
+                        $stillExists = true;
+                        break;
+                    }
+                }
+                
+                if (!$stillExists) {
+                    $product = Product::lockForUpdate()->find($oldItem->product_id);
+                    if ($product) {
+                        $product->stok_saat_ini -= $oldItem->jumlah;
+                        $product->save();
+                    }
+                    $oldItem->delete();
+                }
+            }
+
+            // 4. Update or Create items
             $total_biaya = 0;
 
-            foreach ($request->items as $itemId => $itemData) {
-                $purchaseItem = PurchaseItem::findOrFail($itemId);
-                $oldJumlah = $purchaseItem->jumlah;
+            foreach ($request->items as $itemData) {
+                $productId = $itemData['product_id'];
+                
+                if (is_numeric($productId) && Product::where('id', $productId)->exists()) {
+                    $product = Product::lockForUpdate()->findOrFail($productId);
+                } else {
+                    // Create new product if manually typed
+                    $category = \App\Models\Category::first();
+                    if (!$category) {
+                        $category = \App\Models\Category::create(['nama_kategori' => 'Umum']);
+                    }
+                    $sku = 'BRG-' . strtoupper(uniqid());
+                    while (Product::where('sku', $sku)->exists()) {
+                        $sku = 'BRG-' . strtoupper(uniqid());
+                    }
+                    $product = Product::create([
+                        'category_id' => $category->id,
+                        'sku' => $sku,
+                        'nama_barang' => $productId,
+                        'harga_modal' => $itemData['harga_beli'],
+                        'harga_jual' => $itemData['harga_jual'],
+                        'stok_saat_ini' => 0,
+                        'satuan' => 'Pcs',
+                    ]);
+                }
 
-                $total_harga_item = $itemData['harga_beli'] * $oldJumlah;
-                $total_biaya += $total_harga_item;
+                $existingItem = PurchaseItem::where('purchase_id', $purchase->id)
+                    ->where('product_id', $product->id)
+                    ->first();
 
-                $purchaseItem->update([
-                    'harga_beli' => $itemData['harga_beli'],
-                    'harga_jual' => $itemData['harga_jual'],
-                    'total_harga' => $total_harga_item,
-                ]);
-
-                // Sinkronisasi ke master product
-                $product = Product::lockForUpdate()->find($purchaseItem->product_id);
-                if ($product) {
+                if ($existingItem) {
+                    $selisihQty = $itemData['jumlah'] - $existingItem->jumlah;
+                    $product->stok_saat_ini += $selisihQty;
                     $product->harga_modal = $itemData['harga_beli'];
                     $product->harga_jual = $itemData['harga_jual'];
                     $product->save();
+
+                    $existingItem->update([
+                        'jumlah' => $itemData['jumlah'],
+                        'harga_beli' => $itemData['harga_beli'],
+                        'harga_jual' => $itemData['harga_jual'],
+                        'total_harga' => $itemData['harga_beli'] * $itemData['jumlah'],
+                    ]);
+                } else {
+                    $product->stok_saat_ini += $itemData['jumlah'];
+                    $product->harga_modal = $itemData['harga_beli'];
+                    $product->harga_jual = $itemData['harga_jual'];
+                    $product->save();
+
+                    PurchaseItem::create([
+                        'purchase_id' => $purchase->id,
+                        'product_id' => $product->id,
+                        'jumlah' => $itemData['jumlah'],
+                        'harga_beli' => $itemData['harga_beli'],
+                        'harga_jual' => $itemData['harga_jual'],
+                        'total_harga' => $itemData['harga_beli'] * $itemData['jumlah'],
+                    ]);
                 }
+
+                $total_biaya += $itemData['harga_beli'] * $itemData['jumlah'];
+
+                // Create movement
+                InventoryMovement::create([
+                    'product_id' => $product->id,
+                    'tipe_pergerakan' => 'masuk',
+                    'jumlah' => $itemData['jumlah'],
+                    'tanggal' => $request->tanggal_pembelian,
+                    'keterangan' => 'Restok Faktur ' . $request->nomor_faktur . ' dari ' . $request->nama_supplier,
+                ]);
             }
 
             $purchase->update([
@@ -212,17 +322,9 @@ class PurchaseController extends Controller
                 'total_biaya' => $total_biaya,
             ]);
 
-            // Update matching inventory movements
-            InventoryMovement::where('tipe_pergerakan', 'masuk')
-                ->where('keterangan', 'Restok Faktur ' . $oldFaktur . ' dari ' . $oldSupplier)
-                ->update([
-                    'tanggal' => $request->tanggal_pembelian,
-                    'keterangan' => 'Restok Faktur ' . $request->nomor_faktur . ' dari ' . $request->nama_supplier,
-                ]);
-
             DB::commit();
 
-            return redirect()->route('purchases.index')->with('success', 'Data Barang Masuk dan harga master barang berhasil diperbarui.');
+            return redirect()->route('purchases.index')->with('success', 'Data Pembelian Barang Masuk dan stok master barang berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->with('error', $e->getMessage());
