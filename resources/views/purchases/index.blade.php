@@ -665,8 +665,10 @@
                 </div>
             </div>
         </div>
-    </div>
-</d    document.addEventListener('alpine:init', () => {
+</div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
         Alpine.data('purchasePage', (productsData, hasErrors) => ({
             isModalOpen: hasErrors,
             products: productsData,
