@@ -336,10 +336,10 @@
 
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-xl font-semibold text-gray-800">Daftar Barang Masuk (Restok)</h2>
-        <button @click="openModal()" class="bg-tema-marun hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md transition-all shadow-sm flex items-center gap-2 hover:scale-105 duration-200">
+        <a href="{{ route('purchases.create') }}" class="bg-tema-marun hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md transition-all shadow-sm flex items-center gap-2 hover:scale-105 duration-200">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Input Barang Masuk
-        </button>
+            + Input Barang Masuk
+        </a>
     </div>
 
     <!-- Tabel Daftar Pembelian -->
