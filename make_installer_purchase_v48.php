@@ -3,6 +3,16 @@ $projectRoot = 'C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1';
 $files = [
     'app/Http/Controllers/PurchaseController.php',
     'resources/views/purchases/create.blade.php',
+    'routes/web.php',
+    'app/Http/Controllers/OnlineOrderController.php',
+    'app/Models/User.php',
+    'resources/views/layouts/admin.blade.php',
+    'resources/views/online-orders/show.blade.php',
+    'app/Http/Controllers/KasbonController.php',
+    'app/Models/Kasbon.php',
+    'database/migrations/2026_06_20_000002_create_kasbons_table.php',
+    'resources/views/kasbons/index.blade.php',
+    'resources/views/online-orders/surat-jalan.blade.php',
 ];
 
 $php = "<?php\n";
