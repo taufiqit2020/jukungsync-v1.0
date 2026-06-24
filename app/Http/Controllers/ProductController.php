@@ -34,6 +34,71 @@ class ProductController extends Controller
         return view('products.create', compact('categories', 'merks'));
     }
 
+    public function nextSku(Request $request)
+    {
+        $categoryId = $request->query('category_id');
+        if (!$categoryId) {
+            return response()->json(['sku' => '']);
+        }
+
+        $category = Category::find($categoryId);
+        if (!$category) {
+            return response()->json(['sku' => '']);
+        }
+
+        // 1. Tentukan prefix
+        $prefix = null;
+        $firstProduct = Product::where('category_id', $categoryId)
+            ->where('sku', 'like', '%-%')
+            ->first();
+
+        if ($firstProduct) {
+            $parts = explode('-', $firstProduct->sku);
+            $prefix = $parts[0];
+        } else {
+            // Pemetaan default untuk kategori awal yang belum punya produk
+            $name = strtolower($category->nama_kategori);
+            if (str_contains($name, 'atk')) {
+                $prefix = 'A';
+            } elseif (str_contains($name, 'kebersihan')) {
+                $prefix = 'B';
+            } elseif (str_contains($name, 'ibu') || str_contains($name, 'bayi')) {
+                $prefix = 'C';
+            } elseif (str_contains($name, 'ipsrs')) {
+                $prefix = 'E';
+            } elseif (str_contains($name, 'plastik')) {
+                $prefix = 'P';
+            } else {
+                // Gunakan huruf pertama nama kategori jika tidak cocok
+                $prefix = strtoupper(substr($category->nama_kategori, 0, 1));
+                if (!$prefix || !preg_match('/[A-Z]/', $prefix)) {
+                    $prefix = 'BRG';
+                }
+            }
+        }
+
+        // 2. Cari nomor maksimal untuk prefix ini
+        $skus = Product::where('sku', 'like', $prefix . '-%')
+            ->pluck('sku')
+            ->toArray();
+
+        $maxNum = 0;
+        foreach ($skus as $sku) {
+            $parts = explode('-', $sku);
+            if (count($parts) === 2 && is_numeric($parts[1])) {
+                $num = (int)$parts[1];
+                if ($num > $maxNum) {
+                    $maxNum = $num;
+                }
+            }
+        }
+
+        $nextNum = $maxNum + 1;
+        $nextSku = $prefix . '-' . str_pad($nextNum, 3, '0', STR_PAD_LEFT);
+
+        return response()->json(['sku' => $nextSku]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

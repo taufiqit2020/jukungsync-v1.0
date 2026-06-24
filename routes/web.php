@@ -161,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::resource('merks', MerkController::class)->except(['show']);
         Route::resource('customers', CustomerController::class);
+        Route::get('products/next-sku', [ProductController::class, 'nextSku'])->name('products.next-sku');
         Route::resource('products', ProductController::class)->except(['show']);
         
         // Transaksi Barang Masuk/Keluar

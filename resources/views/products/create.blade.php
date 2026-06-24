@@ -113,4 +113,36 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('category_id');
+    const skuInput = document.getElementById('sku');
+
+    if (categorySelect && skuInput) {
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            if (!categoryId) {
+                skuInput.value = '';
+                return;
+            }
+
+            // Tampilkan status memuat
+            skuInput.placeholder = 'Memuat SKU otomatis...';
+            skuInput.value = '';
+
+            fetch(`/products/next-sku?category_id=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sku) {
+                        skuInput.value = data.sku;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching SKU:', error);
+                });
+        });
+    }
+});
+</script>
 @endsection
