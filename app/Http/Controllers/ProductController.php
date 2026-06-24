@@ -46,47 +46,38 @@ class ProductController extends Controller
             return response()->json(['sku' => '']);
         }
 
-        // 1. Tentukan prefix
-        $prefix = null;
-        $firstProduct = Product::where('category_id', $categoryId)
-            ->where('sku', 'like', '%-%')
-            ->first();
-
-        if ($firstProduct) {
-            $parts = explode('-', $firstProduct->sku);
-            $prefix = $parts[0];
+        // Tentukan prefix berdasarkan kategori secara ketat (strict mapping)
+        $name = strtolower($category->nama_kategori);
+        if (str_contains($name, 'atk')) {
+            $prefix = 'A';
+        } elseif (str_contains($name, 'kebersihan')) {
+            $prefix = 'B';
+        } elseif (str_contains($name, 'ibu') || str_contains($name, 'bayi')) {
+            $prefix = 'C';
+        } elseif (str_contains($name, 'ipsrs')) {
+            $prefix = 'D';
+        } elseif (str_contains($name, 'lainnya')) {
+            $prefix = 'E';
+        } elseif (str_contains($name, 'plastik')) {
+            $prefix = 'P';
         } else {
-            // Pemetaan default untuk kategori awal yang belum punya produk
-            $name = strtolower($category->nama_kategori);
-            if (str_contains($name, 'atk')) {
-                $prefix = 'A';
-            } elseif (str_contains($name, 'kebersihan')) {
-                $prefix = 'B';
-            } elseif (str_contains($name, 'ibu') || str_contains($name, 'bayi')) {
-                $prefix = 'C';
-            } elseif (str_contains($name, 'ipsrs')) {
-                $prefix = 'E';
-            } elseif (str_contains($name, 'plastik')) {
-                $prefix = 'P';
-            } else {
-                // Gunakan huruf pertama nama kategori jika tidak cocok
-                $prefix = strtoupper(substr($category->nama_kategori, 0, 1));
-                if (!$prefix || !preg_match('/[A-Z]/', $prefix)) {
-                    $prefix = 'BRG';
-                }
+            // Gunakan huruf pertama nama kategori jika tidak cocok
+            $prefix = strtoupper(substr($category->nama_kategori, 0, 1));
+            if (!$prefix || !preg_match('/[A-Z]/', $prefix)) {
+                $prefix = 'BRG';
             }
         }
 
-        // 2. Cari nomor maksimal untuk prefix ini
-        $skus = Product::where('sku', 'like', $prefix . '-%')
+        // Cari nomor maksimal untuk prefix ini
+        // Kita mencocokkan pattern $prefix diikuti dengan tanda hubung (-) opsional dan angka
+        $skus = Product::where('sku', 'like', $prefix . '%')
             ->pluck('sku')
             ->toArray();
 
         $maxNum = 0;
         foreach ($skus as $sku) {
-            $parts = explode('-', $sku);
-            if (count($parts) === 2 && is_numeric($parts[1])) {
-                $num = (int)$parts[1];
+            if (preg_match('/^' . preg_quote($prefix, '/') . '-?([0-9]+)$/i', $sku, $matches)) {
+                $num = (int)$matches[1];
                 if ($num > $maxNum) {
                     $maxNum = $num;
                 }
