@@ -4,12 +4,22 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $laravelRoot = dirname(__DIR__);
-echo "<h1>Remote File Lister</h1>";
+echo "<h1>Remote File Lister v2</h1>";
 echo "<p>Laravel Root: $laravelRoot</p>";
 
-function listDir($dir, $prefix = '') {
+$publicStorage = $laravelRoot . '/public/storage';
+echo "<h2>Storage Link Diagnostics</h2>";
+echo "Path: $publicStorage<br>";
+echo "is_link: " . (is_link($publicStorage) ? "YES" : "NO") . "<br>";
+if (is_link($publicStorage)) {
+    echo "readlink target: " . readlink($publicStorage) . "<br>";
+}
+echo "file_exists: " . (file_exists($publicStorage) ? "YES" : "NO") . "<br>";
+echo "is_dir: " . (is_dir($publicStorage) ? "YES" : "NO") . "<br>";
+
+function listDir($dir) {
     if (!is_dir($dir)) {
-        echo "<p style='color:red;'>Not a directory: $dir</p>";
+        echo "<p style='color:red;'>Not a directory or broken symlink: $dir</p>";
         return;
     }
     $items = scandir($dir);
@@ -20,7 +30,7 @@ function listDir($dir, $prefix = '') {
         if (is_dir($path)) {
             echo "<li><strong>[DIR] $item</strong>";
             if (in_array($item, ['storage', 'public', 'app', 'img', 'products', 'bukti_invoices'])) {
-                listDir($path, $prefix . '  ');
+                listDir($path);
             }
             echo "</li>";
         } else {
@@ -31,12 +41,12 @@ function listDir($dir, $prefix = '') {
     echo "</ul>";
 }
 
-echo "<h2>Listing Public Storage (public/storage)</h2>";
-listDir($laravelRoot . '/public/storage');
+echo "<h2>Listing Public Storage Contents</h2>";
+listDir($publicStorage);
 
-echo "<h2>Listing Public Img (public/img)</h2>";
+echo "<h2>Listing Public Img Contents</h2>";
 listDir($laravelRoot . '/public/img');
 
-echo "<h2>Listing Storage App Public (storage/app/public)</h2>";
+echo "<h2>Listing Storage App Public</h2>";
 listDir($laravelRoot . '/storage/app/public');
 ?>
