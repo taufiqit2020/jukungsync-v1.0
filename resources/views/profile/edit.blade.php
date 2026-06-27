@@ -94,21 +94,25 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Nomor HP / WhatsApp <span class="text-red-500">*</span></label>
-                                <div class="relative">
-                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📱</span>
+                                <div class="relative flex items-center">
+                                    <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                    </div>
                                     <input type="text" name="nomor_hp" value="{{ old('nomor_hp', $user->nomor_hp) }}"
-                                        placeholder="08123456789"
-                                        class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                        placeholder="08123456789" style="padding-left:42px;"
+                                        class="w-full border border-gray-200 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
                                         required>
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Nama Perusahaan / Toko</label>
-                                <div class="relative">
-                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🏢</span>
+                                <div class="relative flex items-center">
+                                    <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h2m0 0h2m-4 0v-4m0 0h4m-4 0v4m4-4v4m-4-8v1m0-1h4m-4 0v-1m4 1v1m0-1h-4m4-3v1m0-1h-4m4 0v-1m-4 1v1"/></svg>
+                                    </div>
                                     <input type="text" name="perusahaan" value="{{ old('perusahaan', $user->perusahaan) }}"
-                                        placeholder="Contoh: UD. Berkah Jaya"
-                                        class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none">
+                                        placeholder="Contoh: UD. Berkah Jaya" style="padding-left:42px;"
+                                        class="w-full border border-gray-200 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none">
                                 </div>
                             </div>
                         </div>
@@ -129,19 +133,23 @@
                     <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Kata Sandi Baru</label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔒</span>
-                                <input type="password" name="password"
-                                    class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                            <div class="relative flex items-center">
+                                <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                </div>
+                                <input type="password" name="password" style="padding-left:42px;"
+                                    class="w-full border border-gray-200 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
                                     placeholder="Min. 8 karakter">
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Konfirmasi Kata Sandi</label>
-                            <div class="relative">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔑</span>
-                                <input type="password" name="password_confirmation"
-                                    class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                            <div class="relative flex items-center">
+                                <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                </div>
+                                <input type="password" name="password_confirmation" style="padding-left:42px;"
+                                    class="w-full border border-gray-200 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
                                     placeholder="Ulangi kata sandi baru">
                             </div>
                         </div>
@@ -183,15 +191,17 @@
                         {{-- Search Autocomplete --}}
                         <div class="space-y-1.5 relative">
                             <label class="text-xs font-bold text-gray-600 uppercase tracking-wide block">Cari Alamat Otomatis</label>
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📍</span>
+                            <div class="relative flex items-center">
+                                <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </div>
                                 <input
                                     type="text"
                                     x-model="customAddress"
                                     @input="fetchAddressSuggestions()"
                                     @focus="showSuggestions = addressSuggestions.length > 0"
-                                    placeholder="Ketik nama jalan, gedung..."
-                                    class="w-full border border-gray-200 pl-9 pr-4 py-2.5 text-sm bg-gray-50 rounded-xl focus:bg-white focus:border-green-600 focus:ring focus:ring-green-600 focus:ring-opacity-20 transition-all outline-none">
+                                    placeholder="Ketik nama jalan, gedung..." style="padding-left:42px;"
+                                    class="w-full border border-gray-200 pr-4 py-2.5 text-sm bg-gray-50 rounded-xl focus:bg-white focus:border-green-600 focus:ring focus:ring-green-600 focus:ring-opacity-20 transition-all outline-none">
                                 <div x-show="isSearchingAddress" class="absolute right-3 top-1/2 -translate-y-1/2">
                                     <svg class="animate-spin h-4 w-4 text-red-800" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                                 </div>
