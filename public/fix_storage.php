@@ -12,16 +12,19 @@ $storageAppPublic = $laravelRoot . '/storage/app/public';
 
 $log = '';
 
-// Helper function to copy folders recursively
-function copyFolderRecursive($src, $dst) {
+// Helper function to copy folders recursively safely without overwriting existing user files
+function copyFolderRecursive($src, $dst, $overwrite = false) {
     if (!is_dir($src)) return 0;
     @mkdir($dst, 0777, true);
     $count = 0;
     $files = array_diff(scandir($src), array('.','..'));
     foreach ($files as $file) {
         if (is_dir("$src/$file")) {
-            $count += copyFolderRecursive("$src/$file", "$dst/$file");
+            $count += copyFolderRecursive("$src/$file", "$dst/$file", $overwrite);
         } else {
+            if (!$overwrite && file_exists("$dst/$file")) {
+                continue; // Jangan timpa jika file sudah ada!
+            }
             if (@copy("$src/$file", "$dst/$file")) {
                 $count++;
             }
@@ -31,28 +34,14 @@ function copyFolderRecursive($src, $dst) {
 }
 
 try {
-    // 1. Bersihkan link/file lama di public/storage
+    // 1. Pastikan tidak menghapus direktori/file di public/storage
     if (is_link($publicStorage)) {
-        if (@unlink($publicStorage)) {
-            $log .= "✔ Berhasil menghapus symbolic link lama: $publicStorage\n";
-        } else {
-            $log .= "❌ Gagal menghapus symbolic link lama: $publicStorage\n";
-        }
-    } elseif (file_exists($publicStorage) && !is_dir($publicStorage)) {
-        if (@unlink($publicStorage)) {
-            $log .= "✔ Berhasil menghapus file lama di public/storage: $publicStorage\n";
-        }
+        @unlink($publicStorage);
     }
 
     // 2. Buat direktori fisik public/storage
     if (!is_dir($publicStorage)) {
-        if (@mkdir($publicStorage, 0777, true)) {
-            $log .= "✔ Berhasil membuat direktori fisik public/storage\n";
-        } else {
-            $log .= "❌ Gagal membuat direktori fisik public/storage\n";
-        }
-    } else {
-        $log .= "✔ Direktori fisik public/storage sudah ada\n";
+        @mkdir($publicStorage, 0777, true);
     }
 
     // 3. Buat subdirektori products & bukti_invoices
@@ -60,27 +49,21 @@ try {
     foreach ($subDirs as $sub) {
         $subPath = $publicStorage . '/' . $sub;
         if (!is_dir($subPath)) {
-            if (@mkdir($subPath, 0777, true)) {
-                $log .= "✔ Berhasil membuat subdirektori: public/storage/$sub\n";
-            }
+            @mkdir($subPath, 0777, true);
         }
     }
 
-    // 4. Salin file dari storage/app/public (jika ada) ke public/storage
+    // 4. Salin file dari storage/app/public ke public/storage (hanya jika belum ada di destination)
     if (is_dir($storageAppPublic)) {
-        $copiedStorage = copyFolderRecursive($storageAppPublic, $publicStorage);
-        $log .= "✔ Berhasil menyalin $copiedStorage file dari storage/app/public ke public/storage\n";
-    } else {
-        $log .= "ℹ storage/app/public tidak ditemukan atau bukan direktori\n";
+        $copiedStorage = copyFolderRecursive($storageAppPublic, $publicStorage, false);
+        $log .= "✔ Berhasil menyalin $copiedStorage file baru dari storage/app/public ke public/storage\n";
     }
 
-    // 5. Salin file dari public/img/products ke public/storage/products (untuk seeder images)
+    // 5. Salin file seeder dari public/img/products ke public/storage/products HANYA JIKA BELUM ADA FILE DENGAN NAMA SAMA
     $imgProducts = $laravelRoot . '/public/img/products';
     if (is_dir($imgProducts)) {
-        $copiedImg = copyFolderRecursive($imgProducts, $publicStorage . '/products');
-        $log .= "✔ Berhasil menyalin $copiedImg file seeder dari public/img/products ke public/storage/products\n";
-    } else {
-        $log .= "ℹ public/img/products tidak ditemukan atau bukan direktori\n";
+        $copiedImg = copyFolderRecursive($imgProducts, $publicStorage . '/products', false);
+        $log .= "✔ Berhasil menyalin $copiedImg file seeder ke public/storage/products\n";
     }
 
     // 6. Set permission public/storage agar writable

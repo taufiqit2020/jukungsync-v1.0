@@ -61,23 +61,7 @@ foreach ($files as $f) {
     $php .= "    \$log .= '✔ Berhasil memperbarui file: $f\\n';\n";
 }
 
-$php .= "\n    // 1. Jalankan fix_storage.php secara internal untuk membuat folder public/storage\n";
-$php .= "    \$fixStoragePath = \$laravelRoot . '/public/fix_storage.php';\n";
-$php .= "    if (file_exists(\$fixStoragePath)) {\n";
-$php .= "        ob_start();\n";
-$php .= "        include \$fixStoragePath;\n";
-$php .= "        \$fixOutput = ob_get_clean();\n";
-$php .= "        \$log .= '\\n--- Hasil Eksekusi fix_storage.php ---\\n' . strip_tags(\$fixOutput) . '\\n';\n";
-$php .= "    }\n";
-
-$php .= "\n    // 2. Jalankan restore_missing_images.php secara internal untuk memulihkan gambar yang kosong/hilang dan menjalankan migrasi otomatis\n";
-$php .= "    \$restoreImagesPath = \$laravelRoot . '/public/restore_missing_images.php';\n";
-$php .= "    if (file_exists(\$restoreImagesPath)) {\n";
-$php .= "        ob_start();\n";
-$php .= "        include \$restoreImagesPath;\n";
-$php .= "        \$restoreOutput = ob_get_clean();\n";
-$php .= "        \$log .= '\\n--- Hasil Eksekusi restore_missing_images.php ---\\n' . strip_tags(\$restoreOutput) . '\\n';\n";
-$php .= "    }\n";
+$php .= "\n\n";
 
 $php .= "\n    // 3. Otomatis sinkronkan kasbon untuk semua invoice yang belum lunas\n";
 $php .= "    try {\n";
