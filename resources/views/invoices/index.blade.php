@@ -103,78 +103,91 @@
     }
 </style>
 
-<div class="bg-white shadow rounded-lg p-6 relative" x-data="invoicePage({{ $products->toJson() }}, {{ $errors->any() ? 'true' : 'false' }})">
+<div class="space-y-5" x-data="invoicePage({{ $products->toJson() }}, {{ $errors->any() ? 'true' : 'false' }})">
+
+    {{-- Alerts --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 shadow-sm" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-        </div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;" class="flex items-center gap-3 px-5 py-3.5">
+        <svg class="w-5 h-5 flex-shrink-0" style="color:#15803d;" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span style="font-size:0.875rem;font-weight:600;color:#15803d;">{{ session('success') }}</span>
+    </div>
     @endif
 
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Daftar Invoice</h2>
+    {{-- Page Header --}}
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 style="font-size:1.4rem;font-weight:900;color:#1f2937;margin:0;">Daftar Invoice</h1>
+            <p style="font-size:0.8rem;color:#6b7280;margin-top:2px;">Kelola dan pantau seluruh invoice penjualan.</p>
+        </div>
         @if(in_array(auth()->user()->role, ['superadmin', 'staf_admin']))
-        <button @click="openModal()" class="bg-tema-marun hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md transition-all shadow-sm flex items-center gap-2 hover:scale-105 duration-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <button @click="openModal()"
+                style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);color:white;"
+                class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl shadow-md hover:opacity-90 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Buat Invoice Baru
         </button>
         @endif
     </div>
 
-    <!-- FR-07: Filter & Pencarian Invoice -->
-    <form action="{{ route('invoices.index') }}" method="GET" class="mb-5">
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
-            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+    {{-- Filter & Pencarian Invoice --}}
+    <form action="{{ route('invoices.index') }}" method="GET">
+        <div style="background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 4px rgba(0,0,0,0.07);" class="p-5">
+            <p style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="flex items-center gap-1.5 mb-4">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                 Filter &amp; Pencarian
             </p>
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">No. Invoice</label>
-                    <input type="text" name="nomor" value="{{ request('nomor') }}" placeholder="Cari nomor..." class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 py-2 px-3 border bg-white">
+                    <label style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="block mb-1.5">No. Invoice</label>
+                    <input type="text" name="nomor" value="{{ request('nomor') }}" placeholder="Cari nomor..." class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">Nama Klien</label>
-                    <input type="text" name="customer" value="{{ request('customer') }}" placeholder="Cari klien..." class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 py-2 px-3 border bg-white">
+                    <label style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="block mb-1.5">Nama Klien</label>
+                    <input type="text" name="customer" value="{{ request('customer') }}" placeholder="Cari klien..." class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">Status Bayar</label>
-                    <select name="status" class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 py-2 px-3 border bg-white">
+                    <label style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="block mb-1.5">Status Bayar</label>
+                    <select name="status" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all">
                         <option value="">-- Semua --</option>
                         <option value="lunas" {{ request('status') == 'lunas' ? 'selected' : '' }}>✅ Lunas</option>
                         <option value="belum_lunas" {{ request('status') == 'belum_lunas' ? 'selected' : '' }}>⏳ Belum Lunas</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">Dari Tanggal</label>
-                    <input type="date" name="dari" value="{{ request('dari') }}" class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 py-2 px-3 border bg-white">
+                    <label style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="block mb-1.5">Dari Tanggal</label>
+                    <input type="date" name="dari" value="{{ request('dari') }}" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-semibold text-gray-500 mb-1 uppercase">Sampai Tanggal</label>
-                    <input type="date" name="sampai" value="{{ request('sampai') }}" class="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 py-2 px-3 border bg-white">
+                    <label style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="block mb-1.5">Sampai Tanggal</label>
+                    <input type="date" name="sampai" value="{{ request('sampai') }}" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all">
                 </div>
             </div>
-            <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+            <div class="flex items-center justify-between mt-4 pt-4" style="border-top:1px solid #f3f4f6;">
                 <div class="flex gap-2">
-                    <button type="submit" class="bg-tema-marun hover:bg-red-900 text-white font-bold py-1.5 px-4 rounded-lg text-xs shadow-sm transition-colors flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <button type="submit"
+                            style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);color:white;"
+                            class="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl shadow-md hover:opacity-90 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         Terapkan Filter
                     </button>
                     @if(request()->hasAny(['nomor','customer','status','dari','sampai']))
-                    <a href="{{ route('invoices.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1.5 px-4 rounded-lg text-xs shadow-sm transition-colors flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <a href="{{ route('invoices.index') }}"
+                       style="background:#f3f4f6;color:#374151;"
+                       class="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl hover:bg-gray-200 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         Reset
                     </a>
                     @endif
                 </div>
                 @if(request()->hasAny(['nomor','customer','status','dari','sampai']))
-                <div class="flex gap-4 text-right">
-                    <div class="text-xs">
-                        <span class="text-gray-500">Total Tagihan (Filter):</span>
-                        <span class="font-black text-gray-800 ml-1">Rp {{ number_format($totalTagihanFilter, 0, ',', '.') }}</span>
+                <div class="flex gap-4">
+                    <div style="font-size:0.75rem;">
+                        <span style="color:#6b7280;">Total Tagihan (Filter):</span>
+                        <span style="font-weight:900;color:#1f2937;" class="ml-1">Rp {{ number_format($totalTagihanFilter, 0, ',', '.') }}</span>
                     </div>
-                    <div class="text-xs">
-                        <span class="text-gray-500">Outstanding:</span>
-                        <span class="font-black text-red-600 ml-1">Rp {{ number_format($totalBelumLunasFilter, 0, ',', '.') }}</span>
+                    <div style="font-size:0.75rem;">
+                        <span style="color:#6b7280;">Outstanding:</span>
+                        <span style="font-weight:900;color:#b91c1c;" class="ml-1">Rp {{ number_format($totalBelumLunasFilter, 0, ',', '.') }}</span>
                     </div>
                 </div>
                 @endif
@@ -182,147 +195,145 @@
         </div>
     </form>
 
-    <!-- Tabel Daftar Invoice -->
-    <div class="overflow-x-auto rounded-md border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-tema-hitam">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No. Invoice</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Nama Klien</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jatuh Tempo</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Total Tagihan</th>
-                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($invoices as $invoice)
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {{ \Carbon\Carbon::parse($invoice->tanggal_invoice)->format('d M Y') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                        {{ $invoice->nomor_invoice }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $invoice->nama_klien }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                        <div>
-                            @if($invoice->status === 'draft')
-                                <span class="px-2 inline-flex text-[11px] leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pesanan Online</span>
-                            @else
-                                <span class="px-2 inline-flex text-[11px] leading-5 font-semibold rounded-full bg-green-100 text-green-800">Selesai</span>
-                            @endif
-                        </div>
-                        <div class="mt-1">
-                            @if($invoice->status_pembayaran === 'lunas')
-                                <span class="px-2 inline-flex text-[11px] leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 uppercase tracking-wider">Lunas</span>
-                            @else
-                                <span class="px-2 inline-flex text-[11px] leading-5 font-semibold rounded-full bg-red-100 text-red-800 uppercase tracking-wider">Belum Lunas</span>
-                            @endif
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        @if($invoice->tanggal_jatuh_tempo)
-                            @php
-                                $jatuhTempo = \Carbon\Carbon::parse($invoice->tanggal_jatuh_tempo);
-                                $now = \Carbon\Carbon::now();
-                                $diffDays = $now->startOfDay()->diffInDays($jatuhTempo->startOfDay(), false);
-                            @endphp
-                            
-                            <div class="font-medium mb-1">{{ $jatuhTempo->format('d M Y') }}</div>
-                            
-                            @if($invoice->status_pembayaran === 'belum_lunas')
-                                @if($diffDays < 0)
-                                    <span class="px-2 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded bg-red-100 text-red-800">Lewat {{ abs($diffDays) }} hari</span>
-                                @elseif($diffDays <= 7)
-                                    <span class="px-2 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded bg-yellow-100 text-yellow-800">Sisa {{ $diffDays }} hari</span>
+    {{-- Tabel Daftar Invoice --}}
+    <div style="background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 4px rgba(0,0,0,0.07);" class="overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr style="background:#1f2937;">
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Tanggal</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">No. Invoice</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Nama Klien</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:center;letter-spacing:0.05em;">Status</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Jatuh Tempo</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:right;letter-spacing:0.05em;">Total Tagihan</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:center;letter-spacing:0.05em;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($invoices as $invoice)
+                    <tr class="hover:bg-gray-50/70 transition-colors" style="border-bottom:1px solid #f3f4f6;">
+                        <td style="padding:14px 16px;white-space:nowrap;font-size:0.85rem;color:#6b7280;">
+                            {{ \Carbon\Carbon::parse($invoice->tanggal_invoice)->format('d M Y') }}
+                        </td>
+                        <td style="padding:14px 16px;white-space:nowrap;font-size:0.875rem;font-weight:700;color:#1f2937;">
+                            {{ $invoice->nomor_invoice }}
+                        </td>
+                        <td style="padding:14px 16px;white-space:nowrap;font-size:0.875rem;color:#374151;">
+                            {{ $invoice->nama_klien }}
+                        </td>
+                        <td style="padding:14px 16px;text-align:center;white-space:nowrap;">
+                            <div class="flex flex-col items-center gap-1">
+                                @if($invoice->status === 'draft')
+                                    <span style="background:#fefce8;color:#a16207;border:1px solid #fde68a;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:999px;">Pesanan Online</span>
                                 @else
-                                    <span class="px-2 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded bg-gray-100 text-gray-600">Sisa {{ $diffDays }} hari</span>
+                                    <span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:999px;">Selesai</span>
+                                @endif
+                                @if($invoice->status_pembayaran === 'lunas')
+                                    <span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">Lunas</span>
+                                @else
+                                    <span style="background:#fff5f5;color:#b91c1c;border:1px solid #fecaca;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">Belum Lunas</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td style="padding:14px 16px;white-space:nowrap;font-size:0.85rem;color:#374151;">
+                            @if($invoice->tanggal_jatuh_tempo)
+                                @php
+                                    $jatuhTempo = \Carbon\Carbon::parse($invoice->tanggal_jatuh_tempo);
+                                    $now = \Carbon\Carbon::now();
+                                    $diffDays = $now->startOfDay()->diffInDays($jatuhTempo->startOfDay(), false);
+                                @endphp
+                                <div style="font-weight:600;margin-bottom:4px;">{{ $jatuhTempo->format('d M Y') }}</div>
+                                @if($invoice->status_pembayaran === 'belum_lunas')
+                                    @if($diffDays < 0)
+                                        <span style="background:#fff5f5;color:#b91c1c;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;">Lewat {{ abs($diffDays) }} hari</span>
+                                    @elseif($diffDays <= 7)
+                                        <span style="background:#fefce8;color:#a16207;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;">Sisa {{ $diffDays }} hari</span>
+                                    @else
+                                        <span style="background:#f9fafb;color:#6b7280;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;">Sisa {{ $diffDays }} hari</span>
+                                    @endif
+                                @else
+                                    <span style="background:#f0fdf4;color:#15803d;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:4px;">Selesai</span>
                                 @endif
                             @else
-                                <span class="px-2 py-0.5 inline-flex text-[10px] leading-5 font-bold rounded bg-green-100 text-green-800">Selesai</span>
+                                -
                             @endif
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right text-green-600">
-                        Rp {{ number_format($invoice->total_tagihan, 0, ',', '.') }}
-                    </td>
-                    <td class="px-4 py-4 text-center text-sm font-medium whitespace-nowrap">
-                        <div class="flex justify-center items-center gap-2">
-                            @if($invoice->status_pembayaran === 'belum_lunas' && in_array(auth()->user()->role, ['staf_admin', 'bendahara', 'superadmin']))
-                                <form action="{{ route('invoices.mark-paid', $invoice->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai LUNAS?');">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-green-100 text-green-800 hover:bg-green-200 rounded text-xs font-bold transition-colors shadow-sm">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        Lunas
-                                    </button>
-                                </form>
-                            @endif
-
-                            <a href="{{ route('invoices.show', $invoice->id) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak A4 (Klien)">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                A4 (Klien)
-                            </a>
-
-                            <a href="{{ route('invoices.struk', $invoice->id) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak Struk">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                Struk
-                            </a>
-                            <a href="{{ route('invoices.show', ['invoice' => $invoice->id, 'mode' => 'internal']) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak A4 (Internal)">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                A4 (Internal)
-                            </a>
-
-                            @if(in_array(auth()->user()->role, ['superadmin', 'bendahara']))
-                                @if($invoice->bukti_file)
-                                    <button type="button" @click="openBuktiViewer('{{ Storage::url($invoice->bukti_file) }}', '{{ $invoice->bukti_keterangan }}')" class="inline-flex items-center px-2.5 py-1.5 bg-purple-100 text-purple-800 hover:bg-purple-200 rounded text-xs font-bold transition-colors shadow-sm" title="Lihat Bukti">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                        Lihat Bukti
-                                    </button>
-                                @else
-                                    <button type="button" @click="openUploadBukti('{{ $invoice->id }}', '{{ $invoice->nomor_invoice }}')" class="inline-flex items-center px-2.5 py-1.5 bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold transition-colors shadow-sm" title="Upload Bukti">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                                        Upload Bukti
-                                    </button>
+                        </td>
+                        <td style="padding:14px 16px;white-space:nowrap;font-size:0.875rem;font-weight:800;text-align:right;color:#15803d;">
+                            Rp {{ number_format($invoice->total_tagihan, 0, ',', '.') }}
+                        </td>
+                        <td style="padding:10px 12px;text-align:center;white-space:nowrap;">
+                            <div class="flex justify-center items-center gap-1.5 flex-wrap">
+                                @if($invoice->status_pembayaran === 'belum_lunas' && in_array(auth()->user()->role, ['staf_admin', 'bendahara', 'superadmin']))
+                                    <form action="{{ route('invoices.mark-paid', $invoice->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai invoice ini sebagai LUNAS?');">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-green-100 text-green-800 hover:bg-green-200 rounded text-xs font-bold transition-colors shadow-sm">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            Lunas
+                                        </button>
+                                    </form>
                                 @endif
-                            @endif
 
-                            @if(auth()->user()->role === 'superadmin')
-                                <a href="{{ route('invoices.edit', $invoice->id) }}" class="inline-flex items-center px-2.5 py-1.5 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 rounded text-xs font-bold transition-colors shadow-sm" title="Edit Invoice">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                    Edit
+                                <a href="{{ route('invoices.show', $invoice->id) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak A4 (Klien)">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                    A4 (Klien)
                                 </a>
-                                <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="inline" onsubmit="return confirm('⚠️ PERINGATAN SUPERADMIN ⚠️\n\nAnda akan MENGHAPUS invoice {{ $invoice->nomor_invoice }}.\nStok barang akan dikembalikan secara otomatis.\n\nApakah Anda yakin?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-red-600 text-white hover:bg-red-700 rounded text-xs font-bold transition-colors shadow-sm" title="Hapus Invoice">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        Hapus
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
-                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Tidak ada riwayat invoice.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-4">
-        {{ $invoices->links() }}
+
+                                <a href="{{ route('invoices.struk', $invoice->id) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak Struk">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    Struk
+                                </a>
+
+                                <a href="{{ route('invoices.show', ['invoice' => $invoice->id, 'mode' => 'internal']) }}" target="_blank" class="inline-flex items-center px-2.5 py-1.5 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs font-bold transition-colors shadow-sm" title="Cetak A4 (Internal)">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                    A4 (Internal)
+                                </a>
+
+                                @if(in_array(auth()->user()->role, ['superadmin', 'bendahara']))
+                                    @if($invoice->bukti_file)
+                                        <button type="button" @click="openBuktiViewer('{{ Storage::url($invoice->bukti_file) }}', '{{ $invoice->bukti_keterangan }}')" class="inline-flex items-center px-2.5 py-1.5 bg-purple-100 text-purple-800 hover:bg-purple-200 rounded text-xs font-bold transition-colors shadow-sm" title="Lihat Bukti">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            Lihat Bukti
+                                        </button>
+                                    @else
+                                        <button type="button" @click="openUploadBukti('{{ $invoice->id }}', '{{ $invoice->nomor_invoice }}')" class="inline-flex items-center px-2.5 py-1.5 bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-300 rounded text-xs font-bold transition-colors shadow-sm" title="Upload Bukti">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                            Upload Bukti
+                                        </button>
+                                    @endif
+                                @endif
+
+                                @if(auth()->user()->role === 'superadmin')
+                                    <a href="{{ route('invoices.edit', $invoice->id) }}" class="inline-flex items-center px-2.5 py-1.5 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 rounded text-xs font-bold transition-colors shadow-sm" title="Edit Invoice">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="inline" onsubmit="return confirm('⚠️ PERINGATAN SUPERADMIN ⚠️\n\nAnda akan MENGHAPUS invoice {{ $invoice->nomor_invoice }}.\nStok barang akan dikembalikan secara otomatis.\n\nApakah Anda yakin?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-red-600 text-white hover:bg-red-700 rounded text-xs font-bold transition-colors shadow-sm" title="Hapus Invoice">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" style="padding:48px 16px;text-align:center;">
+                            <svg class="w-12 h-12 mx-auto mb-3" style="color:#d1d5db;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <p style="font-size:0.875rem;font-weight:600;color:#9ca3af;">Tidak ada riwayat invoice.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div style="border-top:1px solid #f3f4f6;" class="px-6 py-4">
+            {{ $invoices->links() }}
+        </div>
     </div>
 
     <!-- ==================== MODAL POPUP ==================== -->

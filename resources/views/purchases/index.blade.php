@@ -325,115 +325,135 @@
     }
 </style>
 
-<div class="bg-white shadow rounded-lg p-6 relative" 
+<div class="space-y-5"
      x-data="purchasePage({{ $products->toJson() }}, {{ $errors->any() ? 'true' : 'false' }})">
-    
+
+    {{-- ===== ALERTS ===== --}}
     @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 shadow-sm" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;" class="flex items-center gap-3 px-5 py-3.5">
+            <svg class="w-5 h-5 flex-shrink-0" style="color:#16a34a;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span style="font-size:0.875rem;font-weight:600;color:#15803d;">{{ session('success') }}</span>
         </div>
     @endif
 
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-semibold text-gray-800">Daftar Barang Masuk (Restok)</h2>
-        <a href="{{ route('purchases.create') }}" class="bg-tema-marun hover:bg-red-900 text-white font-medium py-2 px-4 rounded-md transition-all shadow-sm flex items-center gap-2 hover:scale-105 duration-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            + Input Barang Masuk
+    {{-- ===== PAGE HEADER ===== --}}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 style="font-size:1.4rem;font-weight:900;color:#1f2937;margin:0;">Barang Masuk (Restok)</h1>
+            <p style="font-size:0.8rem;color:#6b7280;margin-top:2px;">Riwayat pembelian dan restok stok barang dari supplier.</p>
+        </div>
+        <a href="{{ route('purchases.create') }}"
+           class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl shadow-md hover:opacity-90 transition-all"
+           style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);color:white;">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Input Barang Masuk
         </a>
     </div>
 
-    <!-- Tabel Daftar Pembelian -->
-    <div class="overflow-x-auto rounded-md border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-tema-hitam">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Tanggal</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">No. Faktur</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Supplier</th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">Total Biaya</th>
-                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($purchases as $purchase)
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {{ \Carbon\Carbon::parse($purchase->tanggal_pembelian)->format('d M Y') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                        {{ $purchase->nomor_faktur }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {{ $purchase->nama_supplier }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-right text-red-600">
-                        Rp {{ number_format($purchase->total_biaya, 0, ',', '.') }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <a href="{{ route('purchases.show', $purchase->id) }}" class="inline-flex items-center px-2.5 py-1.5 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded text-xs font-bold transition-colors shadow-sm" title="Lihat Detail">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                Lihat Detail
-                            </a>
-                            <a href="{{ route('purchases.edit', $purchase->id) }}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded text-xs font-bold transition-colors shadow-sm" title="Edit">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                Edit
-                            </a>
-                            <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus transaksi restock ini? Stok produk yang masuk akan otomatis dikurangi secara berkala.')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center px-2.5 py-1.5 bg-red-100 text-red-800 hover:bg-red-200 rounded text-xs font-bold transition-colors shadow-sm" title="Hapus">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    Hapus
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
-                        <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                        Tidak ada riwayat barang masuk.
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-4">
-        {{ $purchases->links() }}
+    {{-- ===== TABLE CARD ===== --}}
+    <div style="background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 4px rgba(0,0,0,0.07);" class="overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr style="background:#1f2937;">
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Tanggal</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">No. Faktur</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Supplier</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:right;letter-spacing:0.05em;">Total Biaya</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:center;letter-spacing:0.05em;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($purchases as $purchase)
+                    <tr class="hover:bg-gray-50/70 transition-colors" style="border-bottom:1px solid #f3f4f6;">
+                        <td style="padding:13px 16px;font-size:0.85rem;color:#374151;">
+                            {{ \Carbon\Carbon::parse($purchase->tanggal_pembelian)->format('d M Y') }}
+                        </td>
+                        <td style="padding:13px 16px;font-size:0.85rem;font-weight:700;color:#111827;">
+                            {{ $purchase->nomor_faktur }}
+                        </td>
+                        <td style="padding:13px 16px;font-size:0.85rem;color:#374151;">
+                            {{ $purchase->nama_supplier }}
+                        </td>
+                        <td style="padding:13px 16px;font-size:0.85rem;font-weight:800;color:#b91c1c;text-align:right;">
+                            Rp {{ number_format($purchase->total_biaya, 0, ',', '.') }}
+                        </td>
+                        <td style="padding:13px 16px;text-align:center;">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <a href="{{ route('purchases.show', $purchase->id) }}"
+                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg transition-colors"
+                                   style="background:#fef3c7;color:#92400e;" title="Lihat Detail">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    Lihat Detail
+                                </a>
+                                <a href="{{ route('purchases.edit', $purchase->id) }}"
+                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg transition-colors"
+                                   style="background:#dbeafe;color:#1e40af;" title="Edit">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    Edit
+                                </a>
+                                <form action="{{ route('purchases.destroy', $purchase->id) }}" method="POST" class="inline-block"
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus transaksi restock ini? Stok produk yang masuk akan otomatis dikurangi secara berkala.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg transition-colors"
+                                            style="background:#fee2e2;color:#991b1b;" title="Hapus">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" style="padding:48px 16px;text-align:center;">
+                            <svg class="w-12 h-12 mx-auto mb-3" style="color:#d1d5db;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                            <p style="font-size:0.875rem;color:#9ca3af;font-weight:500;">Tidak ada riwayat barang masuk.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($purchases->hasPages())
+        <div style="padding:14px 20px;border-top:1px solid #f3f4f6;">
+            {{ $purchases->links() }}
+        </div>
+        @endif
     </div>
 
-    <!-- ==================== MODAL POPUP ==================== -->
+    {{-- ==================== MODAL POPUP ==================== --}}
     <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
         <!-- Backdrop -->
-        <div x-show="isModalOpen" 
-             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" 
-             class="fixed inset-0 bg-gray-900 bg-opacity-70 backdrop-blur-sm transition-opacity" 
+        <div x-show="isModalOpen"
+             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-gray-900 bg-opacity-70 backdrop-blur-sm transition-opacity"
              @click="closeModal()"></div>
 
         <!-- Panel -->
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div x-show="isModalOpen" 
-                 x-transition:enter="ease-out duration-300" 
-                 x-transition:enter-start="opacity-0 scale-95 translate-y-4" 
-                 x-transition:enter-end="opacity-100 scale-100 translate-y-0" 
-                 x-transition:leave="ease-in duration-200" 
-                 x-transition:leave-start="opacity-100 scale-100 translate-y-0" 
-                 x-transition:leave-end="opacity-0 scale-95 translate-y-4" 
+            <div x-show="isModalOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-4"
                  class="relative bg-white rounded-2xl text-left shadow-2xl transform transition-all w-full border border-gray-100"
                  style="max-width: 1000px;"
                  @click.away="closeModal()"
                  @click="closeAllDropdowns()">
-                
+
                 <!-- Header -->
-                <div class="bg-gradient-to-r from-tema-marun to-red-800 rounded-t-2xl px-6 py-4 flex justify-between items-center">
+                <div class="rounded-t-2xl px-6 py-4 flex justify-between items-center"
+                     style="background:linear-gradient(135deg,#7f1d1d,#991b1b);">
                     <div class="flex items-center gap-3">
                         <div class="bg-white bg-opacity-20 rounded-lg p-2">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
                         <h3 class="text-lg font-bold text-white">Input Barang Masuk</h3>
                     </div>
@@ -445,8 +465,9 @@
                 <!-- Body -->
                 <div class="px-8 py-6 max-h-[80vh] overflow-y-auto">
                     @if($errors->any())
-                        <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-md mb-5">
-                            <ul class="text-sm text-red-700 list-disc list-inside">
+                        <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:12px;" class="flex items-start gap-3 px-5 py-3.5 mb-5">
+                            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#b91c1c;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <ul class="text-sm list-disc list-inside" style="color:#b91c1c;">
                                 @foreach($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -456,26 +477,36 @@
 
                     <form action="{{ route('purchases.store') }}" method="POST" id="purchase-form">
                         @csrf
-                        
+
                         <!-- Info Faktur - Compact -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5 bg-gray-50 p-4 rounded-xl border border-gray-200">
                             <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">No. Faktur *</label>
-                                <input type="text" name="nomor_faktur" value="{{ old('nomor_faktur') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border" required placeholder="001/V/UMAR/2026">
+                                <label class="block mb-1" style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;">No. Faktur *</label>
+                                <input type="text" name="nomor_faktur" value="{{ old('nomor_faktur') }}"
+                                       class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all"
+                                       required placeholder="001/V/UMAR/2026">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Supplier / Toko *</label>
-                                <input type="text" name="nama_supplier" value="{{ old('nama_supplier') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border" required placeholder="PT. UMAR Banjarbaru">
+                                <label class="block mb-1" style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;">Supplier / Toko *</label>
+                                <input type="text" name="nama_supplier" value="{{ old('nama_supplier') }}"
+                                       class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all"
+                                       required placeholder="PT. UMAR Banjarbaru">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Tanggal *</label>
-                                <input type="date" name="tanggal_pembelian" value="{{ old('tanggal_pembelian', date('Y-m-d')) }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border" required>
+                                <label class="block mb-1" style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;">Tanggal *</label>
+                                <input type="date" name="tanggal_pembelian" value="{{ old('tanggal_pembelian', date('Y-m-d')) }}"
+                                       class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all"
+                                       required>
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Keterangan</label>
-                                <input type="text" name="keterangan" value="{{ old('keterangan') }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border" placeholder="Opsional">
+                                <label class="block mb-1" style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;">Keterangan</label>
+                                <input type="text" name="keterangan" value="{{ old('keterangan') }}"
+                                       class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:bg-white outline-none transition-all"
+                                       placeholder="Opsional">
                             </div>
-                        </div>                         <!-- Tabel Barang -->
+                        </div>
+
+                        <!-- Tabel Barang -->
                         <div class="border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
                             <table class="w-full divide-y divide-gray-200" style="table-layout: fixed;">
                                 <colgroup>
@@ -487,15 +518,15 @@
                                     <col style="width: 150px;">
                                     <col style="width: 50px;">
                                 </colgroup>
-                                <thead class="bg-gray-100 border-b-2 border-gray-200">
-                                    <tr>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">#</th>
-                                        <th class="px-2 py-3 text-left text-[11px] font-bold text-gray-700 uppercase tracking-wider">Nama Barang (Ketik Langsung)</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Harga Beli / Modal</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Harga Jual</th>
-                                        <th class="px-2 py-3 text-center text-[11px] font-bold text-gray-700 uppercase tracking-wider">Qty</th>
-                                        <th class="px-2 py-3 text-right text-[11px] font-bold text-gray-700 uppercase tracking-wider">Subtotal</th>
-                                        <th class="px-1 py-3"></th>
+                                <thead>
+                                    <tr style="background:#1f2937;">
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:center;letter-spacing:0.05em;">#</th>
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:left;letter-spacing:0.05em;">Nama Barang (Ketik Langsung)</th>
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:center;letter-spacing:0.05em;">Harga Beli / Modal</th>
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:center;letter-spacing:0.05em;">Harga Jual</th>
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:center;letter-spacing:0.05em;">Qty</th>
+                                        <th style="color:white;font-size:0.65rem;font-weight:700;text-transform:uppercase;padding:10px 8px;text-align:right;letter-spacing:0.05em;">Subtotal</th>
+                                        <th style="padding:10px 4px;"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-100">
@@ -503,15 +534,15 @@
                                         <tr class="hover:bg-amber-50/50 transition-colors">
                                             <!-- No -->
                                             <td class="px-2 py-3.5 text-center text-xs font-bold text-gray-500 align-top" style="padding-top: 1.15rem;" x-text="index + 1"></td>
-                                            
+
                                             <!-- Product Search -->
                                             <td class="px-2 py-3.5 align-top">
                                                 <input type="hidden" :name="'items['+index+'][product_id]'" x-model="item.product_id" required>
-                                                
+
                                                 <div class="search-wrapper" x-show="!item.product_id" @click.stop>
                                                     <svg class="search-icon" style="width:1rem;height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-                                                    <input 
-                                                        type="text" 
+                                                    <input
+                                                        type="text"
                                                         class="search-input"
                                                         :id="'search-'+index"
                                                         x-model="item.searchQuery"
@@ -525,11 +556,11 @@
                                                         autocomplete="off"
                                                     >
                                                     <span class="search-badge" x-show="item.searchResults.length > 0" x-text="item.searchResults.length + ' produk'"></span>
-                                                    
+
                                                     <!-- Dropdown — position:fixed agar tidak terpotong overflow container -->
-                                                    <div 
-                                                        class="search-dropdown" 
-                                                        x-show="item.showDropdown && (item.searchQuery.length > 0 || item.searchResults.length > 0)" 
+                                                    <div
+                                                        class="search-dropdown"
+                                                        x-show="item.showDropdown && (item.searchQuery.length > 0 || item.searchResults.length > 0)"
                                                         :style="'top:'+item.ddTop+'px;left:'+item.ddLeft+'px;width:'+item.ddWidth+'px;'"
                                                         style="display:none;"
                                                         @mousedown.prevent
@@ -546,15 +577,15 @@
                                                             </div>
                                                         </template>
                                                         <template x-for="(product, pIdx) in item.searchResults" :key="product.id">
-                                                            <div 
-                                                                class="dropdown-item" 
+                                                            <div
+                                                                class="dropdown-item"
                                                                 :class="{ 'highlighted': item.highlightIndex === pIdx }"
                                                                 @mousedown.prevent="selectProduct(index, product)"
                                                                 @mouseenter="item.highlightIndex = pIdx"
                                                             >
                                                                 <span class="dropdown-item-sku" x-text="product.sku"></span>
                                                                 <span class="dropdown-item-name" x-text="product.nama_barang"></span>
-                                                                <span class="dropdown-item-stock" 
+                                                                <span class="dropdown-item-stock"
                                                                     :class="product.stok_saat_ini > 10 ? 'stock-ok' : (product.stok_saat_ini > 0 ? 'stock-low' : 'stock-zero')"
                                                                     x-text="'Stok: ' + product.stok_saat_ini">
                                                                 </span>
@@ -562,7 +593,7 @@
                                                         </template>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Selected Product Display -->
                                                 <div class="selected-product" x-show="item.product_id" style="display:none;">
                                                     <svg style="width:1rem;height:1rem;color:#16a34a;flex-shrink:0;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -571,66 +602,66 @@
                                                     <button type="button" class="change-btn" @click="clearProduct(index)">✕ Ganti</button>
                                                 </div>
                                             </td>
-                                            
+
                                             <!-- Harga Beli -->
                                             <td class="px-2 py-3.5 align-top">
                                                 <div class="price-input-wrapper">
                                                     <span class="price-prefix">Rp</span>
-                                                    <input 
-                                                        type="number" 
+                                                    <input
+                                                        type="number"
                                                         class="price-input-field"
-                                                        :name="'items['+index+'][harga_beli]'" 
-                                                        x-model="item.harga_beli" 
-                                                        @input="updateSubtotal(index)" 
-                                                        min="0" 
+                                                        :name="'items['+index+'][harga_beli]'"
+                                                        x-model="item.harga_beli"
+                                                        @input="updateSubtotal(index)"
+                                                        min="0"
                                                         placeholder="0"
                                                         required
                                                     >
                                                 </div>
                                             </td>
-                                            
+
                                             <!-- Harga Jual -->
                                             <td class="px-2 py-3.5 align-top">
                                                 <div class="price-input-wrapper">
                                                     <span class="price-prefix">Rp</span>
-                                                    <input 
-                                                        type="number" 
+                                                    <input
+                                                        type="number"
                                                         class="price-input-field"
-                                                        :name="'items['+index+'][harga_jual]'" 
-                                                        x-model="item.harga_jual" 
-                                                        min="0" 
+                                                        :name="'items['+index+'][harga_jual]'"
+                                                        x-model="item.harga_jual"
+                                                        min="0"
                                                         placeholder="0"
                                                         required
                                                     >
                                                 </div>
                                             </td>
-                                            
+
                                             <!-- Qty -->
                                             <td class="px-2 py-3.5 align-top">
                                                 <div class="qty-wrapper">
                                                     <button type="button" class="qty-btn" @click="decreaseQty(index)">−</button>
-                                                    <input 
-                                                        type="number" 
+                                                    <input
+                                                        type="number"
                                                         class="qty-input"
-                                                        :name="'items['+index+'][jumlah]'" 
-                                                        x-model="item.jumlah" 
+                                                        :name="'items['+index+'][jumlah]'"
+                                                        x-model="item.jumlah"
                                                         @input="updateSubtotal(index)"
-                                                        min="1" 
+                                                        min="1"
                                                         required
                                                     >
                                                     <button type="button" class="qty-btn" @click="increaseQty(index)">+</button>
                                                 </div>
                                             </td>
-                                            
+
                                             <!-- Subtotal -->
                                             <td class="px-2 py-3.5 text-right align-top" style="padding-top: 1.15rem;">
                                                 <span class="font-bold text-sm text-gray-900 whitespace-nowrap" x-text="'Rp ' + formatRupiah(item.subtotal)"></span>
                                             </td>
-                                            
+
                                             <!-- Delete -->
                                             <td class="px-1 py-3.5 text-center align-top" style="padding-top: 1rem;">
                                                 <button type="button" @click="removeItem(index)" class="text-gray-300 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-full transition-all" title="Hapus" x-show="items.length > 1">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                 </button>
                                             </td>
                                         </tr>
@@ -641,30 +672,36 @@
 
                         <!-- Footer Tabel -->
                         <div class="mt-4 flex justify-between items-center">
-                            <button type="button" @click="addItem()" class="bg-white border-2 border-dashed border-gray-400 hover:border-tema-marun hover:text-tema-marun text-gray-500 font-semibold py-2 px-5 rounded-lg text-sm flex items-center transition-all">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            <button type="button" @click="addItem()"
+                                    class="bg-white border-2 border-dashed border-gray-400 hover:border-red-800 hover:text-red-800 text-gray-500 font-semibold py-2 px-5 rounded-lg text-sm flex items-center transition-all">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                 + Tambah Baris
                             </button>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-red-50 to-red-100 px-5 py-3 rounded-xl border-2 border-red-200">
-                                <span class="text-sm font-bold text-red-900 uppercase tracking-wider">TOTAL:</span>
-                                <span class="text-2xl font-black text-red-600" x-text="'Rp ' + formatRupiah(calculateTotal())"></span>
+                            <div class="flex items-center gap-3 px-5 py-3 rounded-xl border-2"
+                                 style="background:linear-gradient(135deg,#fff1f2,#fee2e2);border-color:#fecaca;">
+                                <span class="text-sm font-bold uppercase tracking-wider" style="color:#7f1d1d;">TOTAL:</span>
+                                <span class="text-2xl font-black" style="color:#b91c1c;" x-text="'Rp ' + formatRupiah(calculateTotal())"></span>
                             </div>
-                        </div>                </div>
+                        </div>
                     </form>
                 </div>
 
                 <!-- Footer Modal -->
                 <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-end gap-3 rounded-b-2xl">
-                    <button type="button" @click="closeModal()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-colors text-sm shadow-sm">
+                    <button type="button" @click="closeModal()"
+                            class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-colors text-sm shadow-sm">
                         Batal
                     </button>
-                    <button type="submit" form="purchase-form" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-tema-hitam font-bold py-2.5 px-6 rounded-lg transition-all shadow-md text-sm flex items-center gap-2 hover:scale-105 duration-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <button type="submit" form="purchase-form"
+                            class="font-bold py-2.5 px-6 rounded-lg transition-all shadow-md text-sm flex items-center gap-2 hover:scale-105 duration-200"
+                            style="background:linear-gradient(135deg,#d97706,#FBBF24);color:#1f2937;">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         Simpan & Tambah Stok
                     </button>
                 </div>
             </div>
         </div>
+    </div>
 </div>
 
 <script>
@@ -674,16 +711,16 @@
             products: productsData,
             _uidCounter: 0,
             items: [],
-            
+
             init() {
                 this.items = [this.newItem()];
             },
 
             newItem() {
-                return { 
+                return {
                     _uid: ++this._uidCounter,
-                    product_id: '', 
-                    jumlah: 1, 
+                    product_id: '',
+                    jumlah: 1,
                     harga_beli: 0,
                     harga_jual: 0,
                     subtotal: 0,
@@ -699,18 +736,18 @@
                     ddWidth: 320,
                 };
             },
-            
+
             openModal() {
                 this.isModalOpen = true;
                 document.body.style.overflow = 'hidden';
                 this.items = [this.newItem()]; // reset items when opening modal
             },
-            
+
             closeModal() {
                 this.isModalOpen = false;
                 document.body.style.overflow = '';
             },
-            
+
             updateDropdownPos(index) {
                 this.$nextTick(() => {
                     const el = document.getElementById('search-' + index);
@@ -721,11 +758,11 @@
                     this.items[index].ddWidth = Math.max(r.width, 300);
                 });
             },
-            
+
             addItem() {
                 this.items.push(this.newItem());
             },
-            
+
             removeItem(index) {
                 if (this.items.length > 1) {
                     this.items.splice(index, 1);
@@ -740,13 +777,13 @@
                     item.highlightIndex = -1;
                     return;
                 }
-                item.searchResults = this.products.filter(p => 
-                    p.sku.toLowerCase().includes(q) || 
+                item.searchResults = this.products.filter(p =>
+                    p.sku.toLowerCase().includes(q) ||
                     p.nama_barang.toLowerCase().includes(q)
                 ).slice(0, 12);
                 item.highlightIndex = item.searchResults.length > 0 ? 0 : -1;
             },
-            
+
             selectProduct(index, product) {
                 const item = this.items[index];
                 item.product_id = product.id;
@@ -797,7 +834,7 @@
             closeAllDropdowns() {
                 this.items.forEach(item => { item.showDropdown = false; });
             },
-            
+
             updateSubtotal(index) {
                 const item = this.items[index];
                 item.subtotal = (parseFloat(item.jumlah) || 0) * (parseFloat(item.harga_beli) || 0);
@@ -815,11 +852,11 @@
                     this.updateSubtotal(index);
                 }
             },
-            
+
             calculateTotal() {
                 return this.items.reduce((total, item) => total + (item.subtotal || 0), 0);
             },
-            
+
             formatRupiah(number) {
                 return new Intl.NumberFormat('id-ID').format(number || 0);
             }
@@ -827,5 +864,3 @@
     });
 </script>
 @endsection
-
-
