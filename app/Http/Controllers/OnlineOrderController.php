@@ -107,7 +107,7 @@ class OnlineOrderController extends Controller
 
                 if ($online_order->metode_pembayaran === 'invoice_30_hari') {
                     $nextId        = $online_order->id;
-                    $nomor_invoice = sprintf('%03d/UMAR/%s/%s', $nextId, $this->romanMonth(date('n')), date('Y'));
+                    $nomor_invoice = Invoice::generateDynamicNumber($online_order->nama_klien, $nextId);
                     $updateData['nomor_invoice'] = $nomor_invoice;
                 }
 

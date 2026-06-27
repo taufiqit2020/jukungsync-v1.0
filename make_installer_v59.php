@@ -19,7 +19,11 @@ $files = [
     'app/Models/Kasbon.php',
     'app/Http/Controllers/KasbonController.php',
     'app/Http/Controllers/InvoiceController.php',
+    'app/Http/Controllers/OnlineOrderController.php',
+    'app/Models/Invoice.php',
     'resources/views/kasbons/index.blade.php',
+    'resources/views/invoices/index.blade.php',
+    'resources/views/invoices/edit.blade.php',
 ];
 
 $php = "<?php\n";

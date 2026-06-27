@@ -420,9 +420,9 @@
                                     @endif
                                 </label>
                                 @if(auth()->user()->role === 'superadmin')
-                                    <input type="text" name="nomor_invoice" value="{{ old('nomor_invoice', $nomor_invoice) }}" class="w-full rounded-lg border-yellow-400 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-400 focus:ring-opacity-30 text-sm py-2 px-3 border-2 bg-white font-bold" required>
+                                    <input type="text" name="nomor_invoice" x-model="nomorInvoice" class="w-full rounded-lg border-yellow-400 shadow-sm focus:border-yellow-500 focus:ring focus:ring-yellow-400 focus:ring-opacity-30 text-sm py-2 px-3 border-2 bg-white font-bold" required>
                                 @else
-                                    <input type="text" name="nomor_invoice" value="{{ old('nomor_invoice', $nomor_invoice) }}" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border bg-gray-100" required readonly>
+                                    <input type="text" name="nomor_invoice" x-model="nomorInvoice" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border bg-gray-100" required readonly>
                                 @endif
                             </div>
                             <div class="md:col-span-2">
@@ -730,16 +730,72 @@
             isFetchingMovements: false,
             isGrosir: false,
             isPPN: false,
+            nomorInvoice: '{{ old('nomor_invoice', $nomor_invoice) }}',
+            defaultNomorInvoice: '{{ $nomor_invoice }}',
+            nextNumberStr: '{{ sprintf('%03d', $nextId) }}',
+            bulanRomawiStr: '{{ $this->romanMonth(date('n')) }}',
+            tahunStr: '{{ date('Y') }}',
 
             onCustomerChange(event) {
                 let selectElem = event.target;
                 let selectedOption = selectElem.options[selectElem.selectedIndex];
+                let customerName = selectElem.value;
                 let tipe = selectedOption ? selectedOption.getAttribute('data-tipe') : '';
+                
                 if (tipe === 'Instansi') {
                     this.isPPN = true;
                 } else if (tipe === 'Perorangan') {
                     this.isPPN = false;
                 }
+
+                if (customerName) {
+                    this.nomorInvoice = this.generateDynamicInvoiceNumber(customerName);
+                } else {
+                    this.nomorInvoice = this.defaultNomorInvoice;
+                }
+            },
+
+            generateDynamicInvoiceNumber(customerName) {
+                if (!customerName) return this.defaultNomorInvoice;
+                let name = customerName.trim().toUpperCase();
+                let num = this.nextNumberStr || '001';
+                let month = this.bulanRomawiStr || 'VI';
+                let year = this.tahunStr || '2026';
+
+                let cleanName = name.replace(/\b(PT|CV|UD|TB)\b/gi, '').trim();
+
+                // 1. RUMAH SAKIT / RSU / RS
+                if (/\b(RUMAH\s*SAKIT|RSU|RS)\b/i.test(cleanName)) {
+                    let core = cleanName.replace(/\b(RUMAH\s*SAKIT|RSU|RS)\b/gi, '').trim();
+                    core = core.replace(/[^A-Z0-9\s]/gi, '').trim();
+                    let words = core.split(/\s+/).filter(Boolean);
+                    let shortCode = words.length > 0 ? words[0] : 'RS';
+                    return `RS-${shortCode}-${num}/UMAR/${month}/${year}`;
+                }
+
+                // 2. CAFÉ / CAFE / KAFE
+                if (/\b(CAFÉ|CAFE|KAFE)\b/i.test(cleanName)) {
+                    let core = cleanName.replace(/\b(CAFÉ|CAFE|KAFE)\b/gi, '').trim();
+                    core = core.replace(/[^A-Z0-9\s]/gi, '').trim();
+                    let words = core.split(/\s+/).filter(Boolean);
+                    let shortCode = 'CF';
+                    if (words.length > 0) {
+                        let w = words[0];
+                        if (w === 'MARINA') shortCode = 'MRN';
+                        else shortCode = w.length > 3 ? w.substring(0, 3) : w;
+                    }
+                    return `CF-${shortCode}-${num}/UMAR/${month}/${year}`;
+                }
+
+                // 3. RUMAH MAKAN / RM
+                if (/\b(RUMAH\s*MAKAN|RM|RESTO|RESTORAN)\b/i.test(cleanName)) {
+                    let core = cleanName.replace(/\b(RUMAH\s*MAKAN|RM|RESTO|RESTORAN)\b/gi, '').trim();
+                    core = core.replace(/[^A-Z0-9\s\-]/gi, '').trim();
+                    let shortCode = core.length > 0 ? core : 'RM';
+                    return `RM-${shortCode}-${num}/UMAR/${month}/${year}`;
+                }
+
+                return `${num}/UMAR/${month}/${year}`;
             },
 
             // Upload Modal State
