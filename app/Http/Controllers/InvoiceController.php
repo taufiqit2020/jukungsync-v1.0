@@ -7,6 +7,7 @@ use App\Models\InvoiceItem;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\InventoryMovement;
+use App\Models\Kasbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -188,6 +189,9 @@ class InvoiceController extends Controller
                     'pajak_ppn' => $pajak_ppn,
                     'total_tagihan' => $total_tagihan,
                 ]);
+
+                // Otomatis buat/sinkronkan data Kasbon
+                Kasbon::syncFromInvoice($invoice);
             });
 
             return redirect()->route('invoices.index')->with('success', 'Invoice berhasil dibuat dan stok otomatis terpotong.');
@@ -243,6 +247,9 @@ class InvoiceController extends Controller
         $invoice->update([
             'status_pembayaran' => 'lunas'
         ]);
+
+        // Otomatis sinkronkan status Kasbon
+        Kasbon::syncFromInvoice($invoice);
 
         // Trigger auto-tier upgrade check
         $user = \App\Models\User::find($invoice->klien_id);
@@ -340,6 +347,9 @@ class InvoiceController extends Controller
         }
 
         $invoice->update($updateData);
+
+        // Otomatis sinkronkan data Kasbon
+        Kasbon::syncFromInvoice($invoice);
 
         if ($request->status_pembayaran === 'lunas') {
             $user = \App\Models\User::find($invoice->klien_id);

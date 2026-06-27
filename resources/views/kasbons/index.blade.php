@@ -145,7 +145,14 @@
                         <td style="padding:14px 16px;color:#6b7280;white-space:nowrap;">{{ $kasbon->tanggal_kasbon->translatedFormat('d M Y') }}</td>
                         <td style="padding:14px 16px;text-align:right;font-weight:600;color:#374151;white-space:nowrap;">Rp {{ number_format($kasbon->total_tagihan, 0, ',', '.') }}</td>
                         <td style="padding:14px 16px;text-align:right;font-weight:600;color:#15803d;white-space:nowrap;">Rp {{ number_format($kasbon->jumlah_dibayar, 0, ',', '.') }}</td>
-                        <td style="padding:14px 16px;text-align:right;font-weight:800;color:#b91c1c;white-space:nowrap;">Rp {{ number_format($kasbon->sisa_tagihan, 0, ',', '.') }}</td>
+                        <td style="padding:14px 16px;text-align:right;white-space:nowrap;">
+                            @if($kasbon->piutang_lalu > 0)
+                                <div style="font-weight:800;color:#b91c1c;font-size:0.95rem;">Rp {{ number_format($kasbon->total_sisa_akumulasi, 0, ',', '.') }}</div>
+                                <div style="font-size:0.68rem;color:#6b7280;margin-top:2px;">(Tagihan Ini: Rp {{ number_format($kasbon->sisa_tagihan, 0, ',', '.') }} + Lalu: Rp {{ number_format($kasbon->piutang_lalu, 0, ',', '.') }})</div>
+                            @else
+                                <div style="font-weight:800;color:#b91c1c;">Rp {{ number_format($kasbon->sisa_tagihan, 0, ',', '.') }}</div>
+                            @endif
+                        </td>
                         <td style="padding:14px 16px;text-align:center;">
                             @if($kasbon->status === 'lunas')
                                 <span style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;">Lunas</span>
@@ -182,9 +189,8 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" style="padding:48px 16px;text-align:center;">
-                            <svg class="w-12 h-12 mx-auto mb-3" style="color:#d1d5db;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <p style="font-size:0.875rem;font-weight:600;color:#9ca3af;">Tidak ada data kasbon ditemukan.</p>
+                        <td colspan="8" class="px-6 py-12 text-center text-gray-400">
+                            Tidak ada data kasbon.
                         </td>
                     </tr>
                     @endforelse
@@ -193,7 +199,7 @@
         </div>
 
         @if($kasbons->hasPages())
-        <div style="border-top:1px solid #f3f4f6;background:#fafafa;" class="px-6 py-4">
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             {{ $kasbons->links() }}
         </div>
         @endif
@@ -221,16 +227,26 @@
                         <span class="text-gray-500 font-semibold">Nama Customer:</span>
                         <strong class="text-gray-800" x-text="activeKasbon.nama_klien"></strong>
                     </div>
+                    <div class="flex justify-between border-t border-gray-200 pt-2 text-xs">
+                        <span class="text-gray-600 font-semibold">Tagihan Invoice Ini:</span>
+                        <strong class="text-gray-800" x-text="formatRupiah(activeKasbon.sisa_tagihan)"></strong>
+                    </div>
+                    <template x-if="activeKasbon.piutang_lalu > 0">
+                        <div class="flex justify-between text-xs text-amber-700">
+                            <span class="font-semibold">Piutang Belum Lunas Lalu:</span>
+                            <strong x-text="formatRupiah(activeKasbon.piutang_lalu)"></strong>
+                        </div>
+                    </template>
                     <div class="flex justify-between border-t border-gray-200 pt-2 font-bold text-sm">
-                        <span class="text-tema-marun">Sisa Tagihan:</span>
-                        <span class="text-tema-marun" x-text="formatRupiah(activeKasbon.sisa_tagihan)"></span>
+                        <span class="text-tema-marun">Total Akumulasi Tagihan:</span>
+                        <span class="text-tema-marun" x-text="formatRupiah(activeKasbon.total_sisa_akumulasi || activeKasbon.sisa_tagihan)"></span>
                     </div>
                 </div>
 
                 <!-- Input Nominal Bayar -->
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-gray-700">Jumlah Pembayaran (Rp) <span class="text-red-500">*</span></label>
-                    <input type="number" name="jumlah_bayar" :max="activeKasbon.sisa_tagihan" min="1" :value="activeKasbon.sisa_tagihan" required class="w-full text-sm border-gray-200 bg-gray-50 rounded-xl p-3 focus:ring-tema-marun focus:border-tema-marun focus:bg-white transition-all font-black text-tema-marun">
+                    <input type="number" name="jumlah_bayar" :max="activeKasbon.total_sisa_akumulasi || activeKasbon.sisa_tagihan" min="1" :value="activeKasbon.total_sisa_akumulasi || activeKasbon.sisa_tagihan" required class="w-full text-sm border-gray-200 bg-gray-50 rounded-xl p-3 focus:ring-tema-marun focus:border-tema-marun focus:bg-white transition-all font-black text-tema-marun">
                 </div>
 
                 <!-- Input Tanggal Bayar -->

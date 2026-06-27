@@ -15,6 +15,11 @@ $files = [
     'app/Http/Controllers/ProductController.php',
     'database/migrations/2026_06_27_000001_add_gambar_tambahan_to_products_table.php',
     'resources/views/layouts/admin.blade.php',
+    'resources/views/profile/edit.blade.php',
+    'app/Models/Kasbon.php',
+    'app/Http/Controllers/KasbonController.php',
+    'app/Http/Controllers/InvoiceController.php',
+    'resources/views/kasbons/index.blade.php',
 ];
 
 $php = "<?php\n";
@@ -68,6 +73,22 @@ $php .= "        ob_start();\n";
 $php .= "        include \$restoreImagesPath;\n";
 $php .= "        \$restoreOutput = ob_get_clean();\n";
 $php .= "        \$log .= '\\n--- Hasil Eksekusi restore_missing_images.php ---\\n' . strip_tags(\$restoreOutput) . '\\n';\n";
+$php .= "    }\n";
+
+$php .= "\n    // 3. Otomatis sinkronkan kasbon untuk semua invoice yang belum lunas\n";
+$php .= "    try {\n";
+$php .= "        if (file_exists(\$laravelRoot . '/vendor/autoload.php') && file_exists(\$laravelRoot . '/bootstrap/app.php')) {\n";
+$php .= "            require_once \$laravelRoot . '/vendor/autoload.php';\n";
+$php .= "            \$appInst = require_once \$laravelRoot . '/bootstrap/app.php';\n";
+$php .= "            \$appInst->make('Illuminate\\\\Contracts\\\\Console\\\\Kernel')->bootstrap();\n";
+$php .= "            \$unpaid = \\App\\Models\\Invoice::where('status_pembayaran', 'belum_lunas')->get();\n";
+$php .= "            foreach (\$unpaid as \$inv) {\n";
+$php .= "                \\App\\Models\\Kasbon::syncFromInvoice(\$inv);\n";
+$php .= "            }\n";
+$php .= "            \$log .= '\\n✔ Berhasil sinkronisasi otomatis ' . count(\$unpaid) . ' data kasbon piutang!\\n';\n";
+$php .= "        }\n";
+$php .= "    } catch (\\Exception \$eSync) {\n";
+$php .= "        \$log .= '\\n⚠ Sync kasbon: ' . \$eSync->getMessage() . '\\n';\n";
 $php .= "    }\n";
 
 $php .= "\n    echo \"<div style='font-family:Inter,sans-serif;max-width:640px;margin:60px auto;padding:0 20px;'>\";  \n";

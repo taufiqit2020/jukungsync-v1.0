@@ -49,6 +49,24 @@ class KasbonController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        // Calculate running balance (Piutang Lalu & Total Akumulasi) for each kasbon
+        $kasbons->getCollection()->transform(function($kasbon) {
+            $piutangLalu = Kasbon::where('status', 'belum_lunas')
+                ->where(function($q) use ($kasbon) {
+                    if ($kasbon->klien_id) {
+                        $q->where('klien_id', $kasbon->klien_id);
+                    } else {
+                        $q->where('nama_klien', $kasbon->nama_klien);
+                    }
+                })
+                ->where('id', '<', $kasbon->id)
+                ->sum('sisa_tagihan');
+
+            $kasbon->piutang_lalu = (float) $piutangLalu;
+            $kasbon->total_sisa_akumulasi = (float) ($kasbon->sisa_tagihan + $piutangLalu);
+            return $kasbon;
+        });
+
         return view('kasbons.index', compact(
             'kasbons',
             'totalPiutangBelumLunas',
@@ -66,8 +84,22 @@ class KasbonController extends Controller
             return back()->with('error', 'Kasbon ini sudah lunas.');
         }
 
+        // Hitung piutang lalu untuk validasi max nominal bayar
+        $piutangLalu = Kasbon::where('status', 'belum_lunas')
+            ->where(function($q) use ($kasbon) {
+                if ($kasbon->klien_id) {
+                    $q->where('klien_id', $kasbon->klien_id);
+                } else {
+                    $q->where('nama_klien', $kasbon->nama_klien);
+                }
+            })
+            ->where('id', '<', $kasbon->id)
+            ->sum('sisa_tagihan');
+        
+        $maxBayar = (float) ($kasbon->sisa_tagihan + $piutangLalu);
+
         $request->validate([
-            'jumlah_bayar' => 'required|numeric|min:1|max:' . $kasbon->sisa_tagihan,
+            'jumlah_bayar' => 'required|numeric|min:1|max:' . $maxBayar,
             'tanggal_bayar' => 'required|date',
             'keterangan_pembayaran' => 'nullable|string|max:255',
         ]);
@@ -76,34 +108,49 @@ class KasbonController extends Controller
 
         try {
             DB::transaction(function () use ($kasbon, $jumlahBayar, $request) {
-                // Update nominal kasbon
-                $newDibayar = $kasbon->jumlah_dibayar + $jumlahBayar;
-                $newSisa = $kasbon->sisa_tagihan - $jumlahBayar;
+                $sisaBayar = $jumlahBayar;
 
-                $updateData = [
-                    'jumlah_dibayar' => $newDibayar,
-                    'sisa_tagihan'   => $newSisa,
-                ];
+                // Ambil semua kasbon belum lunas milik customer ini yang ID <= $kasbon->id (urut terlama lebih dulu - FIFO)
+                $unpaidKasbons = Kasbon::where('status', 'belum_lunas')
+                    ->where(function($q) use ($kasbon) {
+                        if ($kasbon->klien_id) {
+                            $q->where('klien_id', $kasbon->klien_id);
+                        } else {
+                            $q->where('nama_klien', $kasbon->nama_klien);
+                        }
+                    })
+                    ->where('id', '<=', $kasbon->id)
+                    ->orderBy('id', 'asc')
+                    ->get();
 
-                // Jika sisa tagihan 0, tandai lunas
-                if ($newSisa <= 0) {
-                    $updateData['status']        = 'lunas';
-                    $updateData['tanggal_lunas'] = $request->tanggal_bayar;
-                    
-                    // Sinkronkan status pembayaran di invoice terkait menjadi lunas
-                    $invoice = Invoice::find($kasbon->invoice_id);
-                    if ($invoice) {
-                        $invoice->update([
-                            'status_pembayaran' => 'lunas'
-                        ]);
+                foreach ($unpaidKasbons as $k) {
+                    if ($sisaBayar <= 0) break;
+
+                    $alokasi = min($sisaBayar, (float)$k->sisa_tagihan);
+                    $newDibayar = (float)$k->jumlah_dibayar + $alokasi;
+                    $newSisa = (float)$k->sisa_tagihan - $alokasi;
+                    $sisaBayar -= $alokasi;
+
+                    $updateData = [
+                        'jumlah_dibayar' => $newDibayar,
+                        'sisa_tagihan'   => $newSisa,
+                    ];
+
+                    if ($newSisa <= 0) {
+                        $updateData['status']        = 'lunas';
+                        $updateData['tanggal_lunas'] = $request->tanggal_bayar;
+                        
+                        $inv = Invoice::find($k->invoice_id);
+                        if ($inv) {
+                            $inv->update(['status_pembayaran' => 'lunas']);
+                        }
                     }
+
+                    $catatanTambahan = "\n- Dibayar Rp " . number_format($alokasi, 0, ',', '.') . " pada " . date('d/m/Y', strtotime($request->tanggal_bayar)) . " (" . ($request->keterangan_pembayaran ?: 'Pembayaran Kasbon') . ")";
+                    $updateData['keterangan'] = $k->keterangan . $catatanTambahan;
+
+                    $k->update($updateData);
                 }
-
-                // Tambahkan catatan di keterangan
-                $catatanTambahan = "\n- Dibayar Rp " . number_format($jumlahBayar, 0, ',', '.') . " pada " . date('d/m/Y', strtotime($request->tanggal_bayar)) . " (" . ($request->keterangan_pembayaran ?: 'Tanpa keterangan') . ")";
-                $updateData['keterangan'] = $kasbon->keterangan . $catatanTambahan;
-
-                $kasbon->update($updateData);
             });
 
             return back()->with('success', 'Pembayaran kasbon sebesar Rp ' . number_format($jumlahBayar, 0, ',', '.') . ' berhasil dicatat.');
