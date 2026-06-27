@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $laravelRoot = dirname(__DIR__);
-echo "<h1>Remote File Lister v3</h1>";
+echo "<h1>Remote File Lister v4</h1>";
 echo "<p>Laravel Root: $laravelRoot</p>";
 
 $publicStorage = $laravelRoot . '/public/storage';
@@ -14,25 +14,22 @@ echo "is_link: " . (is_link($publicStorage) ? "YES" : "NO") . "<br>";
 echo "file_exists: " . (file_exists($publicStorage) ? "YES" : "NO") . "<br>";
 echo "is_dir: " . (is_dir($publicStorage) ? "YES" : "NO") . "<br>";
 
-$storageAppPublicProducts = $laravelRoot . '/storage/app/public/products';
-echo "<h2>Checking storage/app/public/products</h2>";
-echo "Path: $storageAppPublicProducts<br>";
-echo "is_dir: " . (is_dir($storageAppPublicProducts) ? "YES" : "NO") . "<br>";
-if (is_dir($storageAppPublicProducts)) {
-    $files = scandir($storageAppPublicProducts);
-    echo "File Count: " . count($files) . "<br>";
-    echo "Sample files:<br>";
-    echo "<ul>";
-    $count = 0;
-    foreach ($files as $file) {
-        if ($file === '.' || $file === '..') continue;
-        echo "<li>$file (" . filesize($storageAppPublicProducts . '/' . $file) . " bytes)</li>";
-        $count++;
-        if ($count > 10) {
-            echo "<li>... and more</li>";
-            break;
-        }
+$storageAppPublic = $laravelRoot . '/storage/app/public';
+echo "<h2>Checking storage/app/public</h2>";
+echo "Path: $storageAppPublic<br>";
+echo "is_dir: " . (is_dir($storageAppPublic) ? "YES" : "NO") . "<br>";
+
+if (is_dir($storageAppPublic)) {
+    $items = scandir($storageAppPublic);
+    echo "Items in storage/app/public:<br><ul>";
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $storageAppPublic . '/' . $item;
+        $type = is_dir($path) ? "[DIR]" : "[FILE]";
+        echo "<li>$type $item</li>";
     }
     echo "</ul>";
+} else {
+    echo "<p style='color:red;'>storage/app/public is not a directory!</p>";
 }
 ?>
