@@ -219,6 +219,9 @@ Route::middleware('auth')->group(function () {
         // Pengaturan Sistem / Landing Page
         Route::get('settings/landing-page', [\App\Http\Controllers\SettingController::class, 'landingPage'])->name('settings.landing-page');
         Route::post('settings/landing-page', [\App\Http\Controllers\SettingController::class, 'storeLandingPage'])->name('settings.landing-page.store');
+
+        // Backup Database
+        Route::get('backup/download', [\App\Http\Controllers\DatabaseBackupController::class, 'download'])->name('backup.download');
     });
 
     // Rute Khusus Staf Admin & Bendahara

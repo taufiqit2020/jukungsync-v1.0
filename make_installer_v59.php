@@ -2,6 +2,7 @@
 $projectRoot = 'C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1';
 $files = [
     'app/Http/Controllers/StorageController.php',
+    'app/Http/Controllers/DatabaseBackupController.php',
     'routes/web.php',
     'config/filesystems.php',
     'public/fix_storage.php',
