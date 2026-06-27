@@ -180,9 +180,10 @@ class InvoiceController extends Controller
                     ]);
                 }
 
-                // Calculate PPN and Total
-                $pajak_ppn = $sub_total * 0.11;
-                $total_tagihan = $sub_total; // Sesuai permintaan revisi user
+                // Calculate PPN and Total berdasarkan pilihan admin saat penginputan
+                $is_ppn = $request->has('is_ppn') && $request->is_ppn == 1;
+                $pajak_ppn = $is_ppn ? round($sub_total * 0.11) : 0;
+                $total_tagihan = $sub_total + $pajak_ppn;
 
                 $invoice->update([
                     'sub_total' => $sub_total,
@@ -326,6 +327,8 @@ class InvoiceController extends Controller
         }
 
         $ongkir = (float) $request->input('ongkir', 0);
+        $is_ppn = $request->has('is_ppn') && $request->is_ppn == 1;
+        $pajak_ppn = $is_ppn ? round($invoice->sub_total * 0.11) : 0;
 
         $updateData = [
             'nomor_invoice' => $request->nomor_invoice,
@@ -333,8 +336,9 @@ class InvoiceController extends Controller
             'tanggal_invoice' => $request->tanggal_invoice,
             'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
             'status_pembayaran' => $request->status_pembayaran,
+            'pajak_ppn' => $pajak_ppn,
             'ongkir' => $ongkir,
-            'total_tagihan' => $invoice->sub_total + $ongkir,
+            'total_tagihan' => $invoice->sub_total + $pajak_ppn + $ongkir,
         ];
 
         // Jika ini adalah pesanan online, sinkronkan status_pesanan dengan status_pembayaran secara konsisten

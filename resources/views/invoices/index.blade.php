@@ -427,10 +427,10 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-[11px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Nama Klien / Instansi *</label>
-                                <select name="nama_klien" id="nama_klien" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border bg-white" required>
-                                    <option value="">-- Pilih Customer / Klien --</option>
+                                <select name="nama_klien" id="nama_klien" @change="onCustomerChange($event)" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-30 text-sm py-2 px-3 border bg-white" required>
+                                    <option value="" data-tipe="">-- Pilih Customer / Klien --</option>
                                     @foreach($customers as $customer)
-                                        <option value="{{ $customer->nama_klien }}">{{ $customer->nama_klien }}</option>
+                                        <option value="{{ $customer->nama_klien }}" data-tipe="{{ $customer->tipe_customer }}">{{ $customer->nama_klien }} ({{ $customer->tipe_customer == 'Instansi' ? 'Perusahaan / Instansi' : 'Perorangan' }})</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -444,11 +444,23 @@
                             </div>
                         </div>
 
-                        <!-- Opsi Grosir -->
-                        <div class="mb-4 bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex items-center gap-3">
-                            <input type="checkbox" id="gunakan_grosir" name="is_grosir" value="1" x-model="isGrosir" @change="recalculateAllPrices()" class="w-5 h-5 text-tema-marun border-gray-300 rounded focus:ring-tema-marun focus:ring-2">
-                            <label for="gunakan_grosir" class="text-sm font-bold text-yellow-800 cursor-pointer">Gunakan Harga Grosir</label>
-                            <span class="text-xs text-yellow-600">(Berlaku untuk barang yang memiliki harga grosir)</span>
+                        <!-- Opsi Transaksi (Grosir & PPN 11%) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl flex items-center gap-3">
+                                <input type="checkbox" id="gunakan_grosir" name="is_grosir" value="1" x-model="isGrosir" @change="recalculateAllPrices()" class="w-5 h-5 text-tema-marun border-gray-300 rounded focus:ring-tema-marun focus:ring-2">
+                                <div>
+                                    <label for="gunakan_grosir" class="text-sm font-bold text-yellow-900 cursor-pointer block">Gunakan Harga Grosir</label>
+                                    <span class="text-[11px] text-yellow-700 block">(Berlaku untuk barang yang memiliki harga grosir)</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl flex items-center gap-3">
+                                <input type="checkbox" id="kenakan_ppn" name="is_ppn" value="1" x-model="isPPN" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <div>
+                                    <label for="kenakan_ppn" class="text-sm font-bold text-blue-900 cursor-pointer block">Kenakan PPN 11%</label>
+                                    <span class="text-[11px] text-blue-700 block">(Otomatis aktif untuk Customer Perusahaan / Instansi)</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Banner Notifikasi Tarik Barang Keluar -->
@@ -717,6 +729,18 @@
             convertedMovementIds: [],
             isFetchingMovements: false,
             isGrosir: false,
+            isPPN: false,
+
+            onCustomerChange(event) {
+                let selectElem = event.target;
+                let selectedOption = selectElem.options[selectElem.selectedIndex];
+                let tipe = selectedOption ? selectedOption.getAttribute('data-tipe') : '';
+                if (tipe === 'Instansi') {
+                    this.isPPN = true;
+                } else if (tipe === 'Perorangan') {
+                    this.isPPN = false;
+                }
+            },
 
             // Upload Modal State
             isUploadModalOpen: false,
@@ -853,11 +877,11 @@
             },
 
             calculatePPN() {
-                return this.calculateSubTotal() * 0.11;
+                return this.isPPN ? Math.round(this.calculateSubTotal() * 0.11) : 0;
             },
 
             calculateTotal() {
-                return this.calculateSubTotal(); // Total tagihan = subtotal 
+                return this.calculateSubTotal() + this.calculatePPN();
             },
             
             formatRupiah(number) {

@@ -72,6 +72,15 @@
                     </div>
                 </div>
 
+                <!-- Opsi PPN 11% -->
+                <div class="mb-6 bg-blue-50 border border-blue-200 p-3.5 rounded-xl flex items-center gap-3">
+                    <input type="checkbox" id="kenakan_ppn_edit" name="is_ppn" value="1" {{ old('is_ppn', $invoice->pajak_ppn > 0) ? 'checked' : '' }} class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <div>
+                        <label for="kenakan_ppn_edit" class="text-sm font-bold text-blue-900 cursor-pointer block">Kenakan PPN 11%</label>
+                        <span class="text-xs text-blue-700 block">Centang untuk menghitung PPN 11% dari subtotal invoice ini.</span>
+                    </div>
+                </div>
+
                 <!-- Ringkasan Item (Read-Only) -->
                 <div class="mb-6">
                     <label class="block text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Daftar Barang (Tidak Dapat Diubah)</label>
