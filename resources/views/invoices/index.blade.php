@@ -732,8 +732,8 @@
             isPPN: false,
             nomorInvoice: '{{ old('nomor_invoice', $nomor_invoice) }}',
             defaultNomorInvoice: '{{ $nomor_invoice }}',
-            nextNumberStr: '{{ sprintf('%03d', $nextId) }}',
-            bulanRomawiStr: '{{ $this->romanMonth(date('n')) }}',
+            nextNumberStr: '{{ sprintf('%03d', $nextId ?? 1) }}',
+            bulanRomawiStr: '{{ $bulan_romawi ?? "VI" }}',
             tahunStr: '{{ date('Y') }}',
 
             onCustomerChange(event) {

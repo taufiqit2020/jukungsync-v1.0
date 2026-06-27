@@ -64,9 +64,10 @@ class InvoiceController extends Controller
         
         $lastInvoice = Invoice::latest('id')->first();
         $nextId = $lastInvoice ? $lastInvoice->id + 1 : 1;
-        $nomor_invoice = sprintf('%03d/UMAR/%s/%s', $nextId, $this->romanMonth(date('n')), date('Y'));
+        $bulan_romawi = $this->romanMonth(date('n'));
+        $nomor_invoice = sprintf('%03d/UMAR/%s/%s', $nextId, $bulan_romawi, date('Y'));
 
-        return view('invoices.index', compact('invoices', 'products', 'nomor_invoice', 'customers', 'totalTagihanFilter', 'totalBelumLunasFilter'));
+        return view('invoices.index', compact('invoices', 'products', 'nomor_invoice', 'customers', 'totalTagihanFilter', 'totalBelumLunasFilter', 'nextId', 'bulan_romawi'));
     }
 
     public function create()
