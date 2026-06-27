@@ -71,7 +71,7 @@
                         </td>
                         <td class="px-4 py-3.5 text-center">
                             @php
-                                $imgUrl = $product->gambar ? Storage::url($product->gambar) : Storage::url('products/umum.png');
+                                $imgUrl = $product->gambar_url;
                                 $extraCount = is_array($product->gambar_tambahan) ? count($product->gambar_tambahan) : 0;
                             @endphp
                             <div class="relative w-10 h-10 mx-auto">

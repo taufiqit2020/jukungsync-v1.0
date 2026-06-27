@@ -166,13 +166,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($productsGroup as $product)
                         @php
-                            $imagesArray = [];
-                            foreach ($product->all_images as $img) {
-                                $imagesArray[] = asset('storage/' . $img);
-                            }
-                            if (empty($imagesArray)) {
-                                $imagesArray[] = asset('storage/products/umum.png');
-                            }
+                            $imagesArray = $product->all_images_urls;
 
                             $productData = [
                                 'id' => $product->id,
@@ -186,7 +180,7 @@
                                 'formattedRetailPrice' => number_format($product->harga_jual, 0, ',', '.'),
                                 'formattedWholesalePrice' => $product->harga_grosir ? number_format($product->harga_grosir, 0, ',', '.') : '0',
                                 'stock' => $product->stok_saat_ini,
-                                'image' => $product->gambar ? asset('storage/' . $product->gambar) : '',
+                                'image' => $product->gambar_url,
                                 'images' => $imagesArray
                             ];
                         @endphp
@@ -203,7 +197,7 @@
                             @endif
 
                             <div class="h-48 bg-gray-50 flex items-center justify-center relative overflow-hidden border-b border-gray-100 p-4">
-                                <img src="{{ $product->gambar ? asset('storage/' . $product->gambar) : asset('storage/products/umum.png') }}" alt="{{ $product->nama_barang }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                                <img src="{{ $product->gambar_url }}" alt="{{ $product->nama_barang }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
                                 @if($product->stok_saat_ini <= 0)
                                     <div class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center z-10">
                                         <span class="bg-red-500 text-white text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">Stok Habis</span>

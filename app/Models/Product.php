@@ -47,6 +47,33 @@ class Product extends Model
         return $images;
     }
 
+    /**
+     * Get primary image URL via secure /media/ route
+     */
+    public function getGambarUrlAttribute(): string
+    {
+        $img = $this->gambar ?: 'products/umum.png';
+        return url('media/' . ltrim($img, '/'));
+    }
+
+    /**
+     * Get all image URLs array via secure /media/ route
+     */
+    public function getAllImagesUrlsAttribute(): array
+    {
+        $urls = [];
+        $all = $this->all_images;
+        if (empty($all)) {
+            $all = ['products/umum.png'];
+        }
+        foreach ($all as $img) {
+            if (!empty($img)) {
+                $urls[] = url('media/' . ltrim($img, '/'));
+            }
+        }
+        return $urls;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

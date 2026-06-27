@@ -16,6 +16,7 @@ use App\Http\Controllers\OnlineOrderController;
 use App\Http\Controllers\PaymentController;
 
 // Rute serving file storage (Bypass symlink untuk hosting seperti Hostinger)
+Route::get('media/{path}', [\App\Http\Controllers\StorageController::class, 'serve'])->where('path', '.*');
 Route::get('storage/{path}', [\App\Http\Controllers\StorageController::class, 'serve'])->where('path', '.*');
 
 // Rute Bantuan Otomatis (Hanya dipakai sekali)

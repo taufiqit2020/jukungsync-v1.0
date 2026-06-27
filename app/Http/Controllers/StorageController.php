@@ -30,6 +30,31 @@ class StorageController extends Controller
             }
         }
 
+        // Case-insensitive fallback search in products folder if not found directly
+        if (!$realPath) {
+            $foldersToScan = [
+                storage_path('app/public/products'),
+                public_path('storage/products'),
+                public_path('img/products')
+            ];
+
+            $targetLower = strtolower($filename);
+            $targetNoExt = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+
+            foreach ($foldersToScan as $folder) {
+                if (!File::isDirectory($folder)) continue;
+                $files = File::files($folder);
+                foreach ($files as $fileObj) {
+                    $fnLower = strtolower($fileObj->getFilename());
+                    $fnNoExt = strtolower(pathinfo($fileObj->getFilename(), PATHINFO_FILENAME));
+                    if ($fnLower === $targetLower || $fnNoExt === $targetNoExt) {
+                        $realPath = $fileObj->getRealPath();
+                        break 2;
+                    }
+                }
+            }
+        }
+
         if (!$realPath) {
             // Fallback to general default image
             $generalDefault = public_path('img/products/umum.png');
@@ -48,7 +73,7 @@ class StorageController extends Controller
                 File::copy($realPath, $destPublic);
             }
         } catch (\Throwable $e) {
-            // Ignore copy error and proceed serving file
+            // Ignore copy error
         }
 
         $mimeType = File::mimeType($realPath) ?: 'image/jpeg';
