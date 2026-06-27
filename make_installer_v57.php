@@ -5,6 +5,7 @@ $files = [
     'routes/web.php',
     'config/filesystems.php',
     'public/fix_storage.php',
+    'public/test_serve.php',
 ];
 
 $php = "<?php\n";
