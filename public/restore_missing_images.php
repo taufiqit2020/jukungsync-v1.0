@@ -35,6 +35,20 @@ try {
     }
 
     foreach ($products as $p) {
+        $allImgs = $p->all_images;
+        foreach ($allImgs as $imgItem) {
+            if (empty($imgItem)) continue;
+            $appPath = storage_path('app/public/' . $imgItem);
+            $pubPath = public_path('storage/' . $imgItem);
+            if (file_exists($appPath)) {
+                @mkdir(dirname($pubPath), 0777, true);
+                if (@copy($appPath, $pubPath)) {
+                    $log .= "✔ Restored user upload: SKU {$p->sku} ({$p->nama_barang}) -> copied $imgItem to public/storage/\n";
+                    $restoreCount++;
+                }
+            }
+        }
+
         $dbGambar = $p->gambar;
         if (empty($dbGambar)) {
             // Jika kosong, set ke default umum
@@ -43,10 +57,18 @@ try {
             $dbGambar = $p->gambar;
         }
 
-        // Path fisik di public/storage/
+        // Path fisik di public/storage/ dan storage/app/public/
         $physicalPath = public_path('storage/' . $dbGambar);
+        $appPublicPath = storage_path('app/public/' . $dbGambar);
 
-        // Jika file tidak ada, mari kita restore dengan gambar default yang sesuai
+        // Jika file asli dari user ada di storage/app/public, pastikan disalin ke public/storage
+        if (file_exists($appPublicPath)) {
+            @mkdir(dirname($physicalPath), 0777, true);
+            @copy($appPublicPath, $physicalPath);
+            continue;
+        }
+
+        // Jika file tidak ada sama sekali di kedua lokasi, baru gunakan default placeholder
         if (!file_exists($physicalPath)) {
             $catName = $p->category ? strtolower($p->category->nama_kategori) : '';
             $prodName = strtolower($p->nama_barang);

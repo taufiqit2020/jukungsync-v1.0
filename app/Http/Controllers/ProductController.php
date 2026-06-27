@@ -114,7 +114,10 @@ class ProductController extends Controller
                 $savedPaths = [];
                 foreach ($uploadedFiles as $file) {
                     if ($file->isValid()) {
-                        $savedPaths[] = $file->store('products', 'public');
+                        $path = $file->store('products', 'public');
+                        @mkdir(dirname(public_path('storage/' . $path)), 0777, true);
+                        @copy(storage_path('app/public/' . $path), public_path('storage/' . $path));
+                        $savedPaths[] = $path;
                     }
                 }
                 
@@ -168,6 +171,7 @@ class ProductController extends Controller
         foreach ($oldImages as $oldImg) {
             if (!in_array($oldImg, $keptImages)) {
                 Storage::disk('public')->delete($oldImg);
+                @unlink(public_path('storage/' . $oldImg));
             }
         }
         
@@ -178,7 +182,10 @@ class ProductController extends Controller
             if (is_array($uploadedFiles)) {
                 foreach ($uploadedFiles as $file) {
                     if ($file->isValid()) {
-                        $newImages[] = $file->store('products', 'public');
+                        $path = $file->store('products', 'public');
+                        @mkdir(dirname(public_path('storage/' . $path)), 0777, true);
+                        @copy(storage_path('app/public/' . $path), public_path('storage/' . $path));
+                        $newImages[] = $path;
                     }
                 }
             }
@@ -210,6 +217,7 @@ class ProductController extends Controller
             foreach ($allImages as $img) {
                 if ($img) {
                     Storage::disk('public')->delete($img);
+                    @unlink(public_path('storage/' . $img));
                 }
             }
             return redirect(session('products_url', route('products.index')))->with('success', 'Barang berhasil dihapus.');
