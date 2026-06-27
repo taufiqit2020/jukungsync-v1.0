@@ -4,105 +4,302 @@
 
 @extends($layout)
 
+@section('title', 'Profil Saya')
+
 @section('content')
-    <div class="space-y-6 max-w-3xl {{ $layout === 'layouts.customer' ? 'mt-4' : '' }}" x-data="profileApp()">
-        <div>
-            <h2 class="text-2xl font-black text-gray-800 tracking-tight">Profil & Pengaturan Akun</h2>
-            <p class="text-sm text-gray-500 mt-1">Perbarui informasi profil dan kata sandi Anda.</p>
-        </div>
+<div x-data="profileApp()">
 
-        @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-md shadow-sm">
-            <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
-        </div>
-        @endif
+    {{-- ── Hero Banner ── --}}
+    <div style="background:linear-gradient(135deg,#7f1d1d 0%,#991b1b 50%,#b91c1c 100%);" class="rounded-2xl p-6 md:p-8 mb-6 relative overflow-hidden shadow-lg">
+        {{-- Dekorasi bulatan --}}
+        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(255,255,255,0.06);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-60px;left:-20px;width:160px;height:160px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
 
-        @if($errors->any())
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-md shadow-sm">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-red-700 font-medium">Terdapat kesalahan:</p>
-                    <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+        <div class="relative flex items-center gap-5">
+            {{-- Avatar Besar --}}
+            <div style="width:72px;height:72px;min-width:72px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:900;color:#1c1917;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+                {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+            </div>
+            <div>
+                <p style="color:rgba(255,255,255,0.7);font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px;">Akun Saya</p>
+                <h1 style="color:white;font-size:1.5rem;font-weight:900;margin:0 0 6px;">{{ auth()->user()->name ?? 'Admin' }}</h1>
+                <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);color:white;font-size:0.72rem;font-weight:700;padding:3px 12px;border-radius:999px;letter-spacing:0.05em;border:1px solid rgba(255,255,255,0.2);">
+                    <svg style="width:10px;height:10px;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                    {{ strtoupper(auth()->user()->role ?? 'ADMIN') }}
+                </span>
+            </div>
+            <div class="ml-auto hidden md:block text-right">
+                <p style="color:rgba(255,255,255,0.6);font-size:0.75rem;">Email</p>
+                <p style="color:white;font-weight:700;font-size:0.875rem;">{{ auth()->user()->email }}</p>
             </div>
         </div>
-        @endif
+    </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <form action="{{ route('profile.update') }}" method="POST">
-                @csrf
-                @method('PUT')
-                
-                <div class="p-6 md:p-8 space-y-6">
-                    <!-- Grid 2-kolom: Nama & Email -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 shadow-sm focus:bg-white focus:border-red-800 focus:ring focus:ring-red-800 focus:ring-opacity-50" required>
+    {{-- ── Alerts ── --}}
+    @if(session('success'))
+    <div class="mb-5 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 px-5 py-3.5 rounded-xl shadow-sm">
+        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <p class="text-sm font-semibold">{{ session('success') }}</p>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="mb-5 flex items-start gap-3 bg-red-50 border border-red-200 text-red-800 px-5 py-3.5 rounded-xl shadow-sm">
+        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
+        <div>
+            <p class="text-sm font-bold mb-1">Terdapat kesalahan:</p>
+            <ul class="text-sm list-disc list-inside space-y-0.5">
+                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
+    {{-- ── Form ── --}}
+    <form action="{{ route('profile.update') }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {{-- ── Kolom Kiri: Info Pribadi & Kata Sandi ── --}}
+            <div class="lg:col-span-2 space-y-6">
+
+                {{-- Card: Informasi Pribadi --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100" style="background:linear-gradient(to right,#fef9f0,#fff);">
+                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                            <svg style="width:18px;height:18px;color:white;" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Alamat Email</label>
-                            <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 shadow-sm focus:bg-white focus:border-red-800 focus:ring focus:ring-red-800 focus:ring-opacity-50" required>
+                            <h3 class="text-sm font-bold text-gray-800">Informasi Pribadi</h3>
+                            <p class="text-xs text-gray-500">Nama, email, dan nomor kontak</p>
                         </div>
                     </div>
-
-                    <!-- Grid 2-kolom: Nomor HP & Nama Perusahaan -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor HP / WhatsApp <span class="text-red-500">*</span></label>
-                            <input type="text" name="nomor_hp" value="{{ old('nomor_hp', $user->nomor_hp) }}" placeholder="Contoh: 08123456789" class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 shadow-sm focus:bg-white focus:border-red-800 focus:ring focus:ring-red-800 focus:ring-opacity-50" required>
+                    <div class="p-6 space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Nama Lengkap</label>
+                                <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                                    class="w-full border border-gray-200 px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                    placeholder="Nama lengkap Anda" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Alamat Email</label>
+                                <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                                    class="w-full border border-gray-200 px-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                    required>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Perusahaan / Toko</label>
-                            <input type="text" name="perusahaan" value="{{ old('perusahaan', $user->perusahaan) }}" placeholder="Contoh: UD. Berkah Jaya" class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 shadow-sm focus:bg-white focus:border-red-800 focus:ring focus:ring-red-800 focus:ring-opacity-50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Nomor HP / WhatsApp <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📱</span>
+                                    <input type="text" name="nomor_hp" value="{{ old('nomor_hp', $user->nomor_hp) }}"
+                                        placeholder="08123456789"
+                                        class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                        required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Nama Perusahaan / Toko</label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🏢</span>
+                                    <input type="text" name="perusahaan" value="{{ old('perusahaan', $user->perusahaan) }}"
+                                        placeholder="Contoh: UD. Berkah Jaya"
+                                        class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm font-medium text-gray-800 focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none">
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Autocomplete Search Bar & Alamat Detail -->
-                    <div class="space-y-4 pt-2 relative" x-data="{ clickOutside() { showSuggestions = false } }" @click.away="clickOutside()">
-                        <input type="hidden" name="alamat" x-model="customAddress">
-                        
-                        <!-- Search / Autocomplete Bar -->
-                        <div class="space-y-1.5 relative">
-                            <label class="text-sm font-semibold text-gray-700 block">Cari Alamat Lengkap (Google Maps / Autocomplete)</label>
+                {{-- Card: Ubah Kata Sandi --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100" style="background:linear-gradient(to right,#fff5f5,#fff);">
+                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#991b1b,#b91c1c);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                            <svg style="width:18px;height:18px;" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800">Ubah Kata Sandi</h3>
+                            <p class="text-xs text-gray-500">Biarkan kosong jika tidak ingin mengubah</p>
+                        </div>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Kata Sandi Baru</label>
                             <div class="relative">
-                                <input 
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔒</span>
+                                <input type="password" name="password"
+                                    class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                    placeholder="Min. 8 karakter">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Konfirmasi Kata Sandi</label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔑</span>
+                                <input type="password" name="password_confirmation"
+                                    class="w-full border border-gray-200 pl-9 pr-4 py-3 bg-gray-50 rounded-xl text-sm focus:bg-white focus:border-red-700 focus:ring focus:ring-red-700 focus:ring-opacity-20 transition-all outline-none"
+                                    placeholder="Ulangi kata sandi baru">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Tombol Aksi --}}
+                <div class="flex items-center justify-between gap-3 pt-1">
+                    <a href="{{ in_array(auth()->user()->role, ['customer']) ? route('catalog.index') : route('dashboard') }}"
+                        class="flex items-center gap-2 px-6 py-3 text-sm font-bold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        Kembali
+                    </a>
+                    <button type="submit"
+                        style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);"
+                        class="flex items-center gap-2 px-8 py-3 text-sm font-bold text-white rounded-xl hover:opacity-90 transition-all shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+
+            {{-- ── Kolom Kanan: Alamat ── --}}
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-4" x-data="{ clickOutside() { showSuggestions = false } }" @click.away="clickOutside()">
+                    <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100" style="background:linear-gradient(to right,#f0fdf4,#fff);">
+                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#15803d,#16a34a);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                            <svg style="width:18px;height:18px;" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800">Alamat Pengiriman</h3>
+                            <p class="text-xs text-gray-500">Lokasi & detail wilayah</p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        <input type="hidden" name="alamat" x-model="customAddress">
+
+                        {{-- Search Autocomplete --}}
+                        <div class="space-y-1.5 relative">
+                            <label class="text-xs font-bold text-gray-600 uppercase tracking-wide block">Cari Alamat Otomatis</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">📍</span>
+                                <input
                                     type="text"
-                                    x-model="customAddress" 
+                                    x-model="customAddress"
                                     @input="fetchAddressSuggestions()"
                                     @focus="showSuggestions = addressSuggestions.length > 0"
-                                    placeholder="Ketik nama jalan, gedung, atau daerah untuk mencari otomatis..." 
-                                    class="w-full border px-4 py-3 pl-10 bg-gray-50 rounded-xl border-gray-300 shadow-sm focus:bg-white focus:border-red-800 focus:ring focus:ring-red-800 focus:ring-opacity-50">
-                                
-                                <!-- Search Icon -->
-                                <span class="absolute left-3.5 top-3.5 text-gray-400">🔍</span>
+                                    placeholder="Ketik nama jalan, gedung..."
+                                    class="w-full border border-gray-200 pl-9 pr-4 py-2.5 text-sm bg-gray-50 rounded-xl focus:bg-white focus:border-green-600 focus:ring focus:ring-green-600 focus:ring-opacity-20 transition-all outline-none">
+                                <div x-show="isSearchingAddress" class="absolute right-3 top-1/2 -translate-y-1/2">
+                                    <svg class="animate-spin h-4 w-4 text-red-800" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                </div>
+                            </div>
+                            <div x-show="showSuggestions"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden divide-y divide-gray-50 max-h-60 overflow-y-auto" style="display:none;">
+                                <template x-for="(item, idx) in addressSuggestions" :key="idx">
+                                    <div @click="selectSuggestion(item)" class="p-3 hover:bg-gray-50 cursor-pointer flex items-start gap-2.5 transition-colors">
+                                        <span class="text-sm mt-0.5 flex-shrink-0">📍</span>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-xs font-bold text-gray-800 truncate" x-text="item.title"></p>
+                                            <p class="text-[10px] text-gray-400 truncate mt-0.5" x-text="item.subtitle || item.fullAddress"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
 
-                                <!-- Loader -->
-                                <div x-show="isSearchingAddress" class="absolute right-3.5 top-3 flex items-center gap-1.5 pointer-events-none select-none bg-gray-50/80 px-2 py-1 rounded-lg">
-                                    <svg class="animate-spin h-4 w-4 text-red-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
+                        {{-- Detail Alamat --}}
+                        <div class="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-wider">Detail Alamat</p>
+
+                            <div class="space-y-1">
+                                <label class="text-[11px] font-bold text-gray-600">Nama Jalan / Gedung / Patokan</label>
+                                <input type="text" x-model="customRoad" @input="updateCustomAddress()" placeholder="Jl. Panglima Batur"
+                                    class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">No. Rumah / Blok</label>
+                                    <input type="text" x-model="customHouseNumber" @input="updateCustomAddress()" placeholder="No. 12B"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">RT / RW</label>
+                                    <input type="text" x-model="customRtRw" @input="updateCustomAddress()" placeholder="003/002"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none">
                                 </div>
                             </div>
 
-                            <!-- Suggestions Dropdown -->
-                            <div x-show="showSuggestions" 
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="opacity-0 transform scale-95"
-                                 x-transition:enter-end="opacity-100 transform scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="opacity-100 transform scale-100"
-                                 x-transition:leave-end="opacity-0 transform scale-95"
-                                 class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden divide-y divide-gray-50 max-h-60 overflow-y-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">Provinsi</label>
+                                    <select x-model="selectedProvinceId" @change="onProvinceChange()"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none">
+                                        <option value="" x-text="isLoadingProvinces ? 'Memuat...' : '-- Pilih --'"></option>
+                                        <template x-for="p in provinces" :key="p.id">
+                                            <option :value="p.id" x-text="capitalizeWord(p.name)" :selected="p.id === selectedProvinceId"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">Kota / Kabupaten</label>
+                                    <select x-model="selectedRegencyId" @change="onRegencyChange()" :disabled="!selectedProvinceId || isLoadingRegencies"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none disabled:opacity-50 disabled:bg-gray-100">
+                                        <option value="" x-text="isLoadingRegencies ? 'Memuat...' : '-- Pilih --'"></option>
+                                        <template x-for="r in regencies" :key="r.id">
+                                            <option :value="r.id" x-text="capitalizeWord(r.name)" :selected="r.id === selectedRegencyId"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">Kecamatan</label>
+                                    <select x-model="selectedDistrictId" @change="onDistrictChange()" :disabled="!selectedRegencyId || isLoadingDistricts"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none disabled:opacity-50 disabled:bg-gray-100">
+                                        <option value="" x-text="isLoadingDistricts ? 'Memuat...' : '-- Pilih --'"></option>
+                                        <template x-for="d in districts" :key="d.id">
+                                            <option :value="d.id" x-text="capitalizeWord(d.name)" :selected="d.id === selectedDistrictId"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[11px] font-bold text-gray-600">Kelurahan / Desa</label>
+                                    <select x-model="selectedVillageId" @change="onVillageChange()" :disabled="!selectedDistrictId || isLoadingVillages"
+                                        class="w-full text-xs bg-white border border-gray-200 rounded-lg p-2.5 focus:ring-green-600 focus:border-green-600 transition-all outline-none disabled:opacity-50 disabled:bg-gray-100">
+                                        <option value="" x-text="isLoadingVillages ? 'Memuat...' : '-- Pilih --'"></option>
+                                        <template x-for="v in villages" :key="v.id">
+                                            <option :value="v.id" x-text="capitalizeWord(v.name)" :selected="v.id === selectedVillageId"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Preview Alamat Lengkap --}}
+                        <div x-show="customAddress" class="bg-green-50 border border-green-100 rounded-xl p-3">
+                            <p class="text-[10px] font-bold text-green-700 uppercase tracking-wide mb-1">📋 Pratinjau Alamat</p>
+                            <p class="text-xs text-green-800 leading-relaxed" x-text="customAddress"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>{{-- end grid --}}
+    </form>
+
+</div>
+
                                 
                                 <template x-for="(item, idx) in addressSuggestions" :key="idx">
                                     <div @click="selectSuggestion(item)" class="p-3 hover:bg-gray-50 cursor-pointer flex items-start gap-2.5 transition-colors">

@@ -346,7 +346,8 @@
                        @click="loading = true; setTimeout(() => loading = false, 8000)"
                        :class="loading ? 'opacity-60 pointer-events-none' : ''"
                        title="Backup Database"
-                       class="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 text-sm font-bold transition-all duration-200 shadow-sm border border-emerald-700 whitespace-nowrap flex-shrink-0">
+                       style="background:#16a34a;color:#ffffff;border:1px solid #15803d;"
+                       class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-bold transition-all duration-200 shadow-sm whitespace-nowrap flex-shrink-0 hover:opacity-90">
                         <svg x-show="!loading" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         <svg x-show="loading" class="w-4 h-4 flex-shrink-0 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                         <span class="hidden sm:inline" x-text="loading ? 'Proses...' : 'Backup DB'">Backup DB</span>
