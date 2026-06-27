@@ -34,6 +34,23 @@ try {
         @mkdir($publicStorage . '/products', 0777, true);
     }
 
+    // Sinkronkan SEMUA file mentah yang diupload user via File Manager/dashboard dari storage/app/public/products ke public/storage/products
+    $appPublicProd = storage_path('app/public/products');
+    $pubProd = public_path('storage/products');
+    if (is_dir($appPublicProd)) {
+        @mkdir($pubProd, 0777, true);
+        $rawFiles = array_diff(scandir($appPublicProd), array('.', '..'));
+        foreach ($rawFiles as $rf) {
+            $srcF = $appPublicProd . '/' . $rf;
+            $dstF = $pubProd . '/' . $rf;
+            if (is_file($srcF)) {
+                if (@copy($srcF, $dstF)) {
+                    $log .= "✔ Sync File Manager upload: $rf ke public/storage/products/\n";
+                }
+            }
+        }
+    }
+
     foreach ($products as $p) {
         $allImgs = $p->all_images;
         foreach ($allImgs as $imgItem) {
