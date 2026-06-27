@@ -20,30 +20,30 @@
     </div>
 
     {{-- Filter / Search Card --}}
-    <div style="background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 4px rgba(0,0,0,0.07);" class="p-5">
-        <p style="font-size:0.65rem;font-weight:800;color:#9ca3af;text-transform:uppercase;letter-spacing:0.08em;" class="mb-3">Pencarian</p>
-        <form action="{{ route('customers.index') }}" method="GET"
-              x-data="{ search: '{{ addslashes(request('search')) }}' }"
-              class="relative md:w-96">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-                </svg>
+    <div style="background:white;border-radius:16px;border:1px solid #f3f4f6;box-shadow:0 1px 4px rgba(0,0,0,0.07);" class="p-4">
+        <form action="{{ route('customers.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-2 max-w-2xl">
+            <div class="relative w-full flex-1">
+                <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;" class="flex items-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, telp, email, npwp..." 
+                       style="padding-left:42px;padding-right:36px;"
+                       class="w-full border border-gray-200 bg-gray-50 rounded-xl py-2.5 text-sm font-medium text-gray-800 focus:bg-white outline-none transition-all" autofocus>
+                
+                @if(request('search'))
+                <a href="{{ route('customers.index') }}" 
+                   style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;" 
+                   class="hover:text-red-600 text-xs font-bold bg-gray-200 hover:bg-gray-300 rounded-full w-5 h-5 flex items-center justify-center transition-colors" title="Bersihkan Pencarian">
+                    ✕
+                </a>
+                @endif
             </div>
-            <input type="text" name="search" x-model="search"
-                   placeholder="Cari nama, telp, email, npwp..."
-                   @input.debounce.500ms="$el.closest('form').submit()"
-                   class="w-full border border-gray-200 bg-gray-50 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:bg-white outline-none transition-all"
-                   autofocus>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center" x-show="search.length > 0" style="display:none;">
-                <button type="button"
-                        @click="search = ''; $nextTick(() => $el.closest('form').submit())"
-                        class="text-gray-400 hover:text-red-500 focus:outline-none transition-colors">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
+            <button type="submit" 
+                    style="background:linear-gradient(135deg,#7f1d1d,#b91c1c);color:white;" 
+                    class="w-full sm:w-auto px-6 py-2.5 text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-all whitespace-nowrap flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <span>Cari</span>
+            </button>
         </form>
     </div>
 
