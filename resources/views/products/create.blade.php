@@ -79,13 +79,28 @@
 
             <div>
                 <label for="harga_grosir" class="block text-sm font-medium text-gray-700 mb-1">Harga Grosir (Opsional)</label>
-                <div class="relative">
+                <div class="relative mb-2">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span class="text-gray-500 sm:text-sm">Rp</span>
                     </div>
                     <input type="number" name="harga_grosir" id="harga_grosir" value="{{ old('harga_grosir') }}" class="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-50 py-2 px-3 border" placeholder="Kosongkan jika tidak ada">
                 </div>
                 @error('harga_grosir')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+
+                <!-- Quick Percentage Buttons (1% - 10%) -->
+                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;" class="p-2.5 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span style="font-size:0.65rem;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">⚡ Potongan Grosir Otomatis:</span>
+                        <span id="grosir_info" style="font-size:0.7rem;font-weight:700;color:#15803d;"></span>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach(range(1, 10) as $p)
+                        <button type="button" onclick="setGrosirPersen({{ $p }})" class="btn-grosir-persen px-2 py-1 text-xs font-bold rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-red-800 hover:text-white transition-all">
+                            {{ $p }}%
+                        </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -187,6 +202,46 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 previewContainer.classList.add('hidden');
             }
+        });
+    }
+});
+
+let currentPersenGrosir = 0;
+
+function setGrosirPersen(persen) {
+    currentPersenGrosir = persen;
+    calculateGrosir();
+}
+
+function calculateGrosir() {
+    const hargaJualInput = document.getElementById('harga_jual');
+    const hargaGrosirInput = document.getElementById('harga_grosir');
+    const grosirInfo = document.getElementById('grosir_info');
+    
+    if (!hargaJualInput || !hargaGrosirInput) return;
+    
+    const hargaJual = parseFloat(hargaJualInput.value) || 0;
+    if (hargaJual > 0 && currentPersenGrosir > 0) {
+        const potongan = hargaJual * (currentPersenGrosir / 100);
+        const hargaGrosir = Math.round(hargaJual - potongan);
+        hargaGrosirInput.value = hargaGrosir;
+        if (grosirInfo) {
+            grosirInfo.innerText = `Disk. ${currentPersenGrosir}% (Hemat Rp ${new Intl.NumberFormat('id-ID').format(Math.round(potongan))})`;
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const hargaJualInput = document.getElementById('harga_jual');
+    const hargaGrosirInput = document.getElementById('harga_grosir');
+    if (hargaJualInput) {
+        hargaJualInput.addEventListener('input', calculateGrosir);
+    }
+    if (hargaGrosirInput) {
+        hargaGrosirInput.addEventListener('input', function() {
+            currentPersenGrosir = 0;
+            const grosirInfo = document.getElementById('grosir_info');
+            if (grosirInfo) grosirInfo.innerText = '';
         });
     }
 });
