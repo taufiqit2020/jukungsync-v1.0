@@ -100,10 +100,18 @@
                 @error('stok_minimum')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
-            <div>
-                <label for="gambar" class="block text-sm font-medium text-gray-700 mb-1">Gambar Produk</label>
-                <input type="file" name="gambar" id="gambar" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tema-kuning file:text-tema-hitam hover:file:bg-yellow-500 border border-gray-300 rounded-md">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Gambar Produk (Maks. 5 Foto)</label>
+                
+                <!-- Grid Pratinjau Gambar -->
+                <div class="grid grid-cols-5 gap-3 mb-3 hidden" id="preview-container">
+                    <!-- Pratinjau gambar akan diisi via javascript -->
+                </div>
+
+                <input type="file" name="gambar[]" id="gambar" accept="image/*" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tema-kuning file:text-tema-hitam hover:file:bg-yellow-500 border border-gray-300 rounded-md">
+                <p class="text-xs text-gray-400 mt-1">Pilih hingga 5 foto. Foto pertama otomatis menjadi foto utama produk.</p>
                 @error('gambar')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                @error('gambar.*')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -141,6 +149,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Error fetching SKU:', error);
                 });
+        });
+    }
+
+    const gambarInput = document.getElementById('gambar');
+    const previewContainer = document.getElementById('preview-container');
+
+    if (gambarInput && previewContainer) {
+        gambarInput.addEventListener('change', function() {
+            previewContainer.innerHTML = '';
+            
+            const files = Array.from(this.files).slice(0, 5);
+            
+            if (files.length > 0) {
+                previewContainer.classList.remove('hidden');
+                
+                files.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'relative aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center p-1';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'max-h-full max-w-full object-contain rounded';
+                        
+                        const badge = document.createElement('span');
+                        badge.className = `absolute bottom-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded text-white ${index === 0 ? 'bg-green-600' : 'bg-gray-600'}`;
+                        badge.innerText = index === 0 ? 'Utama' : `Foto ${index + 1}`;
+                        
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(badge);
+                        previewContainer.appendChild(wrapper);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                previewContainer.classList.add('hidden');
+            }
         });
     }
 });

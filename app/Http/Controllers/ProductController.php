@@ -104,11 +104,27 @@ class ProductController extends Controller
             'harga_grosir' => 'nullable|numeric|min:0',
             'stok_saat_ini' => 'required|integer|min:0',
             'stok_minimum' => 'nullable|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar' => 'nullable|array|max:5',
+            'gambar.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('gambar')) {
-            $validated['gambar'] = $request->file('gambar')->store('products', 'public');
+            $uploadedFiles = $request->file('gambar');
+            if (is_array($uploadedFiles)) {
+                $savedPaths = [];
+                foreach ($uploadedFiles as $file) {
+                    if ($file->isValid()) {
+                        $savedPaths[] = $file->store('products', 'public');
+                    }
+                }
+                
+                if (count($savedPaths) > 0) {
+                    $validated['gambar'] = $savedPaths[0];
+                    if (count($savedPaths) > 1) {
+                        $validated['gambar_tambahan'] = array_slice($savedPaths, 1);
+                    }
+                }
+            }
         }
 
         Product::create($validated);
@@ -137,14 +153,47 @@ class ProductController extends Controller
             'harga_grosir' => 'nullable|numeric|min:0',
             'stok_saat_ini' => 'required|integer|min:0',
             'stok_minimum' => 'nullable|integer|min:0',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar' => 'nullable|array|max:5',
+            'gambar.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'existing_images' => 'nullable|array',
         ]);
 
-        if ($request->hasFile('gambar')) {
-            if ($product->gambar) {
-                Storage::disk('public')->delete($product->gambar);
+        // Dapatkan gambar lama
+        $oldImages = $product->all_images;
+        
+        // Dapatkan gambar lama yang dipertahankan
+        $keptImages = $request->input('existing_images', []);
+        
+        // Hapus gambar lama yang tidak dipertahankan
+        foreach ($oldImages as $oldImg) {
+            if (!in_array($oldImg, $keptImages)) {
+                Storage::disk('public')->delete($oldImg);
             }
-            $validated['gambar'] = $request->file('gambar')->store('products', 'public');
+        }
+        
+        // Upload gambar baru
+        $newImages = [];
+        if ($request->hasFile('gambar')) {
+            $uploadedFiles = $request->file('gambar');
+            if (is_array($uploadedFiles)) {
+                foreach ($uploadedFiles as $file) {
+                    if ($file->isValid()) {
+                        $newImages[] = $file->store('products', 'public');
+                    }
+                }
+            }
+        }
+        
+        // Gabungkan gambar lama yang disimpan & gambar baru
+        $allFinalImages = array_merge($keptImages, $newImages);
+        $allFinalImages = array_slice($allFinalImages, 0, 5);
+        
+        if (count($allFinalImages) > 0) {
+            $validated['gambar'] = $allFinalImages[0];
+            $validated['gambar_tambahan'] = count($allFinalImages) > 1 ? array_slice($allFinalImages, 1) : null;
+        } else {
+            $validated['gambar'] = null;
+            $validated['gambar_tambahan'] = null;
         }
 
         $product->update($validated);
@@ -155,11 +204,13 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
-            $gambarPath = $product->gambar;
+            $allImages = $product->all_images;
             $product->delete();
             
-            if ($gambarPath) {
-                Storage::disk('public')->delete($gambarPath);
+            foreach ($allImages as $img) {
+                if ($img) {
+                    Storage::disk('public')->delete($img);
+                }
             }
             return redirect(session('products_url', route('products.index')))->with('success', 'Barang berhasil dihapus.');
         } catch (\Illuminate\Database\QueryException $e) {

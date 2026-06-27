@@ -328,6 +328,12 @@
 
                     <div class="hidden md:block h-6 w-px bg-gray-200"></div>
 
+                    <!-- Tombol Cek E-Catalog -->
+                    <a href="{{ route('catalog.index') }}" target="_blank" class="flex items-center gap-1.5 rounded-lg bg-tema-kuning hover:bg-yellow-500 text-tema-hitam px-3 py-2 text-sm font-bold transition-all duration-200 shadow-sm border border-yellow-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span>E-Catalog</span>
+                    </a>
+
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-tema-kuning to-yellow-500 flex items-center justify-center text-tema-hitam text-xs font-bold shadow-sm">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}

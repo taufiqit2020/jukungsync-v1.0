@@ -58,15 +58,20 @@
                         {{ ($products->currentPage() - 1) * $products->perPage() + $loop->iteration }}
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap text-center">
-                        @if($product->gambar)
-                            <img src="{{ Storage::url($product->gambar) }}" alt="{{ $product->nama_barang }}" 
-                                 class="h-9 w-9 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200 shadow-sm mx-auto"
-                                 @click="isImageModalOpen = true; modalImageUrl = '{{ Storage::url($product->gambar) }}'; modalImageAlt = '{{ addslashes($product->nama_barang) }}'">
-                        @else
-                            <div class="h-9 w-9 bg-gray-200 rounded-md flex items-center justify-center border border-gray-300 mx-auto">
-                                <span class="text-[10px] text-gray-400">N/A</span>
-                            </div>
-                        @endif
+                        @php
+                            $imgUrl = $product->gambar ? Storage::url($product->gambar) : Storage::url('products/umum.png');
+                            $extraCount = is_array($product->gambar_tambahan) ? count($product->gambar_tambahan) : 0;
+                        @endphp
+                        <div class="relative w-9 h-9 mx-auto">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->nama_barang }}" 
+                                 class="h-9 w-9 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200 shadow-sm"
+                                 @click="isImageModalOpen = true; modalImageUrl = '{{ $imgUrl }}'; modalImageAlt = '{{ addslashes($product->nama_barang) }}'">
+                            @if($extraCount > 0)
+                                <span class="absolute -top-1.5 -right-1.5 bg-tema-marun text-white text-[8px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-white shadow-sm" title="Ada {{ $extraCount }} foto tambahan">
+                                    +{{ $extraCount }}
+                                </span>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-3 py-3 whitespace-nowrap text-sm font-bold text-gray-900">{{ $product->sku }}</td>
                     <td class="px-3 py-3 text-sm text-gray-800 font-medium truncate max-w-[200px]" title="{{ $product->nama_barang }}">{{ $product->nama_barang }}</td>

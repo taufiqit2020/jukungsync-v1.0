@@ -166,6 +166,14 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach($productsGroup as $product)
                         @php
+                            $imagesArray = [];
+                            foreach ($product->all_images as $img) {
+                                $imagesArray[] = asset('storage/' . $img);
+                            }
+                            if (empty($imagesArray)) {
+                                $imagesArray[] = asset('storage/products/umum.png');
+                            }
+
                             $productData = [
                                 'id' => $product->id,
                                 'name' => $product->nama_barang,
@@ -178,7 +186,8 @@
                                 'formattedRetailPrice' => number_format($product->harga_jual, 0, ',', '.'),
                                 'formattedWholesalePrice' => $product->harga_grosir ? number_format($product->harga_grosir, 0, ',', '.') : '0',
                                 'stock' => $product->stok_saat_ini,
-                                'image' => $product->gambar ? asset('storage/' . $product->gambar) : ''
+                                'image' => $product->gambar ? asset('storage/' . $product->gambar) : '',
+                                'images' => $imagesArray
                             ];
                         @endphp
                         <div class="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 overflow-hidden group hover:shadow-[0_20px_40px_rgba(127,29,29,0.08)] -translate-y-0 hover:-translate-y-1.5 transition-all duration-300 flex flex-col relative cursor-pointer product-card" data-search="{{ strtolower($product->nama_barang) }} {{ strtolower($product->sku) }}" @click="openProductModal({{ json_encode($productData) }})">
@@ -194,11 +203,7 @@
                             @endif
 
                             <div class="h-48 bg-gray-50 flex items-center justify-center relative overflow-hidden border-b border-gray-100 p-4">
-                                @if($product->gambar)
-                                    <img src="{{ asset('storage/' . $product->gambar) }}" alt="{{ $product->nama_barang }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
-                                @else
-                                    <svg class="w-16 h-16 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                @endif
+                                <img src="{{ $product->gambar ? asset('storage/' . $product->gambar) : asset('storage/products/umum.png') }}" alt="{{ $product->nama_barang }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
                                 @if($product->stok_saat_ini <= 0)
                                     <div class="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center z-10">
                                         <span class="bg-red-500 text-white text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">Stok Habis</span>
@@ -316,12 +321,7 @@
                     <div class="flex gap-3.5 p-3.5 border border-gray-100 rounded-2xl relative bg-white hover:border-gray-200 hover:shadow-md transition-all duration-300 items-center">
                         <!-- Product Image Thumbnail -->
                         <div class="w-16 h-16 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center border border-gray-100 p-1.5 overflow-hidden">
-                            <template x-if="item.image">
-                                <img :src="item.image" :alt="item.name" class="w-full h-full object-contain">
-                            </template>
-                            <template x-if="!item.image">
-                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            </template>
+                            <img :src="item.image ? item.image : '{{ asset('storage/products/umum.png') }}'" :alt="item.name" class="w-full h-full object-contain">
                         </div>
                         
                         <!-- Product Info -->
@@ -401,13 +401,29 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <!-- Product Image -->
-            <div class="w-full sm:w-2/5 bg-gray-50 border-r border-gray-100 flex-shrink-0 flex items-center justify-center relative min-h-[240px] sm:min-h-0 p-8">
-                <template x-if="activeProduct?.image">
-                    <img :src="activeProduct.image" :alt="activeProduct?.name" class="absolute inset-0 w-full h-full p-8 object-contain">
-                </template>
-                <template x-if="!activeProduct?.image">
-                    <svg class="w-20 h-20 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <!-- Product Image Section (with Gallery/Thumbnails) -->
+            <div class="w-full sm:w-2/5 bg-gray-50 border-r border-gray-100 flex-shrink-0 flex flex-col items-center justify-center p-6 relative">
+                <!-- Large Display Image -->
+                <div class="w-full aspect-square relative flex items-center justify-center mb-4">
+                    <template x-if="activeProduct?.images && activeProduct.images.length > 0">
+                        <img :src="activeProduct.images[activeImageIndex]" :alt="activeProduct?.name" class="absolute inset-0 w-full h-full object-contain p-2 transition-all duration-300">
+                    </template>
+                    <template x-if="!activeProduct?.images || activeProduct.images.length === 0">
+                        <svg class="w-20 h-20 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </template>
+                </div>
+                
+                <!-- Thumbnails Grid -->
+                <template x-if="activeProduct?.images && activeProduct.images.length > 1">
+                    <div class="flex flex-wrap justify-center gap-2 mt-auto">
+                        <template x-for="(imgUrl, idx) in activeProduct.images" :key="idx">
+                            <button @click="activeImageIndex = idx" 
+                                    class="w-10 h-10 rounded-lg border-2 overflow-hidden bg-white flex items-center justify-center p-0.5 cursor-pointer transition-all duration-200 hover:scale-105 active:scale-95"
+                                    :class="activeImageIndex === idx ? 'border-tema-marun shadow-sm' : 'border-gray-200 opacity-60 hover:opacity-100'">
+                                <img :src="imgUrl" class="max-h-full max-w-full object-cover rounded-md">
+                            </button>
+                        </template>
+                    </div>
                 </template>
             </div>
 
@@ -462,6 +478,7 @@
                 cartOpen: false,
                 productModalOpen: false,
                 activeProduct: null,
+                activeImageIndex: 0,
                 cart: JSON.parse(localStorage.getItem('jukung_cart') || '[]'),
                 isSubmitting: false,
                 successMessage: '',
@@ -650,6 +667,7 @@
 
                 openProductModal(product) {
                     this.activeProduct = product;
+                    this.activeImageIndex = 0;
                     this.productModalOpen = true;
                 },
 

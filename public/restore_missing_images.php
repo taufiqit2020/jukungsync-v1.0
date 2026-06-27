@@ -8,10 +8,17 @@ require $laravelRoot . '/vendor/autoload.php';
 $app = require_once $laravelRoot . '/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
+// Jalankan migrasi database agar kolom baru tersedia sebelum model Product diakses
+try {
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+} catch (\Exception $e) {
+    echo "<p style='color:red;'>❌ Gagal menjalankan migrasi database: " . htmlspecialchars($e->getMessage()) . "</p>";
+}
+
 use App\Models\Product;
 use Illuminate\Support\Facades\File;
 
-echo "<h1>Restore Missing Images v58</h1>";
+echo "<h1>Restore Missing Images v59</h1>";
 
 try {
     $products = Product::with('category')->get();

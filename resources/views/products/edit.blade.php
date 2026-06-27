@@ -102,15 +102,29 @@
                 @error('stok_minimum')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
 
-            <div>
-                <label for="gambar" class="block text-sm font-medium text-gray-700 mb-1">Ganti Gambar (Opsional)</label>
-                @if($product->gambar)
-                <div class="mb-2">
-                    <img src="{{ Storage::url($product->gambar) }}" alt="Preview" class="h-20 rounded-md border border-gray-300">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Manajemen Gambar Produk (Maks. 5 Foto)</label>
+                
+                <!-- Grid Gambar yang Ada & yang Baru Di-upload -->
+                <div class="grid grid-cols-5 gap-3 mb-3" id="preview-container">
+                    @foreach($product->all_images as $index => $img)
+                        <div class="relative aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center p-1 existing-img-wrapper">
+                            <img src="{{ Storage::url($img) }}" class="max-h-full max-w-full object-contain rounded">
+                            <span class="absolute bottom-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded text-white bg-green-600 index-badge">
+                                {{ $index === 0 ? 'Utama' : 'Foto ' . ($index + 1) }}
+                            </span>
+                            <input type="hidden" name="existing_images[]" value="{{ $img }}" class="existing-image-input">
+                            <button type="button" class="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center shadow btn-delete-existing cursor-pointer">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    @endforeach
                 </div>
-                @endif
-                <input type="file" name="gambar" id="gambar" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tema-kuning file:text-tema-hitam hover:file:bg-yellow-500 border border-gray-300 rounded-md">
+
+                <input type="file" name="gambar[]" id="gambar" accept="image/*" multiple class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-tema-kuning file:text-tema-hitam hover:file:bg-yellow-500 border border-gray-300 rounded-md">
+                <p class="text-xs text-gray-400 mt-1">Pilih foto baru jika ingin menambahkan. Total foto (lama + baru) tidak boleh melebihi 5. Foto di urutan pertama otomatis menjadi foto utama.</p>
                 @error('gambar')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                @error('gambar.*')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -120,4 +134,79 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const previewContainer = document.getElementById('preview-container');
+    const gambarInput = document.getElementById('gambar');
+
+    // Fungsi untuk merapikan badge indeks gambar yang tersisa
+    function refreshImageBadges() {
+        const wrappers = previewContainer.querySelectorAll('.existing-img-wrapper, .new-img-wrapper');
+        wrappers.forEach((wrapper, index) => {
+            const badge = wrapper.querySelector('.index-badge');
+            if (badge) {
+                badge.className = `absolute bottom-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded text-white ${index === 0 ? 'bg-green-600' : 'bg-gray-600'}`;
+                badge.innerText = index === 0 ? 'Utama' : `Foto ${index + 1}`;
+            }
+        });
+    }
+
+    // Event listener untuk tombol hapus gambar yang sudah ada
+    previewContainer.addEventListener('click', function(e) {
+        const btnDelete = e.target.closest('.btn-delete-existing');
+        if (btnDelete) {
+            const wrapper = btnDelete.closest('.existing-img-wrapper');
+            if (wrapper) {
+                wrapper.remove();
+                refreshImageBadges();
+                // Reset file input agar tidak konflik
+                gambarInput.value = '';
+                const newWrappers = previewContainer.querySelectorAll('.new-img-wrapper');
+                newWrappers.forEach(w => w.remove());
+            }
+        }
+    });
+
+    if (gambarInput && previewContainer) {
+        gambarInput.addEventListener('change', function() {
+            // Hapus pratinjau baru yang sebelumnya ditambahkan
+            const newWrappers = previewContainer.querySelectorAll('.new-img-wrapper');
+            newWrappers.forEach(w => w.remove());
+
+            const existingCount = previewContainer.querySelectorAll('.existing-img-wrapper').length;
+            const maxAllowedNew = 5 - existingCount;
+
+            if (maxAllowedNew <= 0) {
+                alert('Maksimal 5 foto. Silakan hapus beberapa foto lama terlebih dahulu sebelum menambahkan yang baru.');
+                this.value = '';
+                return;
+            }
+
+            const files = Array.from(this.files).slice(0, maxAllowedNew);
+            
+            files.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'relative aspect-square rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center p-1 new-img-wrapper';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'max-h-full max-w-full object-contain rounded';
+                    
+                    const badge = document.createElement('span');
+                    badge.className = 'absolute bottom-1 left-1 text-[8px] font-bold px-1.5 py-0.5 rounded text-white index-badge';
+                    
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(badge);
+                    previewContainer.appendChild(wrapper);
+                    refreshImageBadges();
+                }
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+});
+</script>
 @endsection

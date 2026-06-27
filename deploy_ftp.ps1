@@ -6,8 +6,8 @@ param(
 $ftpHost = "ftp.ptutamamadaniraya.com"
 $ftpUser = "u169145000"
 $ftpPassword = $FtpPassword
-$localFile = "C:\Users\USER\.gemini\antigravity\scratch\JukungSync-V1.1\public\installer_purchase_redesign_v48.php"
-$remoteFile = "installer_purchase_redesign_v48.php"
+$localFile = "C:\Users\USER\.gemini\antigravity\scratch\JukungSync-V1.1\public\installer_v59.php"
+$remoteFile = "installer_v59.php"
 $remoteUri = "ftp://$ftpHost/public_html/$remoteFile"
 
 Write-Host "=== Deploy Otomatis ke Hostinger ===" -ForegroundColor Cyan
@@ -35,7 +35,7 @@ try {
     if ($response.StatusCode -eq 200) {
         Write-Host "✅ Installer berhasil dijalankan!" -ForegroundColor Green
         Write-Host ""
-        Write-Host "Silakan buka: https://ptutamamadaniraya.com/purchases/create" -ForegroundColor Cyan
+        Write-Host "Silakan buka: https://ptutamadaniraya.com/products" -ForegroundColor Cyan
     } else {
         Write-Host "⚠️ Installer dijalankan tapi status: $($response.StatusCode)" -ForegroundColor Yellow
     }
