@@ -81,17 +81,14 @@ $php .= "    }\n";
 
 $php .= "\n    // 3. Otomatis sinkronkan kasbon untuk semua invoice yang belum lunas\n";
 $php .= "    try {\n";
-$php .= "        if (file_exists(\$laravelRoot . '/vendor/autoload.php') && file_exists(\$laravelRoot . '/bootstrap/app.php')) {\n";
-$php .= "            require_once \$laravelRoot . '/vendor/autoload.php';\n";
-$php .= "            \$appInst = require_once \$laravelRoot . '/bootstrap/app.php';\n";
-$php .= "            \$appInst->make('Illuminate\\\\Contracts\\\\Console\\\\Kernel')->bootstrap();\n";
+$php .= "        if (class_exists('\\\\App\\\\Models\\\\Invoice') && class_exists('\\\\App\\\\Models\\\\Kasbon')) {\n";
 $php .= "            \$unpaid = \\App\\Models\\Invoice::where('status_pembayaran', 'belum_lunas')->get();\n";
 $php .= "            foreach (\$unpaid as \$inv) {\n";
 $php .= "                \\App\\Models\\Kasbon::syncFromInvoice(\$inv);\n";
 $php .= "            }\n";
 $php .= "            \$log .= '\\n✔ Berhasil sinkronisasi otomatis ' . count(\$unpaid) . ' data kasbon piutang!\\n';\n";
 $php .= "        }\n";
-$php .= "    } catch (\\Exception \$eSync) {\n";
+$php .= "    } catch (\\Throwable \$eSync) {\n";
 $php .= "        \$log .= '\\n⚠ Sync kasbon: ' . \$eSync->getMessage() . '\\n';\n";
 $php .= "    }\n";
 

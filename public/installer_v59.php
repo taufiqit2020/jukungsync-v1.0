@@ -112,17 +112,14 @@ try {
 
     // 3. Otomatis sinkronkan kasbon untuk semua invoice yang belum lunas
     try {
-        if (file_exists($laravelRoot . '/vendor/autoload.php') && file_exists($laravelRoot . '/bootstrap/app.php')) {
-            require_once $laravelRoot . '/vendor/autoload.php';
-            $appInst = require_once $laravelRoot . '/bootstrap/app.php';
-            $appInst->make('Illuminate\\Contracts\\Console\\Kernel')->bootstrap();
+        if (class_exists('\\App\\Models\\Invoice') && class_exists('\\App\\Models\\Kasbon')) {
             $unpaid = \App\Models\Invoice::where('status_pembayaran', 'belum_lunas')->get();
             foreach ($unpaid as $inv) {
                 \App\Models\Kasbon::syncFromInvoice($inv);
             }
             $log .= '\n✔ Berhasil sinkronisasi otomatis ' . count($unpaid) . ' data kasbon piutang!\n';
         }
-    } catch (\Exception $eSync) {
+    } catch (\Throwable $eSync) {
         $log .= '\n⚠ Sync kasbon: ' . $eSync->getMessage() . '\n';
     }
 
