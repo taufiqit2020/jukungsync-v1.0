@@ -259,25 +259,26 @@
         <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
             
             <!-- Top Navbar — tingginya sama dengan logo sidebar (h-16) -->
-            <header class="flex h-16 items-center justify-between bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 flex-shrink-0 z-10">
+            <header class="flex h-16 items-center justify-between bg-white border-b border-gray-200 px-4 sm:px-5 lg:px-7 flex-shrink-0 z-10 gap-3">
                 
                 <!-- Left: Hamburger + Page Title -->
-                <div class="flex items-center gap-4">
-                    <button type="button" class="lg:hidden -m-2 p-2 text-gray-600 hover:text-tema-hitam transition-colors" @click="sidebarOpen = true">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button type="button" class="lg:hidden -m-2 p-2 text-gray-600 hover:text-tema-hitam transition-colors flex-shrink-0" @click="sidebarOpen = true">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                     </button>
-                    <h2 class="font-heading text-lg font-semibold text-tema-hitam">@yield('title', 'Admin Panel')</h2>
+                    <h2 class="font-heading text-base sm:text-lg font-semibold text-tema-hitam truncate">@yield('title', 'Admin Panel')</h2>
                 </div>
                 
-                <!-- Right: Date + User + Logout -->
-                <div class="flex items-center gap-3 lg:gap-5">
-                    <!-- FR-04: Global Search -->
-                    <div class="relative hidden md:block" x-data="globalSearch()">
+                <!-- Right: Search + Actions -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+
+                    <!-- Global Search — hanya di layar besar -->
+                    <div class="relative hidden xl:block" x-data="globalSearch()">
                         <div class="relative">
                             <svg class="absolute left-3 w-4 h-4 text-gray-400" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <input type="text" x-model="query" @input.debounce.300ms="doSearch()" @focus="isOpen=true" @keydown.escape="isOpen=false" placeholder="Cari barang, invoice, customer..." class="pr-4 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-20 transition-all w-72 outline-none" style="padding-left: 2.5rem;">
+                            <input type="text" x-model="query" @input.debounce.300ms="doSearch()" @focus="isOpen=true" @keydown.escape="isOpen=false" placeholder="Cari barang, invoice..." class="pr-4 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-tema-marun focus:ring focus:ring-tema-marun focus:ring-opacity-20 transition-all w-56 outline-none" style="padding-left: 2.5rem;">
                         </div>
                         <!-- Dropdown Results -->
                         <div x-show="isOpen && (results.products.length > 0 || results.invoices.length > 0 || results.customers.length > 0)" 
@@ -321,55 +322,72 @@
                         </div>
                     </div>
 
-                    <div class="hidden md:flex items-center text-sm text-gray-500 gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        {{ now()->translatedFormat('l, d M Y') }}
+                    <!-- Tanggal — hanya di layar sangat besar -->
+                    <div class="hidden 2xl:flex items-center text-sm text-gray-500 gap-1.5 whitespace-nowrap">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        {{ now()->translatedFormat('d M Y') }}
                     </div>
 
-                    <div class="hidden md:block h-6 w-px bg-gray-200"></div>
+                    <!-- Divider -->
+                    <div class="hidden lg:block h-6 w-px bg-gray-200 flex-shrink-0"></div>
 
-                    <!-- Tombol Cek E-Catalog -->
-                    <a href="{{ route('catalog.index') }}" target="_blank" class="flex items-center gap-1.5 rounded-lg bg-tema-kuning hover:bg-yellow-500 text-tema-hitam px-3 py-2 text-sm font-bold transition-all duration-200 shadow-sm border border-yellow-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        <span>E-Catalog</span>
+                    <!-- Tombol E-Catalog -->
+                    <a href="{{ route('catalog.index') }}" target="_blank"
+                       title="Lihat E-Catalog"
+                       class="flex items-center gap-1.5 rounded-lg bg-tema-kuning hover:bg-yellow-500 text-tema-hitam px-2.5 py-1.5 text-sm font-bold transition-all duration-200 shadow-sm border border-yellow-400 whitespace-nowrap flex-shrink-0">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span class="hidden sm:inline">E-Catalog</span>
                     </a>
 
+                    <!-- Tombol Backup Database (hanya superadmin) -->
                     @if(auth()->user() && auth()->user()->role === 'superadmin')
-                    <!-- Tombol Backup Database -->
                     <a href="{{ route('backup.download') }}"
                        x-data="{ loading: false }"
-                       @click="loading = true; setTimeout(() => loading = false, 5000)"
-                       :class="loading ? 'opacity-70 pointer-events-none' : ''"
-                       class="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 text-sm font-bold transition-all duration-200 shadow-sm border border-emerald-700">
-                        <svg x-show="!loading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <svg x-show="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                        <span x-text="loading ? 'Memproses...' : 'Backup DB'"></span>
+                       @click="loading = true; setTimeout(() => loading = false, 8000)"
+                       :class="loading ? 'opacity-60 pointer-events-none' : ''"
+                       title="Backup Database"
+                       class="flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 text-sm font-bold transition-all duration-200 shadow-sm border border-emerald-700 whitespace-nowrap flex-shrink-0">
+                        <svg x-show="!loading" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <svg x-show="loading" class="w-4 h-4 flex-shrink-0 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                        <span class="hidden sm:inline" x-text="loading ? 'Proses...' : 'Backup DB'">Backup DB</span>
                     </a>
                     @endif
 
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-tema-kuning to-yellow-500 flex items-center justify-center text-tema-hitam text-xs font-bold shadow-sm">
+                    <!-- Divider -->
+                    <div class="h-6 w-px bg-gray-200 flex-shrink-0"></div>
+
+                    <!-- User Avatar + Nama -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-tema-kuning to-yellow-500 flex items-center justify-center text-tema-hitam text-xs font-bold shadow-sm flex-shrink-0">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                         </div>
-                        <span class="hidden sm:block text-sm font-semibold text-gray-700">
-                            {{ auth()->user()->name ?? 'Admin UMAR' }}
+                        <span class="hidden lg:block text-sm font-semibold text-gray-700 whitespace-nowrap max-w-[100px] truncate">
+                            {{ auth()->user()->name ?? 'Admin' }}
                         </span>
                     </div>
 
-                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-all duration-200 border border-gray-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <span class="hidden sm:inline">Profil</span>
+                    <!-- Tombol Profil -->
+                    <a href="{{ route('profile.edit') }}"
+                       title="Edit Profil"
+                       class="flex items-center gap-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-all duration-200 border border-gray-200 whitespace-nowrap flex-shrink-0">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span class="hidden md:inline">Profil</span>
                     </a>
 
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <!-- Tombol Logout -->
+                    <form method="POST" action="{{ route('logout') }}" class="inline flex-shrink-0">
                         @csrf
-                        <button type="submit" class="flex items-center gap-1.5 rounded-lg bg-gray-100 hover:bg-red-50 hover:text-red-600 px-3 py-2 text-sm font-medium text-gray-600 transition-all duration-200 border border-gray-200 hover:border-red-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            <span class="hidden sm:inline">Logout</span>
+                        <button type="submit"
+                                title="Logout"
+                                class="flex items-center gap-1.5 rounded-lg bg-gray-100 hover:bg-red-50 hover:text-red-600 px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-all duration-200 border border-gray-200 hover:border-red-200 whitespace-nowrap">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            <span class="hidden md:inline">Logout</span>
                         </button>
                     </form>
+
                 </div>
             </header>
+
 
             <!-- Main Content Area — scrollable -->
             <main class="flex-1 overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
