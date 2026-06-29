@@ -92,45 +92,51 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'merk_id' => 'nullable|exists:merks,id',
-            'sku' => 'required|string|unique:products,sku',
-            'nama_barang' => 'required|string|max:255',
-            'satuan' => 'nullable|string|max:50',
-            'deskripsi' => 'nullable|string',
-            'harga_modal' => 'required|numeric|min:0',
-            'harga_jual' => 'required|numeric|min:0',
+        $request->validate([
+            'category_id'  => 'required|exists:categories,id',
+            'merk_id'      => 'nullable|exists:merks,id',
+            'sku'          => 'required|string|unique:products,sku',
+            'nama_barang'  => 'required|string|max:255',
+            'satuan'       => 'nullable|string|max:50',
+            'deskripsi'    => 'nullable|string',
+            'harga_modal'  => 'required|numeric|min:0',
+            'harga_jual'   => 'required|numeric|min:0',
             'harga_grosir' => 'nullable|numeric|min:0',
-            'stok_saat_ini' => 'required|integer|min:0',
+            'stok_saat_ini'=> 'required|integer|min:0',
             'stok_minimum' => 'nullable|integer|min:0',
-            'gambar' => 'nullable|array|max:5',
-            'gambar.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar'       => 'nullable|array|max:5',
+            'gambar.*'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
+        // Upload gambar
+        $savedPaths = [];
         if ($request->hasFile('gambar')) {
-            $uploadedFiles = $request->file('gambar');
-            if (is_array($uploadedFiles)) {
-                $savedPaths = [];
-                foreach ($uploadedFiles as $file) {
-                    if ($file->isValid()) {
-                        $path = $file->store('products', 'public');
-                        @mkdir(dirname(public_path('storage/' . $path)), 0777, true);
-                        @copy(storage_path('app/public/' . $path), public_path('storage/' . $path));
-                        $savedPaths[] = $path;
-                    }
-                }
-                
-                if (count($savedPaths) > 0) {
-                    $validated['gambar'] = $savedPaths[0];
-                    if (count($savedPaths) > 1) {
-                        $validated['gambar_tambahan'] = array_slice($savedPaths, 1);
-                    }
+            foreach ((array) $request->file('gambar') as $file) {
+                if ($file && $file->isValid()) {
+                    $path = $file->store('products', 'public');
+                    $dest = public_path('storage/' . $path);
+                    @mkdir(dirname($dest), 0777, true);
+                    @copy(storage_path('app/public/' . $path), $dest);
+                    $savedPaths[] = $path;
                 }
             }
         }
 
-        Product::create($validated);
+        Product::create([
+            'category_id'    => $request->category_id,
+            'merk_id'        => $request->merk_id ?: null,
+            'sku'            => $request->sku,
+            'nama_barang'    => $request->nama_barang,
+            'satuan'         => $request->satuan ?: null,
+            'deskripsi'      => $request->deskripsi ?: null,
+            'harga_modal'    => $request->harga_modal,
+            'harga_jual'     => $request->harga_jual,
+            'harga_grosir'   => $request->harga_grosir ?: null,
+            'stok_saat_ini'  => $request->stok_saat_ini,
+            'stok_minimum'   => $request->stok_minimum ?? 0,
+            'gambar'         => $savedPaths[0] ?? null,
+            'gambar_tambahan'=> count($savedPaths) > 1 ? array_slice($savedPaths, 1) : null,
+        ]);
 
         return redirect(session('products_url', route('products.index')))->with('success', 'Barang berhasil ditambahkan.');
     }
@@ -144,7 +150,7 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
+        $request->validate([
             'category_id' => 'required|exists:categories,id',
             'merk_id' => 'nullable|exists:merks,id',
             'sku' => 'required|string|unique:products,sku,' . $product->id,
@@ -157,7 +163,7 @@ class ProductController extends Controller
             'stok_saat_ini' => 'required|integer|min:0',
             'stok_minimum' => 'nullable|integer|min:0',
             'gambar' => 'nullable|array|max:5',
-            'gambar.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gambar.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
             'existing_images' => 'nullable|array',
         ]);
 
@@ -181,10 +187,11 @@ class ProductController extends Controller
             $uploadedFiles = $request->file('gambar');
             if (is_array($uploadedFiles)) {
                 foreach ($uploadedFiles as $file) {
-                    if ($file->isValid()) {
+                    if ($file && $file->isValid()) {
                         $path = $file->store('products', 'public');
-                        @mkdir(dirname(public_path('storage/' . $path)), 0777, true);
-                        @copy(storage_path('app/public/' . $path), public_path('storage/' . $path));
+                        $dest = public_path('storage/' . $path);
+                        @mkdir(dirname($dest), 0777, true);
+                        @copy(storage_path('app/public/' . $path), $dest);
                         $newImages[] = $path;
                     }
                 }
@@ -195,15 +202,21 @@ class ProductController extends Controller
         $allFinalImages = array_merge($keptImages, $newImages);
         $allFinalImages = array_slice($allFinalImages, 0, 5);
         
-        if (count($allFinalImages) > 0) {
-            $validated['gambar'] = $allFinalImages[0];
-            $validated['gambar_tambahan'] = count($allFinalImages) > 1 ? array_slice($allFinalImages, 1) : null;
-        } else {
-            $validated['gambar'] = null;
-            $validated['gambar_tambahan'] = null;
-        }
-
-        $product->update($validated);
+        // Update data secara eksplisit
+        $product->category_id = $request->category_id;
+        $product->merk_id = $request->merk_id ?: null;
+        $product->sku = $request->sku;
+        $product->nama_barang = $request->nama_barang;
+        $product->satuan = $request->satuan ?: null;
+        $product->deskripsi = $request->deskripsi ?: null;
+        $product->harga_modal = $request->harga_modal;
+        $product->harga_jual = $request->harga_jual;
+        $product->harga_grosir = $request->harga_grosir ?: null;
+        $product->stok_saat_ini = $request->stok_saat_ini;
+        $product->stok_minimum = $request->stok_minimum ?? 0;
+        $product->gambar = $allFinalImages[0] ?? null;
+        $product->gambar_tambahan = count($allFinalImages) > 1 ? array_slice($allFinalImages, 1) : null;
+        $product->save();
 
         return redirect(session('products_url', route('products.index')))->with('success', 'Barang berhasil diubah.');
     }
