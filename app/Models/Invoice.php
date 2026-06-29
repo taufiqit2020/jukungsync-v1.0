@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 class Invoice extends Model
 {
@@ -39,6 +41,22 @@ class Invoice extends Model
     public function invoiceItems(): HasMany
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    /**
+     * Relasi ke User (Klien) melalui klien_id
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'klien_id');
+    }
+
+    /**
+     * Alias klien -> customer
+     */
+    public function klien(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'klien_id');
     }
 
     /**
