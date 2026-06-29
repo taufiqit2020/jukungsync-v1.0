@@ -120,6 +120,14 @@
             Cetak Surat Jalan
         </a>
 
+        <a href="{{ route('invoices.surat-jalan-lx310', $invoice->id) }}" target="_blank" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm" title="Cetak Surat Jalan untuk printer Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)">
+            🖨️ SJ LX-310
+        </a>
+
+        <a href="{{ route('invoices.invoice-lx310', $invoice->id) }}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm" title="Cetak Invoice untuk printer Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)">
+            🖨️ Invoice LX-310
+        </a>
+
         <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
             Cetak (Ctrl+P)

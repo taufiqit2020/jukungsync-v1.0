@@ -105,9 +105,14 @@ Route::middleware('auth')->group(function () {
     
     // Surat Jalan / Tanda Terima Barang (Invoice Manual)
     Route::get('invoices/{invoice}/surat-jalan', [\App\Http\Controllers\InvoiceController::class, 'suratJalan'])->name('invoices.surat-jalan');
+    // Cetak Surat Jalan LX-310 Dot Matrix (Epson LX-310, Continuous Form 9.5x11in 3-ply)
+    Route::get('invoices/{invoice}/surat-jalan-lx310', [\App\Http\Controllers\InvoiceController::class, 'suratJalanLx310'])->name('invoices.surat-jalan-lx310');
+    // Cetak Invoice LX-310 Dot Matrix (Epson LX-310, Continuous Form 9.5x11in 3-ply)
+    Route::get('invoices/{invoice}/invoice-lx310', [\App\Http\Controllers\InvoiceController::class, 'invoiceLx310'])->name('invoices.invoice-lx310');
     // Surat Jalan Pesanan Online
     Route::get('online-orders/{online_order}/surat-jalan', [OnlineOrderController::class, 'suratJalan'])->name('online-orders.surat-jalan');
     
+
     // FR-04: Global Search (accessible to all authenticated users)
     Route::get('/api/search', [\App\Http\Controllers\SearchController::class, 'search'])->name('api.search');
     

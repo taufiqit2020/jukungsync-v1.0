@@ -217,8 +217,36 @@ class InvoiceController extends Controller
             abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
         }
         
-        $invoice->load('invoiceItems.product.category');
+        $invoice->load('invoiceItems.product.category', 'invoiceItems.product.merk', 'customer');
         return view('invoices.surat_jalan', compact('invoice'));
+    }
+
+    /**
+     * Cetak Surat Jalan & Tanda Terima Barang untuk Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)
+     */
+    public function suratJalanLx310(Invoice $invoice)
+    {
+        $user = auth()->user();
+        if ($user->role === 'customer' && $invoice->klien_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        $invoice->load('invoiceItems.product.category', 'invoiceItems.product.merk', 'customer');
+        return view('invoices.surat_jalan_lx310', compact('invoice'));
+    }
+
+    /**
+     * Cetak Invoice untuk Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)
+     */
+    public function invoiceLx310(Invoice $invoice)
+    {
+        $user = auth()->user();
+        if ($user->role === 'customer' && $invoice->klien_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        $invoice->load('invoiceItems.product.category', 'invoiceItems.product.merk', 'customer');
+        return view('invoices.invoice_lx310', compact('invoice'));
     }
 
     public function exportWord(Invoice $invoice)
