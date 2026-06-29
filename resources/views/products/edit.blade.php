@@ -351,17 +351,23 @@ document.addEventListener('DOMContentLoaded', function() {
 let currentPersenGrosir = 0;
 
 function setGrosirPersen(persen, btnElement) {
+    const isDeactivating = (currentPersenGrosir === persen);
+
+    // Reset all buttons
     document.querySelectorAll('.btn-grosir-persen').forEach(b => {
-        b.classList.remove('bg-red-800', 'text-white', 'border-red-800');
-        b.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+        b.style.backgroundColor = '#ffffff';
+        b.style.color = '#374151';
+        b.style.borderColor = '#e5e7eb';
     });
 
-    if (currentPersenGrosir === persen) {
+    if (isDeactivating) {
         currentPersenGrosir = 0;
     } else {
         currentPersenGrosir = persen;
-        btnElement.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
-        btnElement.classList.add('bg-red-800', 'text-white', 'border-red-800');
+        // Set active style (marun background, white text)
+        btnElement.style.backgroundColor = '#7f1d1d';
+        btnElement.style.color = '#ffffff';
+        btnElement.style.borderColor = '#7f1d1d';
     }
     
     calculateGrosir();
@@ -399,8 +405,9 @@ document.addEventListener('DOMContentLoaded', function() {
         hargaGrosirInput.addEventListener('input', function() {
             currentPersenGrosir = 0;
             document.querySelectorAll('.btn-grosir-persen').forEach(b => {
-                b.classList.remove('bg-red-800', 'text-white', 'border-red-800');
-                b.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+                b.style.backgroundColor = '#ffffff';
+                b.style.color = '#374151';
+                b.style.borderColor = '#e5e7eb';
             });
             const grosirInfo = document.getElementById('grosir_info');
             if (grosirInfo) grosirInfo.innerText = '';
