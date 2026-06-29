@@ -6,16 +6,17 @@
     <title>Invoice - {{ $invoice->nomor_invoice }}</title>
     <style>
         /* ============================================================
-           EPSON LX-310 / DOT MATRIX - CONTINUOUS FORM 9.5 x 11 INCH
-           Paperline 3-ply (Original + 2 Tembusan)
+           EPSON LX-310 / DOT MATRIX - CONTINUOUS FORM
+           Ukuran kertas: 24.5cm (lebar) x 28cm (panjang)
+           Margin printable: kiri 1cm, kanan 0.5cm, atas 0.5cm, bawah 0.5cm
            ============================================================ */
 
         @page {
-            size: 9.5in 11in;
-            margin-top: 0.35in;
-            margin-bottom: 0.35in;
-            margin-left: 0.45in;
-            margin-right: 0.35in;
+            size: 24.5cm 28cm;
+            margin-top: 0.5cm;
+            margin-bottom: 0.5cm;
+            margin-left: 1cm;
+            margin-right: 0.5cm;
         }
 
         * {
@@ -29,8 +30,8 @@
             font-size: 10pt;
             color: #000;
             background: #fff;
-            width: 8.7in;
-            max-width: 8.7in;
+            width: 23cm;
+            max-width: 23cm;
         }
 
         .no-print {
