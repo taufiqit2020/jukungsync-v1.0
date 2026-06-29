@@ -269,19 +269,7 @@
     </div>
 </div>
 
-@php
-    $lembarList = [
-        'LEMBAR ASLI (UNTUK KLIEN)',
-        'TEMBUSAN 1 (FILE PEMBUKUAN)',
-        'TEMBUSAN 2 (ARSIP PERUSAHAAN)',
-    ];
-@endphp
-
-@foreach($lembarList as $idx => $lembar)
-
-@if($idx > 0)
-<div class="ply-divider">- - - - - POTONG DI SINI - - - - -</div>
-@endif
+@php $lembar = 'LEMBAR ASLI'; @endphp
 
 <div style="page-break-inside: avoid;">
 
@@ -493,7 +481,6 @@
     </div>
 
 </div>
-@endforeach
 
 </body>
 </html>

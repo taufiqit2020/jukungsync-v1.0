@@ -262,7 +262,7 @@
     <div>
         <strong>🖨️ Cetak Surat Jalan &amp; Tanda Terima Barang</strong>
         <span style="font-size:12px; opacity:0.8; margin-left:8px;">
-            Epson LX-310 &bull; Continuous Form 9.5×11 inch &bull; 3-ply Paperline
+            Epson LX-310 &bull; Continuous Form 9.5×11 inch &bull; Paperline
         </span>
     </div>
     <div style="display:flex;gap:8px;">
@@ -271,22 +271,8 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!--   LEMBAR 1 : ORIGINAL                                        -->
-<!-- ============================================================ -->
-@include('invoices._lx310_sj_body', ['invoice' => $invoice, 'lembar' => 'LEMBAR ASLI (ORIGINAL)'])
-
-<!-- ============================================================ -->
-<!--   LEMBAR 2 : TEMBUSAN 1 (untuk file perusahaan)             -->
-<!-- ============================================================ -->
-<div class="ply-divider">- - - - - POTONG DI SINI - - - - -</div>
-@include('invoices._lx310_sj_body', ['invoice' => $invoice, 'lembar' => 'TEMBUSAN 1 (FILE PERUSAHAAN)'])
-
-<!-- ============================================================ -->
-<!--   LEMBAR 3 : TEMBUSAN 2 (untuk arsip pengiriman)           -->
-<!-- ============================================================ -->
-<div class="ply-divider">- - - - - POTONG DI SINI - - - - -</div>
-@include('invoices._lx310_sj_body', ['invoice' => $invoice, 'lembar' => 'TEMBUSAN 2 (ARSIP PENGIRIMAN)'])
+@include('invoices._lx310_sj_body', ['invoice' => $invoice, 'lembar' => 'LEMBAR ASLI'])
 
 </body>
 </html>
+
