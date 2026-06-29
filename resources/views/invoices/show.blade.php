@@ -115,6 +115,11 @@
             Export Word
         </a>
 
+        <a href="{{ route('invoices.export-excel', $invoice->id) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Export Excel
+        </a>
+
         <a href="{{ route('invoices.surat-jalan', $invoice->id) }}" target="_blank" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zm12 0a2 2 0 11-4 0 2 2 0 014 0zm0 0V9a2 2 0 00-2-2h-5M9 7V5a2 2 0 012-2h4a2 2 0 012 2v2m-3 5h3m-6 0h3m-3 0a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             Cetak Surat Jalan
@@ -124,8 +129,8 @@
             🖨️ SJ LX-310
         </a>
 
-        <a href="{{ route('invoices.invoice-lx310', $invoice->id) }}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm" title="Cetak Invoice untuk printer Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)">
-            🖨️ Invoice LX-310
+        <a href="{{ route('invoices.invoice-lx310', $isInternal ? ['invoice' => $invoice->id, 'mode' => 'internal'] : $invoice->id) }}" target="_blank" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm" title="Cetak Invoice untuk printer Epson LX-310 (Continuous Form 9.5x11 inch 3-ply){{ $isInternal ? ' - Mode Internal' : '' }}">
+            🖨️ Invoice LX-310{{ $isInternal ? ' (Internal)' : '' }}
         </a>
 
         <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-sm">

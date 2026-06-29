@@ -238,7 +238,7 @@ class InvoiceController extends Controller
     /**
      * Cetak Invoice untuk Epson LX-310 (Continuous Form 9.5x11 inch 3-ply)
      */
-    public function invoiceLx310(Invoice $invoice)
+    public function invoiceLx310(Invoice $invoice, Request $request)
     {
         $user = auth()->user();
         if ($user->role === 'customer' && $invoice->klien_id !== $user->id) {
@@ -246,7 +246,8 @@ class InvoiceController extends Controller
         }
 
         $invoice->load('invoiceItems.product.category', 'invoiceItems.product.merk', 'customer');
-        return view('invoices.invoice_lx310', compact('invoice'));
+        $isInternal = $request->has('mode') && $request->mode === 'internal';
+        return view('invoices.invoice_lx310', compact('invoice', 'isInternal'));
     }
 
     public function exportWord(Invoice $invoice)
@@ -258,6 +259,22 @@ class InvoiceController extends Controller
         
         return response($html)
             ->header('Content-Type', 'application/msword')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Cache-Control', 'max-age=0');
+    }
+
+    /**
+     * Export Invoice ke format Excel (.xls) menggunakan HTML table
+     */
+    public function exportExcel(Invoice $invoice)
+    {
+        $invoice->load('invoiceItems.product.category', 'invoiceItems.product.merk', 'customer');
+        $html = view('invoices.excel', compact('invoice'))->render();
+        
+        $filename = 'Invoice-' . str_replace('/', '-', $invoice->nomor_invoice) . '.xls';
+        
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->header('Cache-Control', 'max-age=0');
     }

@@ -130,6 +130,7 @@ Route::middleware('auth')->group(function () {
         Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
         Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
         Route::get('invoices/{invoice}/word', [InvoiceController::class, 'exportWord'])->name('invoices.export-word');
+        Route::get('invoices/{invoice}/excel', [InvoiceController::class, 'exportExcel'])->name('invoices.export-excel');
         Route::get('invoices/{invoice}/struk', [InvoiceController::class, 'struk'])->name('invoices.struk');
 
         // Laporan (Read)
