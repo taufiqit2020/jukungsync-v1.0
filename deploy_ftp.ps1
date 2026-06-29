@@ -6,8 +6,8 @@ param(
 $ftpHost = "ftp.ptutamamadaniraya.com"
 $ftpUser = "u169145000"
 $ftpPassword = $FtpPassword
-$localFile = "C:\Users\USER\.gemini\antigravity\scratch\JukungSync-V1.1\public\installer_v59.php"
-$remoteFile = "installer_v59.php"
+$localFile = "C:\Users\USER\.gemini\antigravity\scratch\JukungSync-V1.1\public\installer_v60.php"
+$remoteFile = "installer_v60.php"
 $remoteUri = "ftp://$ftpHost/public_html/$remoteFile"
 
 Write-Host "=== Deploy Otomatis ke Hostinger ===" -ForegroundColor Cyan
