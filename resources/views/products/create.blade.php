@@ -89,7 +89,7 @@
                         <label for="harga_modal" class="block text-xs font-black text-gray-700 uppercase tracking-wider mb-1.5">Harga Modal <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">Rp</span>
-                            <input type="number" name="harga_modal" id="harga_modal" value="{{ old('harga_modal') }}" class="pl-9 w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold" required>
+                            <input type="number" name="harga_modal" id="harga_modal" value="{{ old('harga_modal') }}" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold" style="padding-left: 38px !important;" required>
                         </div>
                         @error('harga_modal')<p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p>@enderror
                     </div>
@@ -98,7 +98,7 @@
                         <label for="harga_jual" class="block text-xs font-black text-gray-700 uppercase tracking-wider mb-1.5">Harga Jual <span class="text-red-500">*</span></label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">Rp</span>
-                            <input type="number" name="harga_jual" id="harga_jual" value="{{ old('harga_jual') }}" class="pl-9 w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold" required>
+                            <input type="number" name="harga_jual" id="harga_jual" value="{{ old('harga_jual') }}" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold" style="padding-left: 38px !important;" required>
                         </div>
                         @error('harga_jual')<p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p>@enderror
                     </div>
@@ -107,7 +107,7 @@
                         <label for="harga_grosir" class="block text-xs font-black text-gray-700 uppercase tracking-wider mb-1.5">Harga Grosir (Opsional)</label>
                         <div class="relative mb-2">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 font-bold text-sm">Rp</span>
-                            <input type="number" name="harga_grosir" id="harga_grosir" value="{{ old('harga_grosir') }}" class="pl-9 w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold">
+                            <input type="number" name="harga_grosir" id="harga_grosir" value="{{ old('harga_grosir') }}" class="w-full rounded-xl border-gray-300 shadow-sm focus:border-red-900 focus:ring focus:ring-red-900 focus:ring-opacity-20 py-2.5 px-3 border text-sm font-bold" style="padding-left: 38px !important;">
                         </div>
                         @error('harga_grosir')<p class="text-red-500 text-xs mt-1 font-bold">{{ $message }}</p>@enderror
 
