@@ -12,6 +12,15 @@ $files = [
     'storage/app/public/products/Ztxw9M1yS1hwyzMNDxvEQN4vHF9pv4BDbL9cSoOb.jpg',
     'public/storage/products/Ztxw9M1yS1hwyzMNDxvEQN4vHF9pv4BDbL9cSoOb.jpg',
     'public/dump_production_images.php',
+    'database/migrations/2026_06_30_000001_create_slip_gajis_table.php',
+    'app/Models/SlipGaji.php',
+    'app/Http/Controllers/SlipGajiController.php',
+    'resources/views/layouts/admin.blade.php',
+    'resources/views/slip_gaji/index.blade.php',
+    'resources/views/slip_gaji/create.blade.php',
+    'resources/views/slip_gaji/edit.blade.php',
+    'resources/views/slip_gaji/show.blade.php',
+    'resources/views/slip_gaji/excel.blade.php',
 ];
 
 $php = "<?php\n";
