@@ -8,7 +8,7 @@ $ftpUser = "u169145000"
 $ftpPassword = $FtpPassword
 $localFile = "C:\Users\USER\.gemini\antigravity\scratch\JukungSync-V1.1\public\installer_v60.php"
 $remoteFile = "installer_v60.php"
-$remoteUri = "ftp://$ftpHost/public_html/$remoteFile"
+$remoteUri = "ftp://$ftpHost/domains/ptutamamadaniraya.com/public_html/public/$remoteFile"
 
 Write-Host "=== Deploy Otomatis ke Hostinger ===" -ForegroundColor Cyan
 Write-Host "File  : $localFile" -ForegroundColor Gray
@@ -23,9 +23,24 @@ if ([string]::IsNullOrEmpty($ftpPassword)) {
 
 try {
     Write-Host "Mengunggah file installer..." -ForegroundColor Yellow
-    $wc = New-Object System.Net.WebClient
-    $wc.Credentials = New-Object System.Net.NetworkCredential($ftpUser, $ftpPassword)
-    $wc.UploadFile($remoteUri, $localFile)
+    
+    $request = [System.Net.FtpWebRequest]::Create($remoteUri)
+    $request.Method = [System.Net.WebRequestMethods+Ftp]::UploadFile
+    $request.Credentials = New-Object System.Net.NetworkCredential($ftpUser, $ftpPassword)
+    $request.UsePassive = $true
+    $request.UseBinary = $true
+    $request.KeepAlive = $false
+    
+    $fileBytes = [System.IO.File]::ReadAllBytes($localFile)
+    $request.ContentLength = $fileBytes.Length
+    
+    $requestStream = $request.GetRequestStream()
+    $requestStream.Write($fileBytes, 0, $fileBytes.Length)
+    $requestStream.Close()
+    
+    $response = $request.GetResponse()
+    $response.Close()
+    
     Write-Host "✅ Upload berhasil!" -ForegroundColor Green
 
     Write-Host ""
@@ -35,7 +50,7 @@ try {
     if ($response.StatusCode -eq 200) {
         Write-Host "✅ Installer berhasil dijalankan!" -ForegroundColor Green
         Write-Host ""
-        Write-Host "Silakan buka: https://ptutamadaniraya.com/products" -ForegroundColor Cyan
+        Write-Host "Silakan buka: https://ptutamamadaniraya.com/products" -ForegroundColor Cyan
     } else {
         Write-Host "⚠️ Installer dijalankan tapi status: $($response.StatusCode)" -ForegroundColor Yellow
     }

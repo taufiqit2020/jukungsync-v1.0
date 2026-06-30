@@ -1,4 +1,4 @@
-<html xmlns:x="urn:schemas-microsoft-com:office:excel"
+<html xmlns:xx="urn:schemas-microsoft-com:office:excel"
 xmlns:o="urn:schemas-microsoft-com:office:office"
 xmlns="http://www.w3.org/TR/REC-html40">
 <head>
@@ -7,19 +7,19 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <meta name="Generator" content="Microsoft Excel 15">
 <!--[if gte mso 9]>
 <xml>
-<x:ExcelWorkbook>
-<x:ExcelWorksheets>
-<x:ExcelWorksheet>
-<x:Name>Invoice {{ $invoice->nomor_invoice }}</x:Name>
-<x:WorksheetOptions>
-<x:DisplayGridlines/>
-<x:Print>
-<x:ValidPrinterInfo/>
-</x:Print>
-</x:WorksheetOptions>
-</x:ExcelWorksheet>
-</x:ExcelWorksheets>
-</x:ExcelWorkbook>
+<xx:ExcelWorkbook>
+<xx:ExcelWorksheets>
+<xx:ExcelWorksheet>
+<xx:Name>Invoice {{ $invoice->nomor_invoice }}</xx:Name>
+<xx:WorksheetOptions>
+<xx:DisplayGridlines/>
+<xx:Print>
+<xx:ValidPrinterInfo/>
+</xx:Print>
+</xx:WorksheetOptions>
+</xx:ExcelWorksheet>
+</xx:ExcelWorksheets>
+</xx:ExcelWorkbook>
 </xml>
 <![endif]-->
 <style>

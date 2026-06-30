@@ -330,6 +330,22 @@ document.addEventListener('DOMContentLoaded', function() {
             previewGrid.classList.add('hidden');
         }
     }
+
+    // Peringatan sebelum reload/meninggalkan halaman jika ada gambar belum disimpan
+    let isSubmitting = false;
+    const productForm = document.getElementById('productForm');
+    if (productForm) {
+        productForm.addEventListener('submit', () => {
+            isSubmitting = true;
+        });
+    }
+
+    window.addEventListener('beforeunload', function(e) {
+        if (activeFiles.length > 0 && !isSubmitting) {
+            e.preventDefault();
+            e.returnValue = 'Anda memiliki gambar yang belum disimpan. Yakin ingin meninggalkan halaman ini?';
+        }
+    });
 });
 
 // -------------------------------------------------------------

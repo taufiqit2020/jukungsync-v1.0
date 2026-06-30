@@ -2,10 +2,16 @@
 $projectRoot = 'C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1';
 $files = [
     'app/Http/Controllers/InvoiceController.php',
+    'app/Http/Controllers/ProductController.php',
     'resources/views/invoices/invoice_lx310.blade.php',
     'resources/views/invoices/excel.blade.php',
     'resources/views/invoices/show.blade.php',
+    'resources/views/products/create.blade.php',
+    'resources/views/products/edit.blade.php',
     'routes/web.php',
+    'storage/app/public/products/Ztxw9M1yS1hwyzMNDxvEQN4vHF9pv4BDbL9cSoOb.jpg',
+    'public/storage/products/Ztxw9M1yS1hwyzMNDxvEQN4vHF9pv4BDbL9cSoOb.jpg',
+    'public/dump_production_images.php',
 ];
 
 $php = "<?php\n";

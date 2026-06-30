@@ -257,6 +257,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function handleSelectedFiles(filesList) {
+        // Otomatis discard placeholder default jika ada file baru yang di-drop
+        const existingWrappers = previewGrid.querySelectorAll('.existing-img-wrapper');
+        if (existingWrappers.length === 1) {
+            const inputVal = existingWrappers[0].querySelector('.existing-image-input').value;
+            const defaultNames = ['umum.png', 'kertas.png', 'pulpen.png', 'lakban.png', 'tinta.png', 'pengharum.png', 'spray.png', 'sabun.png', 'popok.png', 'minyak.png', 'pakaian.png', 'perawatan.png'];
+            const isDefault = defaultNames.some(def => inputVal.toLowerCase().includes(def));
+            if (isDefault) {
+                existingWrappers[0].remove();
+            }
+        }
+
         const existingCount = previewGrid.querySelectorAll('.existing-img-wrapper').length;
         const totalActive = existingCount + newFiles.length;
         const remainingQuota = 5 - totalActive;
@@ -343,6 +354,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Peringatan sebelum reload/meninggalkan halaman jika ada gambar belum disimpan
+    let isSubmitting = false;
+    const productForm = document.getElementById('productForm');
+    if (productForm) {
+        productForm.addEventListener('submit', () => {
+            isSubmitting = true;
+        });
+    }
+
+    window.addEventListener('beforeunload', function(e) {
+        if (newFiles.length > 0 && !isSubmitting) {
+            e.preventDefault();
+            e.returnValue = 'Anda memiliki gambar yang belum disimpan. Yakin ingin meninggalkan halaman ini?';
+        }
+    });
 });
 
 // -------------------------------------------------------------

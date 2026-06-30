@@ -176,8 +176,10 @@ class ProductController extends Controller
         // Hapus gambar lama yang tidak dipertahankan
         foreach ($oldImages as $oldImg) {
             if (!in_array($oldImg, $keptImages)) {
-                Storage::disk('public')->delete($oldImg);
-                @unlink(public_path('storage/' . $oldImg));
+                if (!$this->isDefaultImage($oldImg)) {
+                    Storage::disk('public')->delete($oldImg);
+                    @unlink(public_path('storage/' . $oldImg));
+                }
             }
         }
         
@@ -228,7 +230,7 @@ class ProductController extends Controller
             $product->delete();
             
             foreach ($allImages as $img) {
-                if ($img) {
+                if ($img && !$this->isDefaultImage($img)) {
                     Storage::disk('public')->delete($img);
                     @unlink(public_path('storage/' . $img));
                 }
@@ -240,5 +242,19 @@ class ProductController extends Controller
             }
             return redirect(session('products_url', route('products.index')))->with('error', 'Terjadi kesalahan sistem saat menghapus barang.');
         }
+    }
+
+    private function isDefaultImage($path)
+    {
+        if (empty($path)) {
+            return false;
+        }
+        $defaultNames = [
+            'umum.png', 'kertas.png', 'pulpen.png', 'lakban.png', 'tinta.png', 
+            'pengharum.png', 'spray.png', 'sabun.png', 'popok.png', 'minyak.png', 
+            'pakaian.png', 'perawatan.png'
+        ];
+        $filename = basename($path);
+        return in_array(strtolower($filename), $defaultNames);
     }
 }

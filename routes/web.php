@@ -75,18 +75,20 @@ Route::get('/', function () {
 
 // Authentication Routes (Guest Only)
 Route::middleware('guest')->group(function () {
-    // Login & Register (Limit: 5 attempt per menit untuk mencegah Brute-Force/Spam)
+    // Tampilan halaman (Tidak di-throttle agar user bisa me-refresh halaman login/register tanpa terblokir)
+    Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('register', [AuthController::class, 'showRegister'])->name('register');
+
+    // Form submission (Limit: 5 attempt per menit untuk mencegah Brute-Force/Spam)
     Route::middleware('throttle:5,1')->group(function () {
-        Route::get('login', [AuthController::class, 'showLogin'])->name('login');
         Route::post('login', [AuthController::class, 'login'])->name('login.post');
-        Route::get('register', [AuthController::class, 'showRegister'])->name('register');
         Route::post('register', [AuthController::class, 'register'])->name('register.post');
     });
 
-    // OTP Verification Routes
+    // OTP Verification Routes (Halaman verifikasi tidak di-throttle)
     Route::get('/verify-otp', [AuthController::class, 'showVerifyOtp'])->name('verify.otp');
     
-    // (Batasan: 5 percobaan per menit untuk cegah tebak kode)
+    // (Batasan: 5 percobaan kirim/verifikasi OTP per menit)
     Route::middleware('throttle:5,1')->group(function () {
         Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp.post');
         Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('resend.otp');
