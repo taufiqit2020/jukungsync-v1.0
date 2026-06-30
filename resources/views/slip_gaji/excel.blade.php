@@ -239,9 +239,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     <!-- SIGNATURES -->
     <tr>
-        <td colspan="2" class="ttd-header">Penerima / Karyawan</td>
+        <td colspan="2" class="ttd-header">Banjarbaru, {{ date('d F Y') }}<br>DIREKTUR</td>
         <td colspan="2">&nbsp;</td>
-        <td colspan="2" class="ttd-header">Banjarbaru, {{ date('d F Y') }}<br>Hormat Kami</td>
+        <td colspan="2" class="ttd-header">PENERIMA / KARYAWAN</td>
     </tr>
     <tr height="40">
         <td colspan="2">&nbsp;</td>
@@ -249,9 +249,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
         <td colspan="2">&nbsp;</td>
     </tr>
     <tr>
-        <td colspan="2" class="ttd-name">{{ $slipGaji->nama_karyawan }}</td>
-        <td colspan="2">&nbsp;</td>
         <td colspan="2" class="ttd-name">HJ. NORMAULIDA, S.H.</td>
+        <td colspan="2">&nbsp;</td>
+        <td colspan="2" class="ttd-name">{{ $slipGaji->nama_karyawan }}</td>
     </tr>
     <tr>
         <td colspan="2" class="ttd-footer">(Tanda Tangan &amp; Cap)</td>
