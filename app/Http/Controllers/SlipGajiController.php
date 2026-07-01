@@ -39,6 +39,7 @@ class SlipGajiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'perusahaan' => 'required|string|max:255',
             'nama_karyawan' => 'required|string|max:255',
             'jabatan' => 'nullable|string|max:255',
             'periode' => 'required|string|max:255',
@@ -66,6 +67,7 @@ class SlipGajiController extends Controller
     public function update(Request $request, SlipGaji $slipGaji)
     {
         $request->validate([
+            'perusahaan' => 'required|string|max:255',
             'nama_karyawan' => 'required|string|max:255',
             'jabatan' => 'nullable|string|max:255',
             'periode' => 'required|string|max:255',

@@ -99,7 +99,7 @@
     <div class="no-print max-w-4xl mx-auto mb-6 flex justify-between items-center bg-slate-900 text-white p-4 rounded-xl shadow-md">
         <div>
             <h2 class="text-sm font-bold">Cetak Slip Gaji (A4 Landscape Bagi 2)</h2>
-            <p class="text-xs text-gray-400">Nomor: {{ $slipGaji->nomor_slip }} &bull; Periode: {{ $slipGaji->periode }}</p>
+            <p class="text-xs text-gray-400">Nomor: {{ $slipGaji->nomor_slip }} &bull; Perusahaan: {{ $slipGaji->perusahaan ?? 'PT. UTAMA MADANI RAYA' }}</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('slip-gaji.excel', $slipGaji->id) }}" class="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
@@ -128,6 +128,9 @@
         } else {
             $formattedEmployeeName = strtoupper($formattedEmployeeName);
         }
+
+        // Determine active company style
+        $isFarma = (isset($slipGaji->perusahaan) && $slipGaji->perusahaan === 'PT. NUR MADANI FARMA');
     @endphp
 
     <!-- The A4 printable page wrapper -->
@@ -136,12 +139,36 @@
             <!-- FIRST HALF (COPY KARYAWAN) -->
             <div class="payslip-half">
                 <!-- Watermark Background -->
-                <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+                @if($isFarma)
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(13, 148, 136, 0.05); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none; z-index: 0; white-space: nowrap; user-select: none; width: 100%; text-align: center;">
+                        NUR MADANI FARMA
+                    </div>
+                @else
+                    <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+                @endif
 
                 <!-- Kop Surat Resmi -->
-                <div class="w-full mb-1">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
-                </div>
+                @if($isFarma)
+                    <div class="w-full mb-1 flex items-center justify-between p-2 rounded" style="background: linear-gradient(135deg, #064e3b 0%, #0d9488 100%); color: white; min-height: 52px; box-sizing: border-box; border: 1px solid #042f1a;">
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-center bg-white text-emerald-800 rounded-full w-8 h-8 font-black text-xs shadow border border-emerald-100">
+                                NMF
+                            </div>
+                            <div>
+                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #fcd34d;">PT. NUR MADANI FARMA</h1>
+                                <p class="text-[6px] font-semibold tracking-wide m-0 text-emerald-100 opacity-90 leading-tight">Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi</p>
+                            </div>
+                        </div>
+                        <div class="text-right text-[6px] leading-relaxed text-emerald-100 opacity-90 font-medium">
+                            <div>Telp: 0851-6665-7171</div>
+                            <div>Email: ptnurmadanifarma@gmail.com</div>
+                        </div>
+                    </div>
+                @else
+                    <div class="w-full mb-1">
+                        <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
+                    </div>
+                @endif
 
                 <!-- Judul Dokumen -->
                 <div class="flex justify-between items-center mb-1 border-b border-black pb-0.5">
@@ -274,7 +301,7 @@
                 </div>
 
                 <!-- Gaji Bersih Display Banner -->
-                <div class="mb-1.5 p-1.5 grid grid-cols-[60%_40%] bg-slate-900 text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: #111827;">
+                <div class="mb-1.5 p-1.5 grid grid-cols-[60%_40%] text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: {{ $isFarma ? '#064e3b' : '#111827' }};">
                     <span>Gaji Bersih Diterima (Net Salary) = A - B</span>
                     <div class="flex justify-between w-full text-[9px] px-1">
                         <span>Rp</span>
@@ -309,14 +336,25 @@
                 </div>
 
                 <!-- Official Company Footer -->
-                <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
-                    <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
-                    <div class="mt-0.5 text-gray-300 text-[6px]">
-                        <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
-                        <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
-                        <span>Website: www.ptutamamadaniraya.com</span>
+                @if($isFarma)
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-emerald-200 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
+                            <span>Website: www.nurmadanifarma.com</span>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-gray-300 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
+                            <span>Website: www.ptutamamadaniraya.com</span>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- DIVIDER SPACER -->
@@ -325,12 +363,36 @@
             <!-- SECOND HALF (COPY ARSIP) -->
             <div class="payslip-half">
                 <!-- Watermark Background -->
-                <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+                @if($isFarma)
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(13, 148, 136, 0.05); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none; z-index: 0; white-space: nowrap; user-select: none; width: 100%; text-align: center;">
+                        NUR MADANI FARMA
+                    </div>
+                @else
+                    <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+                @endif
 
                 <!-- Kop Surat Resmi -->
-                <div class="w-full mb-1">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
-                </div>
+                @if($isFarma)
+                    <div class="w-full mb-1 flex items-center justify-between p-2 rounded" style="background: linear-gradient(135deg, #064e3b 0%, #0d9488 100%); color: white; min-height: 52px; box-sizing: border-box; border: 1px solid #042f1a;">
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-center bg-white text-emerald-800 rounded-full w-8 h-8 font-black text-xs shadow border border-emerald-100">
+                                NMF
+                            </div>
+                            <div>
+                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #fcd34d;">PT. NUR MADANI FARMA</h1>
+                                <p class="text-[6px] font-semibold tracking-wide m-0 text-emerald-100 opacity-90 leading-tight">Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi</p>
+                            </div>
+                        </div>
+                        <div class="text-right text-[6px] leading-relaxed text-emerald-100 opacity-90 font-medium">
+                            <div>Telp: 0851-6665-7171</div>
+                            <div>Email: ptnurmadanifarma@gmail.com</div>
+                        </div>
+                    </div>
+                @else
+                    <div class="w-full mb-1">
+                        <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
+                    </div>
+                @endif
 
                 <!-- Judul Dokumen -->
                 <div class="flex justify-between items-center mb-1 border-b border-black pb-0.5">
@@ -463,7 +525,7 @@
                 </div>
 
                 <!-- Gaji Bersih Display Banner -->
-                <div class="mb-1.5 p-1.5 grid grid-cols-[60%_40%] bg-slate-900 text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: #111827;">
+                <div class="mb-1.5 p-1.5 grid grid-cols-[60%_40%] text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: {{ $isFarma ? '#064e3b' : '#111827' }};">
                     <span>Gaji Bersih Diterima (Net Salary) = A - B</span>
                     <div class="flex justify-between w-full text-[9px] px-1">
                         <span>Rp</span>
@@ -498,14 +560,25 @@
                 </div>
 
                 <!-- Official Company Footer -->
-                <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
-                    <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
-                    <div class="mt-0.5 text-gray-300 text-[6px]">
-                        <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
-                        <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
-                        <span>Website: www.ptutamamadaniraya.com</span>
+                @if($isFarma)
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-emerald-200 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
+                            <span>Website: www.nurmadanifarma.com</span>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-gray-300 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
+                            <span>Website: www.ptutamamadaniraya.com</span>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

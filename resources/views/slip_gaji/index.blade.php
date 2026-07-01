@@ -68,6 +68,7 @@
                     <tr style="background:#1f2937;">
                         <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:center;letter-spacing:0.05em;width:52px;">No</th>
                         <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Nomor Slip</th>
+                        <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Perusahaan</th>
                         <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Nama Karyawan</th>
                         <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:left;letter-spacing:0.05em;">Jabatan</th>
                         <th style="color:white;font-size:0.7rem;font-weight:700;text-transform:uppercase;padding:12px 16px;text-align:center;letter-spacing:0.05em;">Periode</th>
@@ -83,6 +84,9 @@
                         </td>
                         <td style="padding:13px 16px;font-family:monospace;font-size:0.85rem;font-weight:750;color:#1f2937;">
                             {{ $slip->nomor_slip }}
+                        </td>
+                        <td style="padding:13px 16px;font-size:0.85rem;font-weight:600;color:#374151;">
+                            {{ $slip->perusahaan ?? 'PT. UTAMA MADANI RAYA' }}
                         </td>
                         <td style="padding:13px 16px;font-size:0.85rem;font-weight:700;color:#1f2937;">
                             {{ $slip->nama_karyawan }}
@@ -130,7 +134,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" style="padding:48px 16px;text-align:center;">
+                        <td colspan="8" style="padding:48px 16px;text-align:center;">
                             <svg class="w-12 h-12 mx-auto mb-3" style="color:#d1d5db;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4M8 16l-4-4 4-4m8 8l4-4-4-4"/></svg>
                             <p style="font-size:0.875rem;color:#9ca3af;font-weight:500;">Belum ada data slip gaji karyawan.</p>
                             <p style="font-size:0.75rem;color:#d1d5db;margin-top:4px;">Klik "Buat Slip Gaji Baru" untuk menambahkan.</p>

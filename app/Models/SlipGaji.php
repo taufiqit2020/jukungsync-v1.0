@@ -11,6 +11,7 @@ class SlipGaji extends Model
 
     protected $fillable = [
         'nomor_slip',
+        'perusahaan',
         'nama_karyawan',
         'jabatan',
         'periode',

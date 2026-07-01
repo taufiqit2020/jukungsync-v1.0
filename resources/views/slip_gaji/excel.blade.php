@@ -36,9 +36,19 @@ xmlns="http://www.w3.org/TR/REC-html40">
         mso-number-format: '\#\,\#\#0';
         text-align: right;
     }
+    .company-title {
+        font-size: 12pt;
+        font-weight: bold;
+        color: #1e3a8a;
+    }
 </style>
 </head>
 <body>
+
+@php
+    $isFarma = (isset($slipGaji->perusahaan) && $slipGaji->perusahaan === 'PT. NUR MADANI FARMA');
+    $companyName = $slipGaji->perusahaan ?? 'PT. UTAMA MADANI RAYA';
+@endphp
 
 <table border="0" cellpadding="0" cellspacing="0">
     <colgroup>
@@ -46,30 +56,47 @@ xmlns="http://www.w3.org/TR/REC-html40">
         <col width="150" style="width: 150px;">
     </colgroup>
 
-    <!-- Row 1-6 are empty -->
-    <tr height="20">
-        <td></td><td></td>
+    <!-- Company Header -->
+    <tr height="24">
+        <td colspan="2" class="bold text-left" style="font-size: 13pt; color: {{ $isFarma ? '#064e3b' : '#1e3a8a' }};">{{ $companyName }}</td>
+    </tr>
+    <tr height="18">
+        <td colspan="2" class="text-left" style="font-size: 8pt; color: #4b5563;">
+            @if($isFarma)
+                Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi | Telp: 0851-6665-7171
+            @else
+                Distributor & Mitra Pengadaan Barang | Telp: 0851-6665-7171
+            @endif
+        </td>
     </tr>
     <tr height="20">
+        <td colspan="2" class="bold text-left" style="font-size: 11pt; border-bottom: 2px solid #000000; padding-bottom: 5px;">SLIP GAJI KARYAWAN</td>
+    </tr>
+    
+    <!-- Spacing -->
+    <tr height="10">
         <td></td><td></td>
     </tr>
-    <tr height="20">
-        <td></td><td></td>
+
+    <!-- Info Detail -->
+    <tr>
+        <td class="bold">No. Slip: <span style="font-weight: normal;">{{ $slipGaji->nomor_slip }}</span></td>
+        <td class="bold">Nama: <span style="font-weight: normal;">{{ $slipGaji->nama_karyawan }}</span></td>
     </tr>
-    <tr height="20">
-        <td></td><td></td>
+    <tr>
+        <td class="bold">Periode: <span style="font-weight: normal;">{{ $slipGaji->periode }}</span></td>
+        <td class="bold">Jabatan: <span style="font-weight: normal;">{{ $slipGaji->jabatan ?? '-' }}</span></td>
     </tr>
-    <tr height="20">
-        <td></td><td></td>
-    </tr>
-    <tr height="20">
+    
+    <!-- Spacing -->
+    <tr height="15">
         <td></td><td></td>
     </tr>
 
     <!-- Row 7: Header Pendapatan -->
     <tr>
-        <td class="bordered bold">I. Pendapatan (Earnings)</td>
-        <td class="bordered bold text-center">Jumlah</td>
+        <td class="bordered bold" style="background-color: #f3f4f6;">I. Pendapatan (Earnings)</td>
+        <td class="bordered bold text-center" style="background-color: #f3f4f6;">Jumlah</td>
     </tr>
 
     <!-- Row 8: Gaji Pokok -->
@@ -95,14 +122,14 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
     @endphp
     <tr>
-        <td class="bordered bold">Total Pendapatan (A)</td>
-        <td class="bordered bold number-format">{{ $totalPendapatan }}</td>
+        <td class="bordered bold" style="background-color: #f9fafb;">Total Pendapatan (A)</td>
+        <td class="bordered bold number-format" style="background-color: #f9fafb;">{{ $totalPendapatan }}</td>
     </tr>
 
     <!-- Row 12: Header Potongan -->
     <tr>
-        <td class="bordered bold">II. Potongan (Deductions)</td>
-        <td class="bordered bold text-center">Jumlah</td>
+        <td class="bordered bold" style="background-color: #f3f4f6;">II. Potongan (Deductions)</td>
+        <td class="bordered bold text-center" style="background-color: #f3f4f6;">Jumlah</td>
     </tr>
 
     <!-- Row 13: BPJS Kesehatan -->
@@ -122,8 +149,22 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
     @endphp
     <tr>
-        <td class="bordered bold">Total Potongan (B)</td>
-        <td class="bordered bold number-format">{{ $totalPotongan }}</td>
+        <td class="bordered bold" style="background-color: #f9fafb;">Total Potongan (B)</td>
+        <td class="bordered bold number-format" style="background-color: #f9fafb;">{{ $totalPotongan }}</td>
+    </tr>
+
+    <!-- Spacing -->
+    <tr height="10">
+        <td></td><td></td>
+    </tr>
+
+    <!-- Gaji Bersih -->
+    @php
+        $totalGaji = $totalPendapatan - $totalPotongan;
+    @endphp
+    <tr>
+        <td class="bordered bold text-white" style="background-color: {{ $isFarma ? '#064e3b' : '#111827' }};">Gaji Bersih Diterima (Net Salary)</td>
+        <td class="bordered bold text-white number-format" style="background-color: {{ $isFarma ? '#064e3b' : '#111827' }};">{{ $totalGaji }}</td>
     </tr>
 </table>
 
