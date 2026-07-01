@@ -23,6 +23,12 @@ $files = [
     'resources/views/slip_gaji/show.blade.php',
     'resources/views/slip_gaji/excel.blade.php',
     'public/img/logo-farma.png',
+    
+    // NEW FOR REPORT
+    'app/Http/Controllers/ReportController.php',
+    'resources/views/reports/slip-gaji.blade.php',
+    'resources/views/reports/print-slip-gaji.blade.php',
+    'resources/views/reports/excel-slip-gaji.blade.php',
 ];
 
 $php = "<?php\n";
@@ -119,8 +125,8 @@ $php .= "\n";
 $php .= "    echo \"<div style='font-family:Inter,sans-serif;max-width:640px;margin:60px auto;padding:0 20px;'>\";  \n";
 $php .= "    echo \"<div style='background:linear-gradient(135deg,#064e3b,#0d9488);border-radius:1.25rem;padding:2rem;color:white;text-align:center;margin-bottom:1.5rem;'>\";  \n";
 $php .= "    echo \"<div style='font-size:3rem;margin-bottom:0.75rem;'>🖨️</div>\";  \n";
-$php .= "    echo \"<h1 style='margin:0;font-size:1.5rem;font-weight:900;'>Pembaruan Slip Gaji PT Nur Madani Farma Berhasil!</h1>\";  \n";
-$php .= "    echo \"<p style='margin:0.5rem 0 0;opacity:0.9;font-size:0.9rem;'>Pembaruan Desain & Multi-Company Slip Gaji (v63)</p>\\n\";  \n";
+$php .= "    echo \"<h1 style='margin:0;font-size:1.5rem;font-weight:900;'>Pembaruan Laporan Slip Gaji Berhasil!</h1>\";  \n";
+$php .= "    echo \"<p style='margin:0.5rem 0 0;opacity:0.9;font-size:0.9rem;'>Pembaruan Fitur Laporan Gaji Karyawan Per PT (v64)</p>\\n\";  \n";
 $php .= "    echo \"</div>\";  \n";
 $php .= "    echo \"<div style='background:white;border:1px solid #e5e7eb;border-radius:1rem;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 4px 16px rgba(0,0,0,0.06);'>\";  \n";
 $php .= "    echo \"<h2 style='margin:0 0 1rem;color:#1f2937;font-size:1rem;font-weight:800;'>Log Pembaruan File:</h2>\";  \n";
@@ -131,7 +137,7 @@ $php .= "        echo \"<pre style='background:#ecfdf5;padding:1rem;border-radiu
 $php .= "    }\n";
 $php .= "    echo \"</div>\";  \n";
 $php .= "    echo \"<div style='text-align:center;'>\";  \n";
-$php .= "    echo \"<a href='/slip-gaji' style='display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 2rem;background:linear-gradient(135deg,#064e3b,#0d9488);color:white;text-decoration:none;border-radius:0.875rem;font-weight:800;font-size:0.95rem;box-shadow:0 4px 16px rgba(6,78,59,0.35);'>📄 Buka Data Slip Gaji</a>\";  \n";
+$php .= "    echo \"<a href='/reports/slip-gaji' style='display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 2rem;background:linear-gradient(135deg,#064e3b,#0d9488);color:white;text-decoration:none;border-radius:0.875rem;font-weight:800;font-size:0.95rem;box-shadow:0 4px 16px rgba(6,78,59,0.35);'>📄 Buka Laporan Gaji Karyawan</a>\";  \n";
 $php .= "    echo \"</div>\";  \n";
 $php .= "    echo \"</div>\";  \n";
 
@@ -139,6 +145,6 @@ $php .= "} catch (\\Exception \$e) {\n";
 $php .= "    echo \"<h1 style='color:red;'>Error:</h1><pre>\" . \$e->getMessage() . \"</pre>\";\n";
 $php .= "}\n";
 
-file_put_contents('C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1/public/installer_v63.php', $php);
-echo "✅ installer_v63.php compiled successfully!\n";
+file_put_contents('C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1/public/installer_v64.php', $php);
+echo "✅ installer_v64.php compiled successfully!\n";
 ?>

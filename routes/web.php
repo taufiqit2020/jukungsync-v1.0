@@ -162,6 +162,10 @@ Route::middleware('auth')->group(function () {
         Route::get('reports/expenses', [ReportController::class, 'expenses'])->name('reports.expenses');
         Route::get('reports/expenses/print', [ReportController::class, 'printExpenses'])->name('reports.expenses.print');
 
+        Route::get('reports/slip-gaji', [ReportController::class, 'slipGaji'])->name('reports.slip-gaji');
+        Route::get('reports/slip-gaji/print', [ReportController::class, 'printSlipGaji'])->name('reports.slip-gaji.print');
+        Route::get('reports/slip-gaji/excel', [ReportController::class, 'exportSlipGajiExcel'])->name('reports.slip-gaji.excel');
+
         // Pesanan Online (View Only untuk direktur/bendahara, action untuk staf_admin ditambahkan di bawah)
         Route::get('online-orders', [OnlineOrderController::class, 'index'])->name('online-orders.index');
         Route::get('online-orders/{online_order}', [OnlineOrderController::class, 'show'])->name('online-orders.show');

@@ -8,6 +8,7 @@ use App\Models\InvoiceItem;
 use App\Models\InventoryMovement;
 use App\Models\Product;
 use App\Models\Expense;
+use App\Models\SlipGaji;
 use Carbon\Carbon;
 
 class ReportController extends Controller
@@ -849,6 +850,95 @@ class ReportController extends Controller
         $totalPengeluaran = $expenses->sum('nominal');
 
         return view('reports.print-expenses', compact('expenses', 'totalPengeluaran', 'startDate', 'endDate', 'kategori'));
+    }
+
+    public function slipGaji(Request $request)
+    {
+        $perusahaan = $request->input('perusahaan');
+        $periode = $request->input('periode');
+
+        $query = SlipGaji::query();
+
+        if ($perusahaan) {
+            $query->where('perusahaan', $perusahaan);
+        }
+        if ($periode) {
+            $query->where('periode', $periode);
+        }
+
+        $slipGajis = $query->orderBy('created_at', 'desc')->get();
+        
+        $totalGaji = $slipGajis->sum('total_gaji');
+        $totalPendapatan = $slipGajis->sum(function($s) {
+            return $s->gaji_pokok + $s->lembur + $s->tunjangan_bonus;
+        });
+        $totalPotongan = $slipGajis->sum(function($s) {
+            return $s->bpjs_kesehatan + $s->bpjs_ketenagakerjaan;
+        });
+
+        $periodes = SlipGaji::select('periode')->distinct()->pluck('periode');
+
+        return view('reports.slip-gaji', compact('slipGajis', 'totalGaji', 'totalPendapatan', 'totalPotongan', 'periodes', 'perusahaan', 'periode'));
+    }
+
+    public function printSlipGaji(Request $request)
+    {
+        $perusahaan = $request->input('perusahaan');
+        $periode = $request->input('periode');
+
+        $query = SlipGaji::query();
+
+        if ($perusahaan) {
+            $query->where('perusahaan', $perusahaan);
+        }
+        if ($periode) {
+            $query->where('periode', $periode);
+        }
+
+        $slipGajis = $query->orderBy('created_at', 'asc')->get();
+        
+        $totalGaji = $slipGajis->sum('total_gaji');
+        $totalPendapatan = $slipGajis->sum(function($s) {
+            return $s->gaji_pokok + $s->lembur + $s->tunjangan_bonus;
+        });
+        $totalPotongan = $slipGajis->sum(function($s) {
+            return $s->bpjs_kesehatan + $s->bpjs_ketenagakerjaan;
+        });
+
+        return view('reports.print-slip-gaji', compact('slipGajis', 'totalGaji', 'totalPendapatan', 'totalPotongan', 'perusahaan', 'periode'));
+    }
+
+    public function exportSlipGajiExcel(Request $request)
+    {
+        $perusahaan = $request->input('perusahaan');
+        $periode = $request->input('periode');
+
+        $query = SlipGaji::query();
+
+        if ($perusahaan) {
+            $query->where('perusahaan', $perusahaan);
+        }
+        if ($periode) {
+            $query->where('periode', $periode);
+        }
+
+        $slipGajis = $query->orderBy('created_at', 'asc')->get();
+        
+        $html = view('reports.excel-slip-gaji', compact('slipGajis', 'perusahaan', 'periode'))->render();
+        
+        $filename = 'Laporan-Gaji-Karyawan';
+        if ($perusahaan) {
+            $filename .= '-' . str_replace([' ', '.'], '', $perusahaan);
+        }
+        if ($periode) {
+            $filename .= '-' . str_replace('/', '-', $periode);
+        }
+        $filename .= '.xls';
+
+        return response($html)
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Cache-Control', 'max-age=0');
     }
 }
 
