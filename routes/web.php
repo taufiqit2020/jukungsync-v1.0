@@ -243,6 +243,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:bendahara,superadmin')->group(function() {
         Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
         
+        Route::get('slip-gaji/nomor-slip', [\App\Http\Controllers\SlipGajiController::class, 'getNomorSlipJson'])->name('slip-gaji.nomor-slip');
         Route::get('slip-gaji/{slip_gaji}/excel', [\App\Http\Controllers\SlipGajiController::class, 'exportExcel'])->name('slip-gaji.excel');
         Route::resource('slip-gaji', \App\Http\Controllers\SlipGajiController::class);
     });

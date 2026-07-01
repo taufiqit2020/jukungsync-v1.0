@@ -32,7 +32,7 @@ class SlipGajiController extends Controller
 
     public function create()
     {
-        $nomorSlip = SlipGaji::generateSlipNumber();
+        $nomorSlip = SlipGaji::generateSlipNumber('PT. UTAMA MADANI RAYA');
         return view('slip_gaji.create', compact('nomorSlip'));
     }
 
@@ -52,7 +52,7 @@ class SlipGajiController extends Controller
         ]);
 
         $data = $request->all();
-        $data['nomor_slip'] = SlipGaji::generateSlipNumber();
+        $data['nomor_slip'] = SlipGaji::generateSlipNumber($request->input('perusahaan'));
 
         SlipGaji::create($data);
 
@@ -104,5 +104,13 @@ class SlipGajiController extends Controller
             ->header('Content-Type', 'application/vnd.ms-excel')
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->header('Cache-Control', 'max-age=0');
+    }
+
+    public function getNomorSlipJson(Request $request)
+    {
+        $perusahaan = $request->input('perusahaan', 'PT. UTAMA MADANI RAYA');
+        return response()->json([
+            'nomor_slip' => SlipGaji::generateSlipNumber($perusahaan)
+        ]);
     }
 }

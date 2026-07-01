@@ -42,12 +42,15 @@ class SlipGaji extends Model
     /**
      * Generate dynamic slip number
      */
-    public static function generateSlipNumber()
+    public static function generateSlipNumber($perusahaan = 'PT. UTAMA MADANI RAYA')
     {
         $year = date('Y');
         $month = date('m');
         
-        $latest = self::whereYear('created_at', $year)
+        $prefix = ($perusahaan === 'PT. NUR MADANI FARMA') ? 'SG-NMF' : 'SG-UMAR';
+        
+        $latest = self::where('perusahaan', $perusahaan)
+            ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
             ->orderBy('id', 'desc')
             ->first();
@@ -61,6 +64,6 @@ class SlipGaji extends Model
             }
         }
         
-        return "SG/{$year}/{$month}/" . sprintf('%04d', $nextNum);
+        return "{$prefix}/{$year}/{$month}/" . sprintf('%04d', $nextNum);
     }
 }

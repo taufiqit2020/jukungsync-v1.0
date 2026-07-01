@@ -38,7 +38,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Perusahaan</label>
-                    <select name="perusahaan" required
+                    <select name="perusahaan" id="perusahaan_select" required
                             class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 focus:bg-white focus:border-tema-marun focus:ring-2 focus:ring-tema-marun/20 outline-none transition-all font-semibold">
                         <option value="PT. UTAMA MADANI RAYA" {{ old('perusahaan') == 'PT. UTAMA MADANI RAYA' ? 'selected' : '' }}>PT. UTAMA MADANI RAYA</option>
                         <option value="PT. NUR MADANI FARMA" {{ old('perusahaan') == 'PT. NUR MADANI FARMA' ? 'selected' : '' }}>PT. NUR MADANI FARMA</option>
@@ -46,7 +46,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor Slip Gaji</label>
-                    <input type="text" value="{{ $nomorSlip }}" disabled
+                    <input type="text" id="nomor_slip_display" value="{{ $nomorSlip }}" disabled
                            class="w-full border px-4 py-3 bg-gray-100 rounded-xl border-gray-200 font-mono font-bold text-gray-500 outline-none">
                 </div>
                 <div>
@@ -178,6 +178,23 @@ document.addEventListener('DOMContentLoaded', function() {
     calcTriggers.forEach(input => {
         input.addEventListener('input', calculateSalary);
     });
+
+    // Dynamic slip number prefix change based on selected company
+    const perusahaanSelect = document.getElementById('perusahaan_select');
+    const slipDisplay = document.getElementById('nomor_slip_display');
+    if (perusahaanSelect && slipDisplay) {
+        perusahaanSelect.addEventListener('change', function() {
+            let val = this.value;
+            fetch(`/slip-gaji/nomor-slip?perusahaan=${encodeURIComponent(val)}`)
+                .then(res => res.json())
+                .then(data => {
+                    slipDisplay.value = data.nomor_slip;
+                })
+                .catch(err => {
+                    console.error('Error fetching nomor slip:', err);
+                });
+        });
+    }
 
     calculateSalary();
 });

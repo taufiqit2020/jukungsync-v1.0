@@ -140,27 +140,23 @@
             <div class="payslip-half">
                 <!-- Watermark Background -->
                 @if($isFarma)
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(13, 148, 136, 0.05); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none; z-index: 0; white-space: nowrap; user-select: none; width: 100%; text-align: center;">
-                        NUR MADANI FARMA
-                    </div>
+                    <img src="{{ asset('img/logo-farma.png') }}" alt="Watermark" class="watermark" style="opacity: 0.04; width: 50%;">
                 @else
                     <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
                 @endif
 
                 <!-- Kop Surat Resmi -->
                 @if($isFarma)
-                    <div class="w-full mb-1 flex items-center justify-between p-2 rounded" style="background: linear-gradient(135deg, #064e3b 0%, #0d9488 100%); color: white; min-height: 52px; box-sizing: border-box; border: 1px solid #042f1a;">
+                    <div class="w-full mb-1 flex items-center justify-between p-1.5 rounded" style="background-color: white; border-bottom: 2px solid #064e3b; min-height: 52px; box-sizing: border-box;">
                         <div class="flex items-center gap-2">
-                            <div class="flex items-center justify-center bg-white text-emerald-800 rounded-full w-8 h-8 font-black text-xs shadow border border-emerald-100">
-                                NMF
-                            </div>
+                            <img src="{{ asset('img/logo-farma.png') }}" alt="Logo PT Nur Madani Farma" class="h-10 w-auto object-contain">
                             <div>
-                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #fcd34d;">PT. NUR MADANI FARMA</h1>
-                                <p class="text-[6px] font-semibold tracking-wide m-0 text-emerald-100 opacity-90 leading-tight">Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi</p>
+                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #064e3b;">PT. NUR MADANI FARMA</h1>
+                                <p class="text-[6px] font-semibold tracking-wide m-0 text-gray-500 leading-tight">Distributor &amp; Mitra Pengadaan Alat Kesehatan &amp; Farmasi</p>
                             </div>
                         </div>
-                        <div class="text-right text-[6px] leading-relaxed text-emerald-100 opacity-90 font-medium">
-                            <div>Telp: 0851-6665-7171</div>
+                        <div class="text-right text-[6px] leading-relaxed text-gray-600 font-medium">
+                            <div>WhatsApp: 0851-6665-7070</div>
                             <div>Email: ptnurmadanifarma@gmail.com</div>
                         </div>
                     </div>
@@ -338,9 +334,9 @@
                 <!-- Official Company Footer -->
                 @if($isFarma)
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
-                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div>Alamat Kantor: Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
                         <div class="mt-0.5 text-emerald-200 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>WhatsApp: 0851-6665-7070</span> &nbsp;|&nbsp;
                             <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
                             <span>Website: www.nurmadanifarma.com</span>
                         </div>
@@ -364,27 +360,23 @@
             <div class="payslip-half">
                 <!-- Watermark Background -->
                 @if($isFarma)
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(13, 148, 136, 0.05); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none; z-index: 0; white-space: nowrap; user-select: none; width: 100%; text-align: center;">
-                        NUR MADANI FARMA
-                    </div>
+                    <img src="{{ asset('img/logo-farma.png') }}" alt="Watermark" class="watermark" style="opacity: 0.04; width: 50%;">
                 @else
                     <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
                 @endif
 
                 <!-- Kop Surat Resmi -->
                 @if($isFarma)
-                    <div class="w-full mb-1 flex items-center justify-between p-2 rounded" style="background: linear-gradient(135deg, #064e3b 0%, #0d9488 100%); color: white; min-height: 52px; box-sizing: border-box; border: 1px solid #042f1a;">
+                    <div class="w-full mb-1 flex items-center justify-between p-1.5 rounded" style="background-color: white; border-bottom: 2px solid #064e3b; min-height: 52px; box-sizing: border-box;">
                         <div class="flex items-center gap-2">
-                            <div class="flex items-center justify-center bg-white text-emerald-800 rounded-full w-8 h-8 font-black text-xs shadow border border-emerald-100">
-                                NMF
-                            </div>
+                            <img src="{{ asset('img/logo-farma.png') }}" alt="Logo PT Nur Madani Farma" class="h-10 w-auto object-contain">
                             <div>
-                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #fcd34d;">PT. NUR MADANI FARMA</h1>
-                                <p class="text-[6px] font-semibold tracking-wide m-0 text-emerald-100 opacity-90 leading-tight">Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi</p>
+                                <h1 class="text-[10px] font-black tracking-wider uppercase m-0 leading-tight" style="color: #064e3b;">PT. NUR MADANI FARMA</h1>
+                                <p class="text-[6px] font-semibold tracking-wide m-0 text-gray-500 leading-tight">Distributor &amp; Mitra Pengadaan Alat Kesehatan &amp; Farmasi</p>
                             </div>
                         </div>
-                        <div class="text-right text-[6px] leading-relaxed text-emerald-100 opacity-90 font-medium">
-                            <div>Telp: 0851-6665-7171</div>
+                        <div class="text-right text-[6px] leading-relaxed text-gray-600 font-medium">
+                            <div>WhatsApp: 0851-6665-7070</div>
                             <div>Email: ptnurmadanifarma@gmail.com</div>
                         </div>
                     </div>
@@ -562,9 +554,9 @@
                 <!-- Official Company Footer -->
                 @if($isFarma)
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
-                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div>Alamat Kantor: Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
                         <div class="mt-0.5 text-emerald-200 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>WhatsApp: 0851-6665-7070</span> &nbsp;|&nbsp;
                             <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
                             <span>Website: www.nurmadanifarma.com</span>
                         </div>

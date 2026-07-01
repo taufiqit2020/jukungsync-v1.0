@@ -63,9 +63,18 @@ xmlns="http://www.w3.org/TR/REC-html40">
     <tr height="18">
         <td colspan="2" class="text-left" style="font-size: 8pt; color: #4b5563;">
             @if($isFarma)
-                Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi | Telp: 0851-6665-7171
+                Distributor & Mitra Pengadaan Alat Kesehatan & Farmasi | WA: 0851-6665-7070
             @else
-                Distributor & Mitra Pengadaan Barang | Telp: 0851-6665-7171
+                Distributor & Mitra Pengadaan Barang | WA: 0851-6665-7171
+            @endif
+        </td>
+    </tr>
+    <tr height="18">
+        <td colspan="2" class="text-left" style="font-size: 8pt; color: #4b5563;">
+            @if($isFarma)
+                Alamat: Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714
+            @else
+                Alamat: Jl. Panglima Batur, Banjarbaru Utara, Kalimantan Selatan
             @endif
         </td>
     </tr>
