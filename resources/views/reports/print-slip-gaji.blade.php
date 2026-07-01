@@ -159,12 +159,23 @@
     </table>
 
     <!-- Tanda Tangan Laporan -->
-    <div class="mt-12 w-full flex justify-end">
+    <div class="mt-12 w-full flex justify-end mb-6">
         <div class="text-center w-64 mr-8 text-xs font-semibold">
             <p class="text-gray-700">Banjarbaru, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
             <p class="uppercase font-bold mt-1 mb-16 text-gray-800">DIREKTUR</p>
             <p class="font-extrabold uppercase text-gray-900 border-b border-gray-900 pb-0.5 inline-block w-full">HJ. NORMAULIDA, S.H.</p>
         </div>
+    </div>
+
+    <!-- Official Report Footer -->
+    <div class="mt-auto pt-4 border-t border-gray-300 text-center text-[8px] font-semibold text-gray-500 w-full">
+        @if($isFarma)
+            <p class="uppercase tracking-wider font-extrabold text-emerald-800">PT. NUR MADANI FARMA</p>
+            <p class="mt-0.5 text-gray-400 font-medium">Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714 &bull; WhatsApp: 0851-6665-7070 &bull; Email: ptnurmadanifarma@gmail.com</p>
+        @else
+            <p class="uppercase tracking-wider font-extrabold text-slate-800">PT. UTAMA MADANI RAYA</p>
+            <p class="mt-0.5 text-gray-400 font-medium">Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan &bull; WhatsApp: 0851-6665-7171 &bull; Email: ptutamamadaniraya@gmail.com</p>
+        @endif
     </div>
 
 </body>
