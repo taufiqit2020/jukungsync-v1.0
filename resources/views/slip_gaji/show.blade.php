@@ -22,13 +22,13 @@
                 background-color: white !important;
             }
             @page { 
-                size: A4 portrait; 
+                size: A4 landscape; 
                 margin: 0;
             }
             .payslip-page {
-                width: 210mm;
-                height: 297mm;
-                padding: 10mm;
+                width: 297mm;
+                height: 210mm;
+                padding: 6mm 8mm;
                 box-sizing: border-box;
                 position: relative;
                 background-color: white !important;
@@ -39,9 +39,9 @@
                 background-color: white;
                 box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
                 border-radius: 0.75rem;
-                width: 210mm;
-                height: 297mm;
-                padding: 10mm;
+                width: 297mm;
+                height: 210mm;
+                padding: 6mm 8mm;
                 margin: 2rem auto;
                 box-sizing: border-box;
                 position: relative;
@@ -51,9 +51,22 @@
             width: 100%;
             height: 100%;
             display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            position: relative;
+        }
+        .payslip-half {
+            width: 48.5%;
+            height: 198mm;
+            box-sizing: border-box;
+            display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+        }
+        .payslip-spacer {
+            width: 3%;
+            height: 100%;
         }
         .my-table {
             border-collapse: collapse;
@@ -61,14 +74,14 @@
         }
         .my-table th, .my-table td {
             border: 1px solid #000000;
-            padding: 4px 8px;
-            font-size: 10px;
+            padding: 3px 6px;
+            font-size: 8.5px;
         }
         .my-table th {
             background-color: transparent;
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 9px;
+            font-size: 8px;
             letter-spacing: 0.05em;
         }
         .watermark {
@@ -78,8 +91,7 @@
             transform: translate(-50%, -50%);
             opacity: 0.08;
             z-index: 0;
-            width: 50%;
-            max-width: 350px;
+            width: 60%;
             pointer-events: none;
         }
     </style>
@@ -89,7 +101,7 @@
     <!-- Top Action Buttons (Hidden on print) -->
     <div class="no-print max-w-4xl mx-auto mb-6 flex justify-between items-center bg-slate-900 text-white p-4 rounded-xl shadow-md">
         <div>
-            <h2 class="text-sm font-bold">Cetak Slip Gaji</h2>
+            <h2 class="text-sm font-bold">Cetak Slip Gaji (A4 Landscape Bagi 2)</h2>
             <p class="text-xs text-gray-400">Nomor: {{ $slipGaji->nomor_slip }} &bull; Periode: {{ $slipGaji->periode }}</p>
         </div>
         <div class="flex gap-2">
@@ -108,156 +120,389 @@
     <!-- The A4 printable page wrapper -->
     <div class="payslip-page">
         <div class="payslip-container">
-            <!-- Watermark Background -->
-            <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+            <!-- FIRST HALF (COPY KARYAWAN) -->
+            <div class="payslip-half">
+                <!-- Watermark Background -->
+                <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
 
-            <!-- Top Content Area -->
-            <div>
-                <!-- Kop Surat Resmi -->
-                <div class="w-full mb-3">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
-                </div>
+                <!-- Top Content Area -->
+                <div>
+                    <!-- Kop Surat Resmi -->
+                    <div class="w-full mb-1">
+                        <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
+                    </div>
 
-                <!-- Judul Dokumen -->
-                <div class="flex justify-between items-center mb-3 border-b border-black pb-1.5">
-                    <h2 class="text-sm font-black uppercase tracking-widest">SLIP GAJI KARYAWAN</h2>
-                </div>
+                    <!-- Judul Dokumen -->
+                    <div class="flex justify-between items-center mb-1 border-b border-black pb-0.5">
+                        <h2 class="text-[10px] font-black uppercase tracking-widest">SLIP GAJI KARYAWAN</h2>
+                        <span class="text-[7.5px] font-bold border border-black px-1.5 py-0.2 uppercase tracking-wider rounded bg-transparent">COPY KARYAWAN</span>
+                    </div>
 
-                <!-- Informasi Detail Karyawan -->
-                <div class="grid grid-cols-2 gap-4 mb-4 text-[10px] text-black border border-black p-2.5 rounded bg-transparent relative z-10">
-                    <table class="w-full" style="border: none;">
-                        <tr class="align-top">
-                            <td class="w-16 font-bold py-0.5">No. Slip</td>
-                            <td class="w-2 py-0.5">:</td>
-                            <td class="font-semibold py-0.5">{{ $slipGaji->nomor_slip }}</td>
-                        </tr>
-                        <tr class="align-top">
-                            <td class="font-bold py-0.5">Periode</td>
-                            <td class="py-0.5">:</td>
-                            <td class="py-0.5">{{ $slipGaji->periode }}</td>
-                        </tr>
-                    </table>
-                    <table class="w-full" style="border: none;">
-                        <tr class="align-top">
-                            <td class="w-24 font-bold py-0.5">Nama Karyawan</td>
-                            <td class="w-2 py-0.5">:</td>
-                            <td class="font-semibold py-0.5">{{ $slipGaji->nama_karyawan }}</td>
-                        </tr>
-                        <tr class="align-top">
-                            <td class="font-bold py-0.5">Jabatan</td>
-                            <td class="py-0.5">:</td>
-                            <td class="py-0.5">{{ $slipGaji->jabatan ?? '-' }}</td>
-                        </tr>
-                    </table>
-                </div>
+                    <!-- Informasi Detail Karyawan -->
+                    <div class="grid grid-cols-2 gap-2 mb-1.5 text-[8px] text-black border border-black p-1.5 rounded bg-transparent relative z-10">
+                        <table class="w-full" style="border: none;">
+                            <tr class="align-top">
+                                <td class="w-12 font-bold py-0.2">No. Slip</td>
+                                <td class="w-2 py-0.2">:</td>
+                                <td class="font-semibold py-0.2">{{ $slipGaji->nomor_slip }}</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="font-bold py-0.2">Periode</td>
+                                <td class="py-0.2">:</td>
+                                <td class="py-0.2">{{ $slipGaji->periode }}</td>
+                            </tr>
+                        </table>
+                        <table class="w-full" style="border: none;">
+                            <tr class="align-top">
+                                <td class="w-18 font-bold py-0.2">Nama</td>
+                                <td class="w-2 py-0.2">:</td>
+                                <td class="font-semibold py-0.2">{{ $slipGaji->nama_karyawan }}</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="font-bold py-0.2">Jabatan</td>
+                                <td class="py-0.2">:</td>
+                                <td class="py-0.2">{{ $slipGaji->jabatan ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
 
-                <!-- Vertically Stacked Earnings and Deductions Tables -->
-                <div class="space-y-3 mb-4 relative z-10">
-                    <!-- Pendapatan Table -->
-                    <table class="my-table text-[10px]">
-                        <thead>
-                            <tr>
-                                <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Gaji Pokok</td>
-                                <td class="text-right font-semibold">{{ number_format($slipGaji->gaji_pokok, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td>Lembur</td>
-                                <td class="text-right font-semibold">{{ number_format($slipGaji->lembur, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td>Tunjangan / Bonus</td>
-                                <td class="text-right font-semibold">{{ number_format($slipGaji->tunjangan_bonus, 0, ',', '.') }}</td>
-                            </tr>
-                            @php
-                                $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
-                            @endphp
-                            <tr class="font-bold">
-                                <td>Total Pendapatan (A)</td>
-                                <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Vertically Stacked Earnings and Deductions Tables -->
+                    <div class="space-y-1 mb-1.5 relative z-10">
+                        <!-- Pendapatan Table -->
+                        <table class="my-table text-[8px]">
+                            <thead>
+                                <tr>
+                                    <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gaji Pokok</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->gaji_pokok, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Lembur</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->lembur, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Tunjangan / Bonus</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->tunjangan_bonus, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @php
+                                    $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
+                                @endphp
+                                <tr class="font-bold">
+                                    <td>Total Pendapatan (A)</td>
+                                    <td style="border-top: 1.5px solid #000000;">
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span>{{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                    <!-- Potongan Table -->
-                    <table class="my-table text-[10px]">
-                        <thead>
-                            <tr>
-                                <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>BPJS Kesehatan</td>
-                                <td class="text-right font-semibold">{{ number_format($slipGaji->bpjs_kesehatan, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td>BPJS Ketenagakerjaan</td>
-                                <td class="text-right font-semibold">{{ number_format($slipGaji->bpjs_ketenagakerjaan, 0, ',', '.') }}</td>
-                            </tr>
-                            <tr>
-                                <td>-</td>
-                                <td class="text-right font-semibold">0</td>
-                            </tr>
-                            @php
-                                $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
-                            @endphp
-                            <tr class="font-bold">
-                                <td>Total Potongan (B)</td>
-                                <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPotongan, 0, ',', '.') }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <!-- Potongan Table -->
+                        <table class="my-table text-[8px]">
+                            <thead>
+                                <tr>
+                                    <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BPJS Kesehatan</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->bpjs_kesehatan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BPJS Ketenagakerjaan</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->bpjs_ketenagakerjaan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @php
+                                    $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
+                                @endphp
+                                <tr class="font-bold">
+                                    <td>Total Potongan (B)</td>
+                                    <td style="border-top: 1.5px solid #000000;">
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span>{{ number_format($totalPotongan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <!-- Gaji Bersih Display Banner -->
-                <div class="mb-3 p-2 flex justify-between items-center bg-slate-900 text-white rounded text-[11px] font-black uppercase tracking-wide relative z-10" style="background-color: #111827;">
-                    <span>Gaji Bersih Diterima (Net Salary) = A - B</span>
-                    <span class="text-sm">Rp {{ number_format($slipGaji->total_gaji, 0, ',', '.') }}</span>
-                </div>
-
-                <!-- Terbilang -->
-                <div class="text-[10px] italic font-bold border-b border-dashed border-black pb-1.5 mb-3 relative z-10">
-                    Terbilang: {{ \App\Helpers\TerbilangHelper::terbilang($slipGaji->total_gaji) }} Rupiah
-                </div>
-
-                <!-- Catatan -->
-                @if($slipGaji->catatan)
-                <div class="text-[9px] border border-dashed border-gray-400 p-2 rounded mb-2 relative z-10">
-                    <span class="font-bold">Catatan:</span> {{ $slipGaji->catatan }}
-                </div>
-                @endif
-            </div>
-
-            <!-- Bottom Content Area -->
-            <div>
-                <!-- Tanda Tangan -->
-                <div class="mt-4 relative z-10">
-                    <div class="flex justify-between text-[10px] font-bold text-center">
-                        <div class="w-48">
-                            <p class="uppercase mb-8">DIREKTUR</p>
-                            <p class="font-bold uppercase pb-0.5 inline-block w-full">HJ. NORMAULIDA, S.H.</p>
+                    <!-- Gaji Bersih Display Banner -->
+                    <div class="mb-1 p-1.5 grid grid-cols-[60%_40%] bg-slate-900 text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: #111827;">
+                        <span>Gaji Bersih Diterima (Net Salary) = A - B</span>
+                        <div class="flex justify-between w-full text-[9px] px-1">
+                            <span>Rp</span>
+                            <span>{{ number_format($slipGaji->total_gaji, 0, ',', '.') }}</span>
                         </div>
-                        <div class="w-48">
-                            <p class="uppercase mb-8">PENERIMA / KARYAWAN</p>
-                            <p class="font-bold uppercase pb-0.5 inline-block w-full">{{ $slipGaji->nama_karyawan }}</p>
+                    </div>
+
+                    <!-- Terbilang -->
+                    <div class="text-[7.5px] italic font-bold border-b border-dashed border-black pb-0.5 mb-1 relative z-10">
+                        Terbilang: {{ \App\Helpers\TerbilangHelper::terbilang($slipGaji->total_gaji) }} Rupiah
+                    </div>
+
+                    <!-- Catatan -->
+                    @if($slipGaji->catatan)
+                    <div class="text-[7.5px] border border-dashed border-gray-400 p-1 rounded mb-1 relative z-10">
+                        <span class="font-bold">Catatan:</span> {{ $slipGaji->catatan }}
+                    </div>
+                    @endif
+                </div>
+
+                <!-- Bottom Content Area -->
+                <div>
+                    <!-- Tanda Tangan -->
+                    <div class="mt-1 relative z-10">
+                        <div class="flex justify-between text-[8px] font-bold text-center">
+                            <div class="w-36">
+                                <p class="uppercase mb-14">DIREKTUR</p>
+                                <p class="font-bold uppercase pb-0.5 inline-block w-full">HJ. NORMAULIDA, S.H.</p>
+                            </div>
+                            <div class="w-36">
+                                <p class="uppercase mb-14">PENERIMA / KARYAWAN</p>
+                                <p class="font-bold uppercase pb-0.5 inline-block w-full">{{ $slipGaji->nama_karyawan }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Official Company Footer -->
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-gray-300 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
+                            <span>Website: www.ptutamamadaniraya.com</span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Official Company Footer -->
-                <div class="p-2 text-center text-[8.5px] font-semibold tracking-wide mt-6" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.4;">
-                    <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
-                    <div class="mt-0.5 text-gray-300 text-[7.5px]">
-                        <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
-                        <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
-                        <span>Website: www.ptutamamadaniraya.com</span>
+            <!-- DIVIDER SPACER -->
+            <div class="payslip-spacer"></div>
+
+            <!-- SECOND HALF (COPY ARSIP) -->
+            <div class="payslip-half">
+                <!-- Watermark Background -->
+                <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" class="watermark">
+
+                <!-- Top Content Area -->
+                <div>
+                    <!-- Kop Surat Resmi -->
+                    <div class="w-full mb-1">
+                        <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
+                    </div>
+
+                    <!-- Judul Dokumen -->
+                    <div class="flex justify-between items-center mb-1 border-b border-black pb-0.5">
+                        <h2 class="text-[10px] font-black uppercase tracking-widest">SLIP GAJI KARYAWAN</h2>
+                        <span class="text-[7.5px] font-bold border border-black px-1.5 py-0.2 uppercase tracking-wider rounded bg-transparent">COPY ARSIP</span>
+                    </div>
+
+                    <!-- Informasi Detail Karyawan -->
+                    <div class="grid grid-cols-2 gap-2 mb-1.5 text-[8px] text-black border border-black p-1.5 rounded bg-transparent relative z-10">
+                        <table class="w-full" style="border: none;">
+                            <tr class="align-top">
+                                <td class="w-12 font-bold py-0.2">No. Slip</td>
+                                <td class="w-2 py-0.2">:</td>
+                                <td class="font-semibold py-0.2">{{ $slipGaji->nomor_slip }}</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="font-bold py-0.2">Periode</td>
+                                <td class="py-0.2">:</td>
+                                <td class="py-0.2">{{ $slipGaji->periode }}</td>
+                            </tr>
+                        </table>
+                        <table class="w-full" style="border: none;">
+                            <tr class="align-top">
+                                <td class="w-18 font-bold py-0.2">Nama</td>
+                                <td class="w-2 py-0.2">:</td>
+                                <td class="font-semibold py-0.2">{{ $slipGaji->nama_karyawan }}</td>
+                            </tr>
+                            <tr class="align-top">
+                                <td class="font-bold py-0.2">Jabatan</td>
+                                <td class="py-0.2">:</td>
+                                <td class="py-0.2">{{ $slipGaji->jabatan ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Vertically Stacked Earnings and Deductions Tables -->
+                    <div class="space-y-1 mb-1.5 relative z-10">
+                        <!-- Pendapatan Table -->
+                        <table class="my-table text-[8px]">
+                            <thead>
+                                <tr>
+                                    <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Gaji Pokok</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->gaji_pokok, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Lembur</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->lembur, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Tunjangan / Bonus</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->tunjangan_bonus, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @php
+                                    $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
+                                @endphp
+                                <tr class="font-bold">
+                                    <td>Total Pendapatan (A)</td>
+                                    <td style="border-top: 1.5px solid #000000;">
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span>{{ number_format($totalPendapatan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Potongan Table -->
+                        <table class="my-table text-[8px]">
+                            <thead>
+                                <tr>
+                                    <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BPJS Kesehatan</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->bpjs_kesehatan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BPJS Ketenagakerjaan</td>
+                                    <td>
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span class="font-semibold">{{ number_format($slipGaji->bpjs_ketenagakerjaan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @php
+                                    $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
+                                @endphp
+                                <tr class="font-bold">
+                                    <td>Total Potongan (B)</td>
+                                    <td style="border-top: 1.5px solid #000000;">
+                                        <div class="flex justify-between w-full">
+                                            <span>Rp</span>
+                                            <span>{{ number_format($totalPotongan, 0, ',', '.') }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Gaji Bersih Display Banner -->
+                    <div class="mb-1 p-1.5 grid grid-cols-[60%_40%] bg-slate-900 text-white rounded text-[8.5px] font-black uppercase tracking-wide relative z-10" style="background-color: #111827;">
+                        <span>Gaji Bersih Diterima (Net Salary) = A - B</span>
+                        <div class="flex justify-between w-full text-[9px] px-1">
+                            <span>Rp</span>
+                            <span>{{ number_format($slipGaji->total_gaji, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Terbilang -->
+                    <div class="text-[7.5px] italic font-bold border-b border-dashed border-black pb-0.5 mb-1 relative z-10">
+                        Terbilang: {{ \App\Helpers\TerbilangHelper::terbilang($slipGaji->total_gaji) }} Rupiah
+                    </div>
+
+                    <!-- Catatan -->
+                    @if($slipGaji->catatan)
+                    <div class="text-[7.5px] border border-dashed border-gray-400 p-1 rounded mb-1 relative z-10">
+                        <span class="font-bold">Catatan:</span> {{ $slipGaji->catatan }}
+                    </div>
+                    @endif
+                </div>
+
+                <!-- Bottom Content Area -->
+                <div>
+                    <!-- Tanda Tangan -->
+                    <div class="mt-1 relative z-10">
+                        <div class="flex justify-between text-[8px] font-bold text-center">
+                            <div class="w-36">
+                                <p class="uppercase mb-14">DIREKTUR</p>
+                                <p class="font-bold uppercase pb-0.5 inline-block w-full">HJ. NORMAULIDA, S.H.</p>
+                            </div>
+                            <div class="w-36">
+                                <p class="uppercase mb-14">PENERIMA / KARYAWAN</p>
+                                <p class="font-bold uppercase pb-0.5 inline-block w-full">{{ $slipGaji->nama_karyawan }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Official Company Footer -->
+                    <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
+                        <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                        <div class="mt-0.5 text-gray-300 text-[6px]">
+                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
+                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
+                            <span>Website: www.ptutamamadaniraya.com</span>
+                        </div>
                     </div>
                 </div>
             </div>
