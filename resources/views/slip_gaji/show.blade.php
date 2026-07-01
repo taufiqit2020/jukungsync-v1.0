@@ -122,7 +122,7 @@
             <div>
                 <!-- Kop Surat Resmi -->
                 <div class="w-full mb-1">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-[18mm] object-contain">
+                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
                 </div>
 
                 <!-- Judul Dokumen -->
@@ -284,7 +284,7 @@
             <div>
                 <!-- Kop Surat Resmi -->
                 <div class="w-full mb-1">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-[18mm] object-contain">
+                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
                 </div>
 
                 <!-- Judul Dokumen -->
