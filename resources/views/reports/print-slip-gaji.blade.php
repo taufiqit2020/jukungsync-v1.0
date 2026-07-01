@@ -168,13 +168,21 @@
     </div>
 
     <!-- Official Report Footer -->
-    <div class="mt-auto pt-4 border-t border-gray-300 text-center text-[8px] font-semibold text-gray-500 w-full">
+    <div class="mt-auto pt-4 w-full">
         @if($isFarma)
-            <p class="uppercase tracking-wider font-extrabold text-emerald-800">PT. NUR MADANI FARMA</p>
-            <p class="mt-0.5 text-gray-400 font-medium">Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714 &bull; WhatsApp: 0851-6665-7070 &bull; Email: ptnurmadanifarma@gmail.com</p>
+            <div class="p-2 text-center text-[7.5px] font-semibold tracking-wide relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.4;">
+                <div>Alamat Kantor : Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
+                <div class="mt-0.5 text-emerald-200 text-[6.5px]">
+                    <span>WhatsApp - 0851-6665-7070 &nbsp;|&nbsp; Instagram - @nurmadanifarma &nbsp;|&nbsp; Website - www.nurmadanifarma.com</span>
+                </div>
+            </div>
         @else
-            <p class="uppercase tracking-wider font-extrabold text-slate-800">PT. UTAMA MADANI RAYA</p>
-            <p class="mt-0.5 text-gray-400 font-medium">Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan &bull; WhatsApp: 0851-6665-7171 &bull; Email: ptutamamadaniraya@gmail.com</p>
+            <div class="p-2 text-center text-[7.5px] font-semibold tracking-wide relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.4;">
+                <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
+                <div class="mt-0.5 text-gray-300 text-[6.5px]">
+                    <span>WhatsApp - 0851-6665-7171 &nbsp;|&nbsp; Instagram - @pt_umar &nbsp;|&nbsp; Website - www.ptutamamadaniraya.com</span>
+                </div>
+            </div>
         @endif
     </div>
 

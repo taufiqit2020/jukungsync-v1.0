@@ -334,20 +334,16 @@
                 <!-- Official Company Footer -->
                 @if($isFarma)
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
-                        <div>Alamat Kantor: Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
+                        <div>Alamat Kantor : Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
                         <div class="mt-0.5 text-emerald-200 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7070</span> &nbsp;|&nbsp;
-                            <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
-                            <span>Website: www.nurmadanifarma.com</span>
+                            <span>WhatsApp - 0851-6665-7070 &nbsp;|&nbsp; Instagram - @nurmadanifarma &nbsp;|&nbsp; Website - www.nurmadanifarma.com</span>
                         </div>
                     </div>
                 @else
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
                         <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
                         <div class="mt-0.5 text-gray-300 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
-                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
-                            <span>Website: www.ptutamamadaniraya.com</span>
+                            <span>WhatsApp - 0851-6665-7171 &nbsp;|&nbsp; Instagram - @pt_umar &nbsp;|&nbsp; Website - www.ptutamamadaniraya.com</span>
                         </div>
                     </div>
                 @endif
@@ -554,20 +550,16 @@
                 <!-- Official Company Footer -->
                 @if($isFarma)
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #064e3b; color: white; line-height: 1.3;">
-                        <div>Alamat Kantor: Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
+                        <div>Alamat Kantor : Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</div>
                         <div class="mt-0.5 text-emerald-200 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7070</span> &nbsp;|&nbsp;
-                            <span>Instagram: @nurmadanifarma</span> &nbsp;|&nbsp;
-                            <span>Website: www.nurmadanifarma.com</span>
+                            <span>WhatsApp - 0851-6665-7070 &nbsp;|&nbsp; Instagram - @nurmadanifarma &nbsp;|&nbsp; Website - www.nurmadanifarma.com</span>
                         </div>
                     </div>
                 @else
                     <div class="p-1 text-center text-[7px] font-semibold tracking-wide mt-2 relative z-10" style="border-radius: 4px; background-color: #111827; color: white; line-height: 1.3;">
                         <div>Alamat Kantor : Jl. Panglima Batur Banjarbaru Utara, Banjarbaru Kalimantan Selatan</div>
                         <div class="mt-0.5 text-gray-300 text-[6px]">
-                            <span>WhatsApp: 0851-6665-7171</span> &nbsp;|&nbsp;
-                            <span>Instagram: @pt_umar</span> &nbsp;|&nbsp;
-                            <span>Website: www.ptutamamadaniraya.com</span>
+                            <span>WhatsApp - 0851-6665-7171 &nbsp;|&nbsp; Instagram - @pt_umar &nbsp;|&nbsp; Website - www.ptutamamadaniraya.com</span>
                         </div>
                     </div>
                 @endif
