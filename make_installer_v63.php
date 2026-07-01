@@ -120,7 +120,7 @@ $php .= "    echo \"<div style='font-family:Inter,sans-serif;max-width:640px;mar
 $php .= "    echo \"<div style='background:linear-gradient(135deg,#064e3b,#0d9488);border-radius:1.25rem;padding:2rem;color:white;text-align:center;margin-bottom:1.5rem;'>\";  \n";
 $php .= "    echo \"<div style='font-size:3rem;margin-bottom:0.75rem;'>🖨️</div>\";  \n";
 $php .= "    echo \"<h1 style='margin:0;font-size:1.5rem;font-weight:900;'>Pembaruan Slip Gaji PT Nur Madani Farma Berhasil!</h1>\";  \n";
-$php .= "    echo \"<p style='margin:0.5rem 0 0;opacity:0.9;font-size:0.9rem;'>Pembaruan Fitur Multi-Company Slip Gaji (v62)</p>\\n\";  \n";
+$php .= "    echo \"<p style='margin:0.5rem 0 0;opacity:0.9;font-size:0.9rem;'>Pembaruan Desain & Multi-Company Slip Gaji (v63)</p>\\n\";  \n";
 $php .= "    echo \"</div>\";  \n";
 $php .= "    echo \"<div style='background:white;border:1px solid #e5e7eb;border-radius:1rem;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 4px 16px rgba(0,0,0,0.06);'>\";  \n";
 $php .= "    echo \"<h2 style='margin:0 0 1rem;color:#1f2937;font-size:1rem;font-weight:800;'>Log Pembaruan File:</h2>\";  \n";
@@ -139,6 +139,6 @@ $php .= "} catch (\\Exception \$e) {\n";
 $php .= "    echo \"<h1 style='color:red;'>Error:</h1><pre>\" . \$e->getMessage() . \"</pre>\";\n";
 $php .= "}\n";
 
-file_put_contents('C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1/public/installer_v62.php', $php);
-echo "✅ installer_v62.php compiled successfully!\n";
+file_put_contents('C:/Users/USER/.gemini/antigravity/scratch/JukungSync-V1.1/public/installer_v63.php', $php);
+echo "✅ installer_v63.php compiled successfully!\n";
 ?>
