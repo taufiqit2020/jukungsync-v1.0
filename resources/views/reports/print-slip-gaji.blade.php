@@ -6,7 +6,7 @@
     <title>Laporan Gaji Karyawan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;750;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: white;
@@ -30,12 +30,21 @@
             }
         }
         .table-border, .table-border th, .table-border td {
-            border: 1px solid #000000;
+            border: 1px solid #1e293b;
         }
         .table-border th {
-            background-color: #f3f4f6;
             font-weight: 800;
-            text-transform: uppercase;
+        }
+        .watermark-bg {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -10;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -43,8 +52,9 @@
 
     <!-- Tombol Print -->
     <div class="no-print mb-6 flex justify-end">
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold flex items-center shadow-md">
-            🖨️ Cetak (Ctrl+P)
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center shadow-md transition-all">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Cetak Laporan (Ctrl+P)
         </button>
     </div>
 
@@ -52,18 +62,30 @@
         $isFarma = ($perusahaan === 'PT. NUR MADANI FARMA');
     @endphp
 
+    <!-- Watermark Background -->
+    @if($isFarma)
+        <div class="watermark-bg">
+            <img src="{{ asset('img/logo-farma.png') }}" alt="Watermark" style="opacity: 0.035; width: 450px;">
+        </div>
+    @else
+        <div class="watermark-bg">
+            <img src="{{ asset('img/watermark-tengah.png') }}" alt="Watermark" style="opacity: 0.06; width: 450px;">
+        </div>
+    @endif
+
     <!-- Kop Surat (Logo Perusahaan) -->
     <div class="w-full mb-6">
         @if($isFarma)
-            <div class="flex items-center justify-between p-3 rounded" style="background-color: white; border-bottom: 3px double #064e3b; min-height: 60px; box-sizing: border-box;">
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('img/logo-farma.png') }}" alt="Logo PT Nur Madani Farma" class="h-12 w-auto object-contain">
+            <div class="flex items-center justify-between pb-3 border-b-2 border-emerald-800" style="min-height: 60px; box-sizing: border-box;">
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('img/logo-farma.png') }}" alt="Logo PT Nur Madani Farma" class="h-14 w-auto object-contain">
                     <div>
-                        <h1 class="text-lg font-black tracking-wider uppercase m-0 leading-tight" style="color: #064e3b;">PT. NUR MADANI FARMA</h1>
-                        <p class="text-[9px] font-semibold tracking-wide m-0 text-gray-500 leading-tight">Distributor &amp; Mitra Pengadaan Alat Kesehatan &amp; Farmasi</p>
+                        <h1 class="text-xl font-black tracking-wider uppercase m-0 leading-tight" style="color: #064e3b;">PT. NUR MADANI FARMA</h1>
+                        <p class="text-[9px] font-bold tracking-wide m-0 text-emerald-800 leading-tight">Distributor &amp; Mitra Pengadaan Alat Kesehatan &amp; Farmasi</p>
+                        <p class="text-[8px] font-medium m-0 text-gray-500 mt-1">Jl. Panglima Batur No. 16, Kel. Komet, Kec. Banjarbaru Utara, Kota Banjarbaru, Kalsel 70714</p>
                     </div>
                 </div>
-                <div class="text-right text-[9px] leading-relaxed text-gray-600 font-medium">
+                <div class="text-right text-[9px] leading-relaxed text-gray-600 font-semibold">
                     <div>WhatsApp: 0851-6665-7070</div>
                     <div>Email: ptnurmadanifarma@gmail.com</div>
                 </div>
@@ -75,8 +97,8 @@
 
     <!-- Judul Laporan -->
     <div class="text-center mb-6">
-        <h2 class="text-base font-black uppercase tracking-wider">LAPORAN GAJI KARYAWAN</h2>
-        <p class="text-xs text-gray-600 font-medium mt-1">
+        <h2 class="text-sm font-black uppercase tracking-widest text-gray-900">LAPORAN GAJI KARYAWAN</h2>
+        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-1">
             Perusahaan: {{ $perusahaan ?? 'Semua Perusahaan' }} &bull; Periode: {{ $periode ?? 'Semua Periode' }}
         </p>
     </div>
@@ -84,16 +106,16 @@
     <!-- Table -->
     <table class="w-full text-left text-[10px] table-border">
         <thead>
-            <tr class="text-center font-bold">
-                <th class="px-3 py-2.5 w-10">No</th>
-                <th class="px-3 py-2.5 w-32">Nomor Slip</th>
-                <th class="px-3 py-2.5 w-40">Perusahaan</th>
+            <tr class="text-center font-bold text-[9px] uppercase tracking-wider" style="background-color: {{ $isFarma ? '#ecfdf5' : '#f8fafc' }}; color: {{ $isFarma ? '#064e3b' : '#1e293b' }};">
+                <th class="px-3 py-2.5 w-10 text-center">No</th>
+                <th class="px-3 py-2.5 w-36">Nomor Slip</th>
+                <th class="px-3 py-2.5 w-44">Perusahaan</th>
                 <th class="px-3 py-2.5">Nama Karyawan</th>
                 <th class="px-3 py-2.5">Jabatan</th>
-                <th class="px-3 py-2.5 w-20">Periode</th>
-                <th class="px-3 py-2.5 text-right w-24">Pendapatan (A)</th>
-                <th class="px-3 py-2.5 text-right w-24">Potongan (B)</th>
-                <th class="px-3 py-2.5 text-right w-28">Gaji Bersih</th>
+                <th class="px-3 py-2.5 w-24 text-center">Periode</th>
+                <th class="px-3 py-2.5 text-right w-28">Pendapatan (A)</th>
+                <th class="px-3 py-2.5 text-right w-28">Potongan (B)</th>
+                <th class="px-3 py-2.5 text-right w-32">Gaji Bersih</th>
             </tr>
         </thead>
         <tbody>
@@ -108,28 +130,28 @@
                 $pendapatan = $gapok + $lembur + $tunjangan;
                 $potongan = $bpjsKes + $bpjsKet;
             @endphp
-            <tr>
-                <td class="px-3 py-2 text-center font-bold text-gray-500">{{ $idx + 1 }}</td>
-                <td class="px-3 py-2 font-mono font-bold">{{ $slip->nomor_slip }}</td>
-                <td class="px-3 py-2 font-medium">{{ $slip->perusahaan ?? 'PT. UTAMA MADANI RAYA' }}</td>
-                <td class="px-3 py-2 font-bold">{{ $slip->nama_karyawan }}</td>
-                <td class="px-3 py-2 text-gray-600">{{ $slip->jabatan ?? '-' }}</td>
-                <td class="px-3 py-2 text-center">{{ $slip->periode }}</td>
-                <td class="px-3 py-2 text-right">Rp {{ number_format($pendapatan, 0, ',', '.') }}</td>
-                <td class="px-3 py-2 text-right text-red-600">Rp {{ number_format($potongan, 0, ',', '.') }}</td>
-                <td class="px-3 py-2 text-right font-bold text-emerald-700">Rp {{ number_format($slip->total_gaji, 0, ',', '.') }}</td>
+            <tr class="hover:bg-slate-50/30">
+                <td class="px-3 py-2 text-center font-bold text-gray-400">{{ $idx + 1 }}</td>
+                <td class="px-3 py-2 font-mono font-bold text-gray-900">{{ $slip->nomor_slip }}</td>
+                <td class="px-3 py-2 font-medium text-gray-800">{{ $slip->perusahaan ?? 'PT. UTAMA MADANI RAYA' }}</td>
+                <td class="px-3 py-2 font-bold text-gray-900">{{ $slip->nama_karyawan }}</td>
+                <td class="px-3 py-2 text-gray-600 font-medium">{{ $slip->jabatan ?? '-' }}</td>
+                <td class="px-3 py-2 text-center font-semibold text-gray-700">{{ $slip->periode }}</td>
+                <td class="px-3 py-2 text-right font-medium text-gray-900">Rp {{ number_format($pendapatan, 0, ',', '.') }}</td>
+                <td class="px-3 py-2 text-right font-medium text-rose-600">Rp {{ number_format($potongan, 0, ',', '.') }}</td>
+                <td class="px-3 py-2 text-right font-black text-emerald-700">Rp {{ number_format($slip->total_gaji, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="px-3 py-8 text-center text-gray-500 font-medium">Belum ada data slip gaji pada periode ini.</td>
+                <td colspan="9" class="px-3 py-12 text-center text-gray-500 font-bold">Belum ada data slip gaji pada periode ini.</td>
             </tr>
             @endforelse
             
             @if($slipGajis->count() > 0)
-            <tr class="font-bold bg-gray-50">
-                <td colspan="6" class="px-3 py-3 text-right uppercase tracking-wider">TOTAL KESELURUHAN</td>
-                <td class="px-3 py-3 text-right">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
-                <td class="px-3 py-3 text-right text-red-600">Rp {{ number_format($totalPotongan, 0, ',', '.') }}</td>
+            <tr class="font-bold bg-slate-50/50">
+                <td colspan="6" class="px-3 py-3 text-right uppercase tracking-wider text-gray-900">TOTAL KESELURUHAN</td>
+                <td class="px-3 py-3 text-right text-gray-900">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</td>
+                <td class="px-3 py-3 text-right text-rose-600">Rp {{ number_format($totalPotongan, 0, ',', '.') }}</td>
                 <td class="px-3 py-3 text-right text-emerald-700 text-xs">Rp {{ number_format($totalGaji, 0, ',', '.') }}</td>
             </tr>
             @endif
@@ -137,15 +159,11 @@
     </table>
 
     <!-- Tanda Tangan Laporan -->
-    <div class="mt-8 mb-4 relative z-10 w-full">
-        <div class="flex justify-between text-[10px] font-bold text-center">
-            <div class="w-48">
-                <!-- Spacer for layout -->
-            </div>
-            <div class="w-64">
-                <p class="uppercase mb-16">DIREKTUR</p>
-                <p class="font-bold uppercase pb-0.5 border-b border-black inline-block w-full">HJ. NORMAULIDA, S.H.</p>
-            </div>
+    <div class="mt-12 w-full flex justify-end">
+        <div class="text-center w-64 mr-8 text-xs font-semibold">
+            <p class="text-gray-700">Banjarbaru, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+            <p class="uppercase font-bold mt-1 mb-16 text-gray-800">DIREKTUR</p>
+            <p class="font-extrabold uppercase text-gray-900 border-b border-gray-900 pb-0.5 inline-block w-full">HJ. NORMAULIDA, S.H.</p>
         </div>
     </div>
 
