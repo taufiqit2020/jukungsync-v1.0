@@ -40,7 +40,7 @@
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Perusahaan</label>
                     <select name="perusahaan" required
-                            class="w-full border px-4 py-3 bg-gray-55 rounded-xl border-gray-300 focus:bg-white focus:border-tema-marun focus:ring-2 focus:ring-tema-marun/20 outline-none transition-all font-semibold">
+                            class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 focus:bg-white focus:border-tema-marun focus:ring-2 focus:ring-tema-marun/20 outline-none transition-all font-semibold">
                         <option value="PT. UTAMA MADANI RAYA" {{ old('perusahaan', $slipGaji->perusahaan ?? 'PT. UTAMA MADANI RAYA') == 'PT. UTAMA MADANI RAYA' ? 'selected' : '' }}>PT. UTAMA MADANI RAYA</option>
                         <option value="PT. NUR MADANI FARMA" {{ old('perusahaan', $slipGaji->perusahaan ?? '') == 'PT. NUR MADANI FARMA' ? 'selected' : '' }}>PT. NUR MADANI FARMA</option>
                     </select>
@@ -53,7 +53,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap Karyawan</label>
                     <input type="text" name="nama_karyawan" value="{{ old('nama_karyawan', $slipGaji->nama_karyawan) }}" required
-                           class="w-full border px-4 py-3 bg-gray-55 rounded-xl border-gray-300 focus:bg-white focus:border-tema-marun focus:ring-2 focus:ring-tema-marun/20 outline-none transition-all">
+                           class="w-full border px-4 py-3 bg-gray-50 rounded-xl border-gray-300 focus:bg-white focus:border-tema-marun focus:ring-2 focus:ring-tema-marun/20 outline-none transition-all">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Jabatan</label>
