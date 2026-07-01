@@ -114,6 +114,22 @@
         </div>
     </div>
 
+    @php
+        // Helper formatting for Employee degree in signatures block
+        $formattedEmployeeName = $slipGaji->nama_karyawan;
+        if (strpos($formattedEmployeeName, ',') !== false) {
+            $parts = explode(',', $formattedEmployeeName);
+            $namePart = strtoupper(trim($parts[0]));
+            $titlePart = trim($parts[1]);
+            if (strcasecmp($titlePart, 'S.Pd') === 0 || strcasecmp($titlePart, 'S.Pd.') === 0) {
+                $titlePart = 'S.Pd.';
+            }
+            $formattedEmployeeName = $namePart . ', ' . $titlePart;
+        } else {
+            $formattedEmployeeName = strtoupper($formattedEmployeeName);
+        }
+    @endphp
+
     <!-- The A4 printable page wrapper -->
     <div class="payslip-page">
         <div class="payslip-container">
@@ -168,7 +184,7 @@
                         <thead>
                             <tr>
                                 <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                <th class="text-right" style="width: 40%;">JUMLAH</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -219,7 +235,7 @@
                         <thead>
                             <tr>
                                 <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                <th class="text-right" style="width: 40%;">JUMLAH</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -287,7 +303,7 @@
                         </div>
                         <div class="w-36">
                             <p class="uppercase mb-12">PENERIMA / KARYAWAN</p>
-                            <p class="font-bold uppercase pb-0.5 inline-block w-full">{{ $slipGaji->nama_karyawan }}</p>
+                            <p class="font-bold pb-0.5 inline-block w-full">{{ $formattedEmployeeName }}</p>
                         </div>
                     </div>
                 </div>
@@ -357,7 +373,7 @@
                         <thead>
                             <tr>
                                 <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                <th class="text-right" style="width: 40%;">JUMLAH</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -408,7 +424,7 @@
                         <thead>
                             <tr>
                                 <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
-                                <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
+                                <th class="text-right" style="width: 40%;">JUMLAH</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -476,7 +492,7 @@
                         </div>
                         <div class="w-36">
                             <p class="uppercase mb-12">PENERIMA / KARYAWAN</p>
-                            <p class="font-bold uppercase pb-0.5 inline-block w-full">{{ $slipGaji->nama_karyawan }}</p>
+                            <p class="font-bold pb-0.5 inline-block w-full">{{ $formattedEmployeeName }}</p>
                         </div>
                     </div>
                 </div>

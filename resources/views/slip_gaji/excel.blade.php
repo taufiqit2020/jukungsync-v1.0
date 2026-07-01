@@ -69,7 +69,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     <!-- Row 7: Header Pendapatan -->
     <tr>
         <td class="bordered bold">I. Pendapatan (Earnings)</td>
-        <td class="bordered bold text-center">Jumlah (Rp)</td>
+        <td class="bordered bold text-center">Jumlah</td>
     </tr>
 
     <!-- Row 8: Gaji Pokok -->
@@ -102,7 +102,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     <!-- Row 12: Header Potongan -->
     <tr>
         <td class="bordered bold">II. Potongan (Deductions)</td>
-        <td class="bordered bold text-center">Jumlah (Rp)</td>
+        <td class="bordered bold text-center">Jumlah</td>
     </tr>
 
     <!-- Row 13: BPJS Kesehatan -->
