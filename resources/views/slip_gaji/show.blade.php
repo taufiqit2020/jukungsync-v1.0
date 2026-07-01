@@ -101,7 +101,7 @@
             font-size: 10px;
         }
         .my-table th {
-            background-color: #f3f4f6;
+            background-color: transparent;
             font-weight: 800;
             text-transform: uppercase;
             font-size: 9px;
@@ -152,13 +152,13 @@
             <div>
                 <!-- Kop Surat Resmi -->
                 <div class="w-full mb-2">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-[15mm] object-contain">
+                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
                 </div>
 
                 <!-- Judul Dokumen -->
                 <div class="flex justify-between items-center mb-2 border-b border-black pb-1">
                     <h2 class="text-xs font-black uppercase tracking-widest">SLIP GAJI KARYAWAN</h2>
-                    <span class="text-[8px] font-bold border border-black px-2 py-0.5 uppercase tracking-wider rounded bg-gray-100">COPY KARYAWAN</span>
+                    <span class="text-[8px] font-bold border border-black px-2 py-0.5 uppercase tracking-wider rounded bg-transparent">COPY KARYAWAN</span>
                 </div>
 
                 <!-- Informasi Detail Karyawan -->
@@ -196,8 +196,8 @@
                         <table class="my-table text-[9px]">
                             <thead>
                                 <tr>
-                                    <th class="text-left" style="width: 60%;">I. Pendapatan (Earnings)</th>
-                                    <th class="text-right" style="width: 40%;">Jumlah (Rp)</th>
+                                    <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -216,7 +216,7 @@
                                 @php
                                     $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
                                 @endphp
-                                <tr class="font-bold bg-gray-50">
+                                <tr class="font-bold">
                                     <td>Total Pendapatan (A)</td>
                                     <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPendapatan, 0, ',', '.') }}</td>
                                 </tr>
@@ -229,8 +229,8 @@
                         <table class="my-table text-[9px]">
                             <thead>
                                 <tr>
-                                    <th class="text-left" style="width: 60%;">II. Potongan (Deductions)</th>
-                                    <th class="text-right" style="width: 40%;">Jumlah (Rp)</th>
+                                    <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -249,7 +249,7 @@
                                 @php
                                     $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
                                 @endphp
-                                <tr class="font-bold bg-gray-50">
+                                <tr class="font-bold">
                                     <td>Total Potongan (B)</td>
                                     <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPotongan, 0, ',', '.') }}</td>
                                 </tr>
@@ -320,13 +320,13 @@
             <div>
                 <!-- Kop Surat Resmi -->
                 <div class="w-full mb-2">
-                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-[15mm] object-contain">
+                    <img src="{{ asset('img/invoice-header.png') }}" alt="Kop Surat PT UMAR" class="w-full h-auto object-contain">
                 </div>
 
                 <!-- Judul Dokumen -->
                 <div class="flex justify-between items-center mb-2 border-b border-black pb-1">
                     <h2 class="text-xs font-black uppercase tracking-widest">SLIP GAJI KARYAWAN</h2>
-                    <span class="text-[8px] font-bold border border-black px-2 py-0.5 uppercase tracking-wider rounded bg-gray-100">COPY ARSIP</span>
+                    <span class="text-[8px] font-bold border border-black px-2 py-0.5 uppercase tracking-wider rounded bg-transparent">COPY ARSIP</span>
                 </div>
 
                 <!-- Informasi Detail Karyawan -->
@@ -364,8 +364,8 @@
                         <table class="my-table text-[9px]">
                             <thead>
                                 <tr>
-                                    <th class="text-left" style="width: 60%;">I. Pendapatan (Earnings)</th>
-                                    <th class="text-right" style="width: 40%;">Jumlah (Rp)</th>
+                                    <th class="text-left" style="width: 60%;">I. PENDAPATAN (EARNINGS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -384,7 +384,7 @@
                                 @php
                                     $totalPendapatan = $slipGaji->gaji_pokok + $slipGaji->lembur + $slipGaji->tunjangan_bonus;
                                 @endphp
-                                <tr class="font-bold bg-gray-50">
+                                <tr class="font-bold">
                                     <td>Total Pendapatan (A)</td>
                                     <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPendapatan, 0, ',', '.') }}</td>
                                 </tr>
@@ -397,8 +397,8 @@
                         <table class="my-table text-[9px]">
                             <thead>
                                 <tr>
-                                    <th class="text-left" style="width: 60%;">II. Potongan (Deductions)</th>
-                                    <th class="text-right" style="width: 40%;">Jumlah (Rp)</th>
+                                    <th class="text-left" style="width: 60%;">II. POTONGAN (DEDUCTIONS)</th>
+                                    <th class="text-right" style="width: 40%;">JUMLAH (RP)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -417,7 +417,7 @@
                                 @php
                                     $totalPotongan = $slipGaji->bpjs_kesehatan + $slipGaji->bpjs_ketenagakerjaan;
                                 @endphp
-                                <tr class="font-bold bg-gray-50">
+                                <tr class="font-bold">
                                     <td>Total Potongan (B)</td>
                                     <td class="text-right" style="border-top: 1.5px solid #000000;">{{ number_format($totalPotongan, 0, ',', '.') }}</td>
                                 </tr>
